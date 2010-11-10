@@ -9,9 +9,17 @@
  
  package com.addi.core.interpreter;
 
+import java.io.IOException;
+import java.io.InputStream;
+
 import com.addi.core.tokens.*;
 import com.addi.core.tokens.numbertokens.DoubleNumberToken;
 
+import android.app.Activity;
+import android.content.res.AssetManager;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 
@@ -31,6 +39,12 @@ public class Interpreter
     
     /**for testing purposes additional throwing of errors can be enables */
     public boolean throwErrorsB = false;
+    
+    private static Handler _mHandler;
+    
+    private static AssetManager _assetManager;
+    
+    private static Activity _act;
 
     /**
      * Constructs the interpreter and sets the constants
@@ -88,8 +102,11 @@ public class Interpreter
      */
     public void displayText(String text)
     {
-	    if(_outputArrayAdapter != null)
-	    	_outputArrayAdapter.add(text);
+    	Message msg = new Message();
+    	Bundle bndl = new Bundle();
+    	bndl.putString("text", text);
+    	msg.setData(bndl);
+    	_mHandler.sendMessage(msg);
     }
 	
     /**
@@ -99,19 +116,31 @@ public class Interpreter
     {
 	    if(runningStandalone)
 	    {
-	        executeExpression("finish");
+	        executeExpression("finish",_act,_mHandler);
 	    
 	        // store current properties to file
             globals.storePropertiesToFile();
         }
+    }
+    
+    public static Activity getActivity() {
+    	return _act;
+    }
+    
+    public static Handler getHandler() {
+    	return _mHandler;
     }
 	
     /**execute a single line.
      * @param expression = the line to execute
      * @return the result as a String
      */
-    public String executeExpression(String expression)
-    {    	
+    public String executeExpression(String expression, Activity act, Handler handler)
+    {  
+    	_mHandler = handler;
+    	_act = act;
+    	_assetManager = _act.getResources().getAssets();
+    	
         String answer = "";
         Parser p = new Parser(true);
 
@@ -173,7 +202,10 @@ public class Interpreter
         }
 
         ErrorLogger.debugLine("Interpreter: done");
-	    
+        
+        _assetManager = null;
+        _act = null;
+        
         return answer;
     }
 
@@ -376,5 +408,34 @@ public class Interpreter
         return ((CharToken)(variableData.clone())).getValue();
                 
     }
+    
+	public static String readAsset(String asset) {
 
+        // Programmatically load text from an asset and place it into the
+        // text view.  Note that the text we are loading is ASCII, so we
+        // need to convert it to UTF-16.
+        try {
+            InputStream is = _assetManager.open(asset);
+
+            // We guarantee that the available method returns the total
+            // size of the asset...  of course, this does mean that a single
+            // asset can't be more than 2 gigs.
+            int size = is.available();
+
+            // Read the entire asset into a local byte buffer.
+            byte[] buffer = new byte[size];
+            is.read(buffer);
+            is.close();
+
+            // Convert the buffer into a string.
+            String text = new String(buffer);
+            
+            return text;
+
+        } catch (IOException e) {
+            // Should never happen!
+            throw new RuntimeException(e);
+        }
+	}
+	
 }
