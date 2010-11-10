@@ -61,7 +61,7 @@ public class runfile extends ExternalFunction
 			inReader.close();					
 
 			//execute the file and store the answer
-			answerString = globals.getInterpreter().executeExpression(lineFile);		
+			answerString = globals.getInterpreter().executeExpression(lineFile, com.addi.core.interpreter.Interpreter.getActivity(),com.addi.core.interpreter.Interpreter.getHandler());		
 
 		}
 		catch (Exception e)
