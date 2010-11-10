@@ -2,6 +2,7 @@ package com.addi;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.ThreadGroup;
 
 import com.addi.R;
 import com.addi.R.id;
@@ -38,16 +39,31 @@ public class Addi extends Activity {
    private EditText _mCmdEditText;
    private Button _mRunButton;
    private Interpreter _interpreter;
-   private static AssetManager _assetManager;
+   private String _mResults = "";
    private String _prevCmd = "";	
+   private boolean _blockExecute = false;
+   private String _command;
+   private Activity _act;
+
+   // Need handler for callbacks to the UI thread
+   public final Handler _mHandler = new Handler() {
+	    public void handleMessage(Message msg) {
+	    	_mOutArrayAdapter.add(msg.getData().getString("text"));
+	    };
+   };
+   
+   // Create runnable for posting
+   final Runnable mUpdateResults = new Runnable() {
+       public void run() {
+           updateResultsInUi();
+       }
+   };
    
    /** Called when the activity is first created. */
    @Override
    public void onCreate(Bundle savedInstanceState) {
        super.onCreate(savedInstanceState);
        setContentView(R.layout.main);
-       
-       _assetManager = getResources().getAssets();
        
        _interpreter = new Interpreter(true);
        
@@ -58,16 +74,14 @@ public class Addi extends Activity {
        _mOutArrayAdapter = new ArrayAdapter<String>(this, R.layout.message);
        _mOutView.setAdapter(_mOutArrayAdapter);
        _mOutArrayAdapter.clear();
-       _interpreter.setOutputAdapter(_mOutArrayAdapter);
-       
-       String result = _interpreter.executeExpression("startup;");
-       _mOutArrayAdapter.add(result);
+
+       executeCmd("startup;",false);
        
        _mRunButton.setOnClickListener(new OnClickListener() {
            public void onClick(View v) {
                // Send a message using content of the edit text widget
                String command = _mCmdEditText.getText().toString();
-               executeCmd(command);
+               executeCmd(command,true);
            }
        }); 
        
@@ -81,51 +95,49 @@ public class Addi extends Activity {
            // If the action is a key-up event on the return key, send the message
            if (actionId == EditorInfo.IME_NULL && event.getAction() == KeyEvent.ACTION_UP) {
                String command = view.getText().toString();
-               executeCmd(command);
-               view.setText("");
+               executeCmd(command,true);
            }
            return true;
        }
    };
    
-   public void executeCmd(String command) {
-	 _mOutArrayAdapter.add(">>  " + command);	   
-	 String result = _interpreter.executeExpression(_prevCmd + command + "\n");
-	 if (result.equals("PARSER: CCX: continue") == true) {
-		 _prevCmd = _prevCmd + command  + "\n";
-	 } else {
-	    _mOutArrayAdapter.add(result);
-	    _prevCmd = "";
-	 }
+   private void updateResultsInUi() {
+       // Back in the UI thread -- update our UI elements based on the data in mResults
+	   if (_mResults.equals("PARSER: CCX: continue") == false) {
+		   _mOutArrayAdapter.add(_mResults);
+		   _prevCmd = "";
+	   } 
+	   _blockExecute = false;
    }
+
+	public void executeCmd(final String command, boolean displayCommand) {
+		if (_blockExecute == false) {
+			final Activity act = this;
+			if (displayCommand) {
+				_mOutArrayAdapter.add(">>  " + command);
+			}
+			_blockExecute = true;
+			
+			_command = command;
+			_act = this;
+
+			// Fire off a thread to do some work that we shouldn't do directly in the UI thread
+			ThreadGroup threadGroup = new ThreadGroup("executeCmdGroup");
+			Thread t = new Thread(threadGroup, mRunThread, "executeCmd", 1000000) {};
+			t.start();
+
+            _mCmdEditText.setText("");
+		}
+
+   }
+	
+   // Create runnable for thread run
+   final Runnable mRunThread = new Runnable() {
+       public void run() {
+			_mResults = _interpreter.executeExpression(_prevCmd + _command + "\n",_act,_mHandler);
+			_prevCmd = _prevCmd + _command  + "\n";
+			_mHandler.post(mUpdateResults);
+       }
+   };
    
-	public static String readAsset(String asset) {
-
-        // Programmatically load text from an asset and place it into the
-        // text view.  Note that the text we are loading is ASCII, so we
-        // need to convert it to UTF-16.
-        try {
-            InputStream is = _assetManager.open(asset);
-
-            // We guarantee that the available method returns the total
-            // size of the asset...  of course, this does mean that a single
-            // asset can't be more than 2 gigs.
-            int size = is.available();
-
-            // Read the entire asset into a local byte buffer.
-            byte[] buffer = new byte[size];
-            is.read(buffer);
-            is.close();
-
-            // Convert the buffer into a string.
-            String text = new String(buffer);
-            
-            return text;
-
-        } catch (IOException e) {
-            // Should never happen!
-            throw new RuntimeException(e);
-        }
-	}
 }
-

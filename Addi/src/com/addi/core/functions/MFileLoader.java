@@ -92,14 +92,13 @@ public class MFileLoader extends RootObject
      String       code         = "";
      UserFunction function     = null;
      String       fullFileName = mFilePath;
-     ReadAsset    assetReader  = new ReadAsset();
      
      ErrorLogger.debugLine("MFileLoader: loading >"+mFilePath);
  
      // open file and read m-file line by line
      try 
      {                 
-    	code = com.addi.Addi.readAsset(mFilePath);
+    	code = com.addi.core.interpreter.Interpreter.readAsset(mFilePath);
      }
      catch (Exception e)
      {
