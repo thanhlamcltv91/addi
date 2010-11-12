@@ -7,9 +7,10 @@
 *********************************************************/
 
 disp("********* Welcome to Addi *********");
-disp("Initially based on JMatLib");
+disp("A Mathematical Computing Environment");
 disp("Goal is to make it like Matlab/Octave.");
 disp("But java based and open source.");
 disp("Learn about this project at addi.googlecode.com");
+disp("You can file bugs, make feature requests, even help out");
 setdebug(1); 
 
