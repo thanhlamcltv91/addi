@@ -52,7 +52,7 @@ public class adjoint extends ExternalFunction
         
 		try
 		{
-			token = new FunctionToken("Determinant");
+			token = new FunctionToken("determinant");
 			function = globals.getFunctionManager().findFunction(token);
 		}
 		catch(java.lang.Exception e)

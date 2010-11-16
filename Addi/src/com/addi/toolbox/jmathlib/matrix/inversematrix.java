@@ -40,7 +40,7 @@ public class inversematrix extends ExternalFunction
 
 				try
 				{
-					token = new FunctionToken("Determinant");
+					token = new FunctionToken("determinant");
 					determinant = globals.getFunctionManager().findFunction(token);
 				}
 				catch(java.lang.Exception e)
@@ -48,7 +48,7 @@ public class inversematrix extends ExternalFunction
 
 				try
 				{
-					token = new FunctionToken("Adjoint");
+					token = new FunctionToken("adjoint");
 					adjoint = globals.getFunctionManager().findFunction(token);
 				}
 				catch(java.lang.Exception e)

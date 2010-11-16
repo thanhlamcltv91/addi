@@ -644,9 +644,11 @@ public class DoubleNumberToken extends NumberToken
     {
         StringBuffer buffer = new StringBuffer(20);
         
+        buffer.append("\n");
+        
         for(int yy = 0; yy < sizeA[0]; yy++)
         {
-            buffer.append(" [");
+            buffer.append("\n   ");
             for(int xx = 0; xx < sizeA[1]; xx++)
             {
                 nn[0] = yy;
@@ -657,10 +659,12 @@ public class DoubleNumberToken extends NumberToken
                 buffer.append(toString(values[n]));
                 
                 if(xx < sizeX - 1)
-                    buffer.append(" ,  ");
+                    buffer.append("   ");
             }           
-            buffer.append("]\n");
         }
+        
+        buffer.append("\n");
+        
         return buffer.toString();
     }
         
