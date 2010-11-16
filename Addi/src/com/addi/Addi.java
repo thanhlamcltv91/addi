@@ -12,9 +12,12 @@ import com.addi.core.interpreter.*;
 import android.app.Activity;
 import android.content.Intent; 
 import android.content.res.AssetManager;
+import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -62,6 +65,12 @@ public class Addi extends Activity {
    /** Called when the activity is first created. */
    @Override
    public void onCreate(Bundle savedInstanceState) {
+	   /*support multi language pack (Auto select) */
+	   Resources res = getResources();
+	   Configuration conf =res.getConfiguration();
+	   DisplayMetrics dm=res.getDisplayMetrics();
+	   res.updateConfiguration(conf, dm);
+	   
        super.onCreate(savedInstanceState);
        setContentView(R.layout.main);
        

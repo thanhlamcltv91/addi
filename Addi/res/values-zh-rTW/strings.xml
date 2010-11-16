@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="hello">歡迎使用 Addi!</string>
+    <string name="app_name">Addi</string>
+    <string name="run">執行</string>
+</resources>
