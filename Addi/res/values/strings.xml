@@ -4,4 +4,6 @@
     <string name="app_name">Addi</string>
     <string name="run">run</string>
 <string name="mbtn_AboutAddi_title">About Addi</string>
+<string name="smbtn_projectWebSite_title">Brower Addi Web Site</string>
+<string name="smbtn_bugReport_title">Bug Report </string>
 </resources>
