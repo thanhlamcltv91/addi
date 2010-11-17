@@ -3,4 +3,5 @@
     <string name="hello">Welcome to Addi!</string>
     <string name="app_name">Addi</string>
     <string name="run">run</string>
+<string name="mbtn_AboutAddi_title">About Addi</string>
 </resources>
