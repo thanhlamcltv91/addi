@@ -6,4 +6,5 @@
 <string name="mbtn_AboutAddi_title">關於 Addi</string>
 <string name="smbtn_projectWebSite_title">瀏覽 Addi 網站</string>
 <string name="smbtn_bugReport_title">問題回報</string>
+<string name="mbtn_History_title">指令歷程</string>
 </resources>

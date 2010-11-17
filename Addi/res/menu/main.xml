@@ -1,9 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu
   xmlns:android="http://schemas.android.com/apk/res/android">
-<item android:title="@string/mbtn_AboutAddi_title" android:id="@+id/aboutAddi"><menu><group android:id="@+id/group01"><item android:id="@+id/smbtn_projectWebSite" android:title="@string/smbtn_projectWebSite_title"></item>
+<item android:title="@string/mbtn_AboutAddi_title" android:id="@+id/aboutAddi">
+<menu>
+<group android:id="@+id/group01"><item android:id="@+id/smbtn_projectWebSite" android:title="@string/smbtn_projectWebSite_title"></item>
 <item android:id="@+id/smbtn_bugReport" android:title="@string/smbtn_bugReport_title"></item>
 </group>
 </menu>
+</item>
+<item android:title="@string/mbtn_History_title" android:id="@+id/History">
+
 </item>
 </menu>
