@@ -3,7 +3,8 @@ package com.addi;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.ThreadGroup;
-
+import java.util.Arrays;
+import java.util.LinkedList;
 
 import com.addi.R;
 import com.addi.R.id;
@@ -51,7 +52,7 @@ public class Addi extends Activity {
    private boolean _blockExecute = false;
    private String _command;
    private Activity _act;
-   private SubMenu _sumAboutAddi;
+   private LinkedList<String> _historyQueue = new LinkedList<String>();
 
    // Need handler for callbacks to the UI thread
    public final Handler _mHandler = new Handler() {
@@ -122,6 +123,14 @@ public class Addi extends Activity {
        case R.id.smbtn_bugReport:
     	   browserWeb("http://code.google.com/p/addi/issues/list");
            return true;
+       case R.id.History:
+    	   Intent intent = new Intent();
+    	   intent.setClass(Addi.this, HistorySelectMenu.class);
+    	   Bundle bundle = new Bundle();
+    	   bundle.putStringArray("historyQueue",getHistoryQueue());
+    	   intent.putExtras(bundle);
+    	   startActivity(intent);
+    	   return true;
        default:
            return super.onOptionsItemSelected(item);
        }
@@ -164,7 +173,9 @@ public class Addi extends Activity {
 			
 			_command = command;
 			_act = this;
-
+			
+			addHistoryQueue(command);
+			
 			// Fire off a thread to do some work that we shouldn't do directly in the UI thread
 			ThreadGroup threadGroup = new ThreadGroup("executeCmdGroup");
 			Thread t = new Thread(threadGroup, mRunThread, "executeCmd", 1000000) {};
@@ -174,7 +185,23 @@ public class Addi extends Activity {
 		}
 
    }
-	
+
+   public void addHistoryQueue(String commandString)
+   {
+	   _historyQueue.add(commandString);
+	   
+	   if (_historyQueue.size()>10)
+	   {
+		   _historyQueue.removeFirst();
+	   }
+	  
+   }
+   public String[] getHistoryQueue()
+   {
+	   String[] strArray = _historyQueue.toArray(new String[0]);
+	   return strArray;
+   }
+   
    // Create runnable for thread run
    final Runnable mRunThread = new Runnable() {
        public void run() {

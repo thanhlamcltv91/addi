@@ -11,10 +11,13 @@
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+            
+</intent-filter>
         </activity>
 
-    </application>
+    <activity android:name=".HistorySelectMenu" android:label="@string/mbtn_History_title">
+</activity>
+</application>
     <uses-sdk android:minSdkVersion="2" />
 
 </manifest> 
