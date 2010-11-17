@@ -106,24 +106,33 @@ public class Addi extends Activity {
    @Override
    public boolean onCreateOptionsMenu(Menu menu){;
 	   /*Add menu button  */
-	   boolean menuBtnResult=super.onCreateOptionsMenu(menu);
-	   _sumAboutAddi=menu.addSubMenu(0,0,0,R.string.mbtn_AboutAddi_title);
-	   return menuBtnResult;
+	  boolean menuBtnResult=super.onCreateOptionsMenu(menu);
+	  MenuInflater inflater = getMenuInflater();
+	  inflater.inflate(R.menu.main, menu);
+	  return menuBtnResult;
    }
    
-   public boolean onOptionsItemSelected(MenuItem item)
-   {
-	   /*Menu button Click Handler*/
-	   switch (item.getItemId())
-	   {
-	   	case 0: /*about Addi*/
-	   		Uri projectUri=Uri.parse("http://addi.googlecode.com");   		
-	   		Intent BrowerIntent = new Intent(Intent.ACTION_VIEW,projectUri);
-	   		startActivity(BrowerIntent);
-	   		break;
-	   }
-	   return super.onOptionsItemSelected(item); 
+   @Override
+   public boolean onOptionsItemSelected(MenuItem item) {
+       // Handle item selection
+       switch (item.getItemId()) {
+       case R.id.smbtn_projectWebSite:
+    	   browserWeb("http://code.google.com/p/addi/");
+           return true;
+       case R.id.smbtn_bugReport:
+    	   browserWeb("http://code.google.com/p/addi/issues/list");
+           return true;
+       default:
+           return super.onOptionsItemSelected(item);
+       }
    }
+  
+   private void browserWeb(String uriString){
+	   Uri browserUri=Uri.parse(uriString);
+	   Intent browserIntent= new Intent(Intent.ACTION_VIEW,browserUri);
+	   startActivity(browserIntent);
+   }
+   
    private TextView.OnEditorActionListener mWriteListener =
        new TextView.OnEditorActionListener() {
        public boolean onEditorAction(TextView view, int actionId, KeyEvent event) {
