@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.ThreadGroup;
 
+
 import com.addi.R;
 import com.addi.R.id;
 import com.addi.R.layout;
@@ -14,6 +15,8 @@ import android.content.Intent;
 import android.content.res.AssetManager;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -23,6 +26,7 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.SubMenu;
 import android.view.View;
 import android.view.Window;
 import android.view.View.OnClickListener;
@@ -47,6 +51,7 @@ public class Addi extends Activity {
    private boolean _blockExecute = false;
    private String _command;
    private Activity _act;
+   private SubMenu _sumAboutAddi;
 
    // Need handler for callbacks to the UI thread
    public final Handler _mHandler = new Handler() {
@@ -71,7 +76,7 @@ public class Addi extends Activity {
 	   DisplayMetrics dm=res.getDisplayMetrics();
 	   res.updateConfiguration(conf, dm);
 	   
-       super.onCreate(savedInstanceState);
+	   super.onCreate(savedInstanceState);
        setContentView(R.layout.main);
        
        _interpreter = new Interpreter(true);
@@ -98,6 +103,27 @@ public class Addi extends Activity {
 
    }
    
+   @Override
+   public boolean onCreateOptionsMenu(Menu menu){;
+	   /*Add menu button  */
+	   boolean menuBtnResult=super.onCreateOptionsMenu(menu);
+	   _sumAboutAddi=menu.addSubMenu(0,0,0,R.string.mbtn_AboutAddi_title);
+	   return menuBtnResult;
+   }
+   
+   public boolean onOptionsItemSelected(MenuItem item)
+   {
+	   /*Menu button Click Handler*/
+	   switch (item.getItemId())
+	   {
+	   	case 0: /*about Addi*/
+	   		Uri projectUri=Uri.parse("http://addi.googlecode.com");   		
+	   		Intent BrowerIntent = new Intent(Intent.ACTION_VIEW,projectUri);
+	   		startActivity(BrowerIntent);
+	   		break;
+	   }
+	   return super.onOptionsItemSelected(item); 
+   }
    private TextView.OnEditorActionListener mWriteListener =
        new TextView.OnEditorActionListener() {
        public boolean onEditorAction(TextView view, int actionId, KeyEvent event) {
