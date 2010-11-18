@@ -682,9 +682,6 @@ public class DoubleNumberToken extends NumberToken
         double im = _values[IMAG];
         
         StringBuffer result =  new StringBuffer();
-        
-        if((im != 0.0) || Double.isNaN(im))
-            result.append("(");
 
         // real part of number
         // +/- infinity, not a number, number
@@ -695,15 +692,17 @@ public class DoubleNumberToken extends NumberToken
         else if (Double.isNaN(re))    
             result.append("NaN");
         else
-            //result.append(getNumberFormat().format(re));
             result.append(numFormat.format(re));
-//stefan
         
         // imaginary part of number
         if((im != 0.0) || Double.isNaN(im))
         {
-            if ((re!=0.0) && !(im<0))
-                result.append("+");
+            if (im>0)
+                result.append(" + ");
+            else {
+            	result.append(" - ");
+            	im = im * -1;
+            }
                 
             // +/- infinity, not a number, number
             if (im == Double.POSITIVE_INFINITY)
@@ -715,9 +714,8 @@ public class DoubleNumberToken extends NumberToken
             else
                 //result.append(getNumberFormat().format(im));
                 result.append(numFormat.format(im));
-     //stefan
             
-            result.append("i)");
+            result.append("i");
         }
         return  result.toString();
     }
