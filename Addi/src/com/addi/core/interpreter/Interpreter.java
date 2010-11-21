@@ -143,6 +143,22 @@ public class Interpreter
     	
         String answer = "";
         Parser p = new Parser(true);
+        
+        //CCX temp fix for lex and parser issue
+        
+        //issues with cd, same issue may exist for other commands
+        //current lex doesn't understand .. not in a string
+        //current parser doesn't understand cd path, only understands cd "path"
+        if (expression.trim().startsWith("cd ")) {
+        	String tempExp = expression.trim().substring(3).trim();
+        	if (tempExp.startsWith("\"") || tempExp.startsWith("'")) {
+        		//do nothing
+        	} else {
+        		tempExp = "\"" + tempExp + "\"";
+        		expression = "cd " + tempExp;
+        	}
+        	expression.replace('\\', '/');
+        }
 
         // if required rehash m-files
         if(runningStandalone)
