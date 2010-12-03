@@ -3,8 +3,6 @@ package com.addi;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.ThreadGroup;
-import java.util.Arrays;
-import java.util.LinkedList;
 
 import com.addi.R;
 import com.addi.R.id;
@@ -16,8 +14,6 @@ import android.content.Intent;
 import android.content.res.AssetManager;
 import android.content.res.Configuration;
 import android.content.res.Resources;
-
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -27,7 +23,6 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.SubMenu;
 import android.view.View;
 import android.view.Window;
 import android.view.View.OnClickListener;
@@ -52,7 +47,6 @@ public class Addi extends Activity {
    private boolean _blockExecute = false;
    private String _command;
    private Activity _act;
-   private LinkedList<String> _historyQueue = new LinkedList<String>();
 
    // Need handler for callbacks to the UI thread
    public final Handler _mHandler = new Handler() {
@@ -77,7 +71,7 @@ public class Addi extends Activity {
 	   DisplayMetrics dm=res.getDisplayMetrics();
 	   res.updateConfiguration(conf, dm);
 	   
-	   super.onCreate(savedInstanceState);
+       super.onCreate(savedInstanceState);
        setContentView(R.layout.main);
        
        _interpreter = new Interpreter(true);
@@ -102,44 +96,6 @@ public class Addi extends Activity {
        
        _mCmdEditText.setOnEditorActionListener(mWriteListener);
 
-   }
-   
-   @Override
-   public boolean onCreateOptionsMenu(Menu menu){;
-	   /*Add menu button  */
-	  boolean menuBtnResult=super.onCreateOptionsMenu(menu);
-	  MenuInflater inflater = getMenuInflater();
-	  inflater.inflate(R.menu.main, menu);
-	  return menuBtnResult;
-   }
-   
-   @Override
-   public boolean onOptionsItemSelected(MenuItem item) {
-       // Handle item selection
-       switch (item.getItemId()) {
-       case R.id.smbtn_projectWebSite:
-    	   browserWeb("http://code.google.com/p/addi/");
-           return true;
-       case R.id.smbtn_bugReport:
-    	   browserWeb("http://code.google.com/p/addi/issues/list");
-           return true;
-       case R.id.History:
-    	   Intent intent = new Intent();
-    	   intent.setClass(Addi.this, HistorySelectMenu.class);
-    	   Bundle bundle = new Bundle();
-    	   bundle.putStringArray("historyQueue",getHistoryQueue());
-    	   intent.putExtras(bundle);
-    	   startActivity(intent);
-    	   return true;
-       default:
-           return super.onOptionsItemSelected(item);
-       }
-   }
-  
-   private void browserWeb(String uriString){
-	   Uri browserUri=Uri.parse(uriString);
-	   Intent browserIntent= new Intent(Intent.ACTION_VIEW,browserUri);
-	   startActivity(browserIntent);
    }
    
    private TextView.OnEditorActionListener mWriteListener =
@@ -173,9 +129,7 @@ public class Addi extends Activity {
 			
 			_command = command;
 			_act = this;
-			
-			addHistoryQueue(command);
-			
+
 			// Fire off a thread to do some work that we shouldn't do directly in the UI thread
 			ThreadGroup threadGroup = new ThreadGroup("executeCmdGroup");
 			Thread t = new Thread(threadGroup, mRunThread, "executeCmd", 1000000) {};
@@ -185,23 +139,7 @@ public class Addi extends Activity {
 		}
 
    }
-
-   public void addHistoryQueue(String commandString)
-   {
-	   _historyQueue.add(commandString);
-	   
-	   if (_historyQueue.size()>10)
-	   {
-		   _historyQueue.removeFirst();
-	   }
-	  
-   }
-   public String[] getHistoryQueue()
-   {
-	   String[] strArray = _historyQueue.toArray(new String[0]);
-	   return strArray;
-   }
-   
+	
    // Create runnable for thread run
    final Runnable mRunThread = new Runnable() {
        public void run() {

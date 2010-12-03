@@ -1,10 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="hello">歡迎使用 Addi!</string>
+    <string name="hello">æ­¡è¿Žä½¿ç”¨ Addi!</string>
     <string name="app_name">Addi</string>
-    <string name="run">執行</string>
-<string name="mbtn_AboutAddi_title">關於 Addi</string>
-<string name="smbtn_projectWebSite_title">瀏覽 Addi 網站</string>
-<string name="smbtn_bugReport_title">問題回報</string>
-<string name="mbtn_History_title">指令歷程</string>
+    <string name="run">åŸ·è¡Œ</string>
 </resources>
