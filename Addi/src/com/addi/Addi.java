@@ -1,5 +1,8 @@
 package com.addi;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.ThreadGroup;
@@ -33,7 +36,6 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
-
 
 public class Addi extends Activity {
 	
@@ -95,7 +97,67 @@ public class Addi extends Activity {
        }); 
        
        _mCmdEditText.setOnEditorActionListener(mWriteListener);
+       
+       try
+       {    	
+    	   String fileName = "addiVariables";
+       	
+       		//create streams
+       		FileInputStream input = openFileInput(fileName);
+      
+       		_interpreter.globals.getLocalVariables().loadVariablesOnCreate(input);
+       		
+       		String fileName2 = "addiPaths";	
+       		
+       		FileInputStream input2 = openFileInput(fileName2);
+       		
+       		int length = input2.available();
+       		
+       		byte buffer[] = new byte[(int)length];
+       		
+       		input2.read(buffer);
+       		
+       		String dirStr = new String(buffer);
+       		
+       		File dir = new File(dirStr);
+       		
+       		if (dir.isDirectory()) {
+       			_interpreter.globals.setWorkingDirectory(dir);
+       		}
+       		
+       		input2.close();
+       		
+       }
+       catch(java.io.IOException except)
+       {
+       }
 
+   }
+   
+   /** Called when the activity is put into background. */
+   @Override
+   public void onPause() {
+       try
+       {    
+    	   super.onPause();
+    	   String fileName = "addiVariables";
+       	
+       		//create streams
+       		FileOutputStream output = openFileOutput(fileName, MODE_PRIVATE);
+      
+       		_interpreter.globals.getLocalVariables().saveVariablesOnPause(output);
+       		
+       	    String fileName2 = "addiPaths";	
+       	    
+       	    FileOutputStream output2 = openFileOutput(fileName2, MODE_PRIVATE);
+       	
+       	    output2.write(_interpreter.globals.getWorkingDirectory().getAbsolutePath().getBytes());
+       	    
+       	    output2.close();
+       }
+       catch(java.io.IOException except)
+       {
+       }
    }
    
    private TextView.OnEditorActionListener mWriteListener =

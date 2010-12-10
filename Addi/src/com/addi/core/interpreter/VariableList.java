@@ -196,6 +196,53 @@ public class VariableList implements Cloneable, java.io.Serializable
         }
     }
     
+    /*saves the list of variables when app paused*/
+    public void saveVariablesOnPause(FileOutputStream output)
+    {
+        try
+        {    	
+            //create object stream
+            ObjectOutputStream objectOutput = new ObjectOutputStream(output);
+            
+            objectOutput.writeObject(variables);
+            
+            //close output objects	    	
+            objectOutput.close();
+            output.close();
+        }
+        catch(java.io.IOException except)
+        {
+        }
+    }
+	
+    /**loads the list of variables
+     @param fileName = the name of the file to load from*/
+    public void loadVariablesOnCreate(FileInputStream input)
+    {        
+        try
+        {             
+            ObjectInputStream objectInput   = new ObjectInputStream(input);
+            
+            try
+            {
+                variables = ((HashMap)objectInput.readObject());
+            }
+            catch(java.lang.ClassNotFoundException except)
+            {
+            }
+            catch(java.lang.ClassCastException except)
+            {	    	
+            }
+            
+            //close input objects
+            objectInput.close();
+            input.close();	    	
+        }
+        catch(java.io.IOException except)
+        {
+        }
+    }
+    
     /**Create a duplicate of this Variable List*/
     public Object clone()
     {
