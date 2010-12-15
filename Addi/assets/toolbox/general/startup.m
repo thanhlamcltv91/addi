@@ -6,7 +6,7 @@
 * or scripts.                       						*
 *********************************************************/
 
-disp("********* Welcome to Josh's Addi *********");
+disp("********* Welcome to Addi *********");
 disp("A Mathematical Computing Environment");
 disp("Goal is to make it like Matlab/Octave.");
 disp("But java based and open source.");
