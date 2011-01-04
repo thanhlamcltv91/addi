@@ -14,9 +14,12 @@ import com.addi.core.interpreter.*;
 
 import android.app.Activity;
 import android.content.Intent; 
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.content.res.AssetManager;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -26,9 +29,11 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.View.OnClickListener;
+import android.view.View.OnTouchListener;
 import android.view.inputmethod.EditorInfo;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -80,21 +85,42 @@ public class Addi extends Activity {
        
        _mOutView = (ListView)findViewById(R.id.out);
        _mCmdEditText = (EditText)findViewById(R.id.edit_command);
-       _mRunButton = (Button)findViewById(R.id.button_run);
+       //_mRunButton = (Button)findViewById(R.id.button_run);
        
        _mOutArrayAdapter = new ArrayAdapter<String>(this, R.layout.message);
        _mOutView.setAdapter(_mOutArrayAdapter);
+       _mOutView.setDividerHeight(0);
+       _mOutView.setDivider(new ColorDrawable(0x00FFFFFF));
+       _mOutView.setFocusable(false);
+       _mOutView.setFocusableInTouchMode(false);
+       _mOutView.setClickable(false);
+       _mOutView.setDescendantFocusability(393216);
+       _mOutView.setFooterDividersEnabled(false);
+       _mOutView.setHeaderDividersEnabled(false);
+       _mOutView.setChoiceMode(0);
+       
        _mOutArrayAdapter.clear();
+       
+       String version = new String();
+       try {
+    	   PackageInfo pi = getPackageManager().getPackageInfo("com.addi", 0);
+    	   version = pi.versionName;     // this is the line Eclipse complains
+       }
+       catch (PackageManager.NameNotFoundException e) {
+    	   // eat error, for testing
+    	   version = "?";
+       }
+       _mOutArrayAdapter.add("********* Welcome to Addi " + version + " *********");
 
        executeCmd("startup;",false);
        
-       _mRunButton.setOnClickListener(new OnClickListener() {
-           public void onClick(View v) {
-               // Send a message using content of the edit text widget
-               String command = _mCmdEditText.getText().toString();
-               executeCmd(command,true);
-           }
-       }); 
+       _mOutView.setOnTouchListener(new OnTouchListener() {
+    	   @Override
+    	   public boolean onTouch(View view, MotionEvent event) {
+    		   _mCmdEditText.dispatchTouchEvent(event);
+    		   return false;
+    	   }
+       });
        
        _mCmdEditText.setOnEditorActionListener(mWriteListener);
        
