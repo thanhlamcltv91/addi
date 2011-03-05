@@ -529,6 +529,7 @@ public class FunctionManager {
         functions.put("testIf002","toolbox/test/testIf002.m");
         functions.put("testIf003","toolbox/test/testIf003.m");
         functions.put("testNarginNargout001","toolbox/test/testNarginNargout001.m");
+        functions.put("plot","com.addi.toolbox.plot");
     }
 
     /**

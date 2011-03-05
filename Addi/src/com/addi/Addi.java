@@ -1,11 +1,18 @@
 package com.addi;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.lang.ThreadGroup;
+import java.util.Vector;
 
 import com.addi.R;
 import com.addi.R.id;
@@ -13,6 +20,7 @@ import com.addi.R.layout;
 import com.addi.core.interpreter.*;
 
 import android.app.Activity;
+import android.content.ActivityNotFoundException;
 import android.content.Intent; 
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -33,6 +41,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.View.OnClickListener;
+import android.view.View.OnKeyListener;
 import android.view.View.OnTouchListener;
 import android.view.inputmethod.EditorInfo;
 import android.widget.ArrayAdapter;
@@ -54,11 +63,25 @@ public class Addi extends Activity {
    private boolean _blockExecute = false;
    private String _command;
    private Activity _act;
+   private Vector<String> _oldCommands = new Vector<String>();  
+   private int _oldCommandIndex = -1;
+   private String _partialCommand;
 
    // Need handler for callbacks to the UI thread
    public final Handler _mHandler = new Handler() {
 	    public void handleMessage(Message msg) {
-	    	_mOutArrayAdapter.add(msg.getData().getString("text"));
+	    	if (msg.getData().getString("text").startsWith("STARTUPADDIPLOTWITH=")) {
+	 		   Intent addiPlotIntent = new Intent();
+	 		   addiPlotIntent.setClassName("com.addiPlot", "com.addiPlot.addiPlot");
+	 		   addiPlotIntent.putExtra("plotData", msg.getData().getString("text").substring(20)); // key/value pair, where key needs current package prefix.
+	 		   try {
+	 			   startActivity(addiPlotIntent);
+	 		   } catch (ActivityNotFoundException e) {
+	 			   _mOutArrayAdapter.add("You should download AddiPlot for this to work.");
+	 		   }
+	        } else {
+	    	   _mOutArrayAdapter.add(msg.getData().getString("text"));
+	        }
 	    };
    };
    
@@ -82,6 +105,7 @@ public class Addi extends Activity {
        setContentView(R.layout.main);
        
        _interpreter = new Interpreter(true);
+       Interpreter.setCacheDir(getCacheDir());
        
        _mOutView = (ListView)findViewById(R.id.out);
        _mCmdEditText = (EditText)findViewById(R.id.edit_command);
@@ -122,7 +146,45 @@ public class Addi extends Activity {
     	   }
        });
        
+       //KEYCODE_DPAD_DOWN
+       
        _mCmdEditText.setOnEditorActionListener(mWriteListener);
+       
+       _mCmdEditText.setOnKeyListener(new OnKeyListener() {
+
+    	   @Override
+    	   public boolean onKey(View view, int keyCode, KeyEvent event) {
+    		   // TODO Auto-generated method stub
+    		   if (event.getAction() == KeyEvent.ACTION_DOWN) {
+    			   if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN) {
+    				   if (_oldCommandIndex == -1) {
+    					   //do nothing
+    				   } else if (_oldCommandIndex == 0) {
+    					   _oldCommandIndex=_oldCommandIndex-1;
+    					   _mCmdEditText.setText(_partialCommand);
+    					   _mCmdEditText.setSelection(_partialCommand.length());
+    				   } else {
+    					   _oldCommandIndex=_oldCommandIndex-1;
+    					   _mCmdEditText.setText(_oldCommands.get(_oldCommandIndex));
+    					   _mCmdEditText.setSelection(_oldCommands.get(_oldCommandIndex).length());
+    				   }
+    			   } else if (keyCode == KeyEvent.KEYCODE_DPAD_UP) {
+    				   if (_oldCommandIndex == -1) {
+    					   _partialCommand = _mCmdEditText.getText().toString();
+    					   _oldCommandIndex = 0;
+    					   _mCmdEditText.setText(_oldCommands.get(_oldCommandIndex));
+    					   _mCmdEditText.setSelection(_oldCommands.get(_oldCommandIndex).length());
+    				   } else if ((_oldCommandIndex+1) < _oldCommands.size()) {
+    					   _oldCommandIndex = _oldCommandIndex+1;
+    					   _mCmdEditText.setText(_oldCommands.get(_oldCommandIndex));
+    					   _mCmdEditText.setSelection(_oldCommands.get(_oldCommandIndex).length());
+    				   }
+    			   }
+    		   }
+    		   return false;
+    	   }
+    	   
+       });
        
        try
        {    	
@@ -153,6 +215,22 @@ public class Addi extends Activity {
        		
        		input2.close();
        		
+       		String fileName3 = "addiCommands";	
+       		
+       		FileInputStream input3 = openFileInput(fileName3);
+       		
+       	    InputStreamReader input3reader = new InputStreamReader(input3);
+       	    BufferedReader buffreader = new BufferedReader(input3reader);
+       	 
+            String line;
+       	 
+            _oldCommands.clear();
+       	    while (( line = buffreader.readLine()) != null) {
+       	    	_oldCommands.add(line);
+       	    }
+       		
+       		input3.close();
+       		
        }
        catch(java.io.IOException except)
        {
@@ -180,6 +258,17 @@ public class Addi extends Activity {
        	    output2.write(_interpreter.globals.getWorkingDirectory().getAbsolutePath().getBytes());
        	    
        	    output2.close();
+       	    
+       	    String fileName3 = "addiCommands";	
+    	        	
+    	    OutputStreamWriter out = new OutputStreamWriter(openFileOutput(fileName3, MODE_PRIVATE));
+    	   
+    	    for (int lineLoop = 0; lineLoop < _oldCommands.size(); lineLoop++) {
+    	    	out.write(_oldCommands.get(lineLoop));
+    	    	out.write("\n");
+    	    }
+    	    
+    	    out.close();
        }
        catch(java.io.IOException except)
        {
@@ -212,7 +301,13 @@ public class Addi extends Activity {
 			final Activity act = this;
 			if (displayCommand) {
 				_mOutArrayAdapter.add(">>  " + command);
+				_oldCommands.add(0, command);
+				if (_oldCommands.size() == 100) {
+					_oldCommands.remove(99);
+				}
 			}
+			_oldCommandIndex = -1;
+			
 			_blockExecute = true;
 			
 			_command = command;

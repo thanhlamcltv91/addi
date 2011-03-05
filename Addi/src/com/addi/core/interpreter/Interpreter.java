@@ -9,6 +9,7 @@
  
  package com.addi.core.interpreter;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -45,6 +46,8 @@ public class Interpreter
     private static AssetManager _assetManager;
     
     private static Activity _act;
+    
+    private static File cacheDir;
 
     /**
      * Constructs the interpreter and sets the constants
@@ -452,6 +455,14 @@ public class Interpreter
             // Should never happen!
             throw new RuntimeException(e);
         }
+	}
+
+	public static void setCacheDir(File cacheDirIn) {
+		cacheDir = cacheDirIn;
+	}
+
+	public static File getCacheDir() {
+		return cacheDir;
 	}
 	
 }
