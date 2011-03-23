@@ -1,0 +1,19 @@
+#Frequently Asked Questions.
+
+How do I create and run an .m file?
+   1) a) Use another app to create a .m file with the script/function
+         you want to use.
+      or
+      b) Load the .m onto your sdcard or device.
+
+   2) In Addi
+      _cd locationofyourmfile_
+      maybe this is 
+      _cd /sdcard_ 
+
+   3) In Addi
+      a) if it is a script
+         _nameoffilewithoutdotm_
+      b) if it is a function
+         _return = nameoffilewithoutdotm(arg1, arg2, etc)_
+      
