@@ -1,6 +1,6 @@
 =Frequently Asked Questions=
 
-[WikiSyntax#How-do-I-create-and-run-a-.m-file? How do I create and run an .m file?]
+[FAQ#How-do-I-create-and-run-a-.m-file? How do I create and run an .m file?]
 
  =How do I create and run a .m file?=
   # Create .m file (do 1 or 2)
