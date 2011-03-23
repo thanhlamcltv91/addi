@@ -1,4 +1,4 @@
-#Frequently Asked Questions.
+Frequently Asked Questions.
 
 How do I create and run an .m file?
    1) a) Use another app to create a .m file with the script/function
