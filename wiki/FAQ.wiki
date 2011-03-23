@@ -11,4 +11,6 @@
   # Run it (do 1 or 2) in Addi 
    # if it is a script: _nameoffilewithoutdotm_
    # if it is a function: _return = nameoffilewithoutdotm(arg1, arg2, etc)_
+
+[FAQ#How-do-I-create-and-run-a-.m-file? How do I create and run an .m file?]
       
