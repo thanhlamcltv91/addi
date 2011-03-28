@@ -16,6 +16,7 @@
 
  ==How do I setup to be a developer?==
   # Follow the Android [http://developer.android.com/resources/tutorials/hello-world.html Hello World] instructions for setup
+   # Follow each step fully.
    # We develop using eclipse.
    # You can check if you are setup correctly by trying to create and run the Hello World example.
   # Get subclipse 
