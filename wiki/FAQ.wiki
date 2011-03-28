@@ -1,6 +1,7 @@
 =Frequently Asked Questions=
 
 [FAQ#How-do-I-create-and-run-a-.m-file? How do I create and run an .m file?]
+[FAQ#How-do-I-setup-to-be-a-developer? How do I create and run an .m file?]
 
  ==How do I create and run a .m file?==
   # Create .m file (do 1 or 2)
@@ -12,4 +13,8 @@
    # if it is a script: _nameoffilewithoutdotm_
    # if it is a function: _return = nameoffilewithoutdotm(arg1, arg2, etc)_
 
-      
+ ==How do I setup to be a developer?==
+  # Follow the Android [http://developer.android.com/resources/tutorials/hello-world.html Hello World] instructions for setup
+   # We develop using eclipse.
+   # You can check if you are setup correctly by trying to create and run the Hello World example.
+  # Get subclipse 
