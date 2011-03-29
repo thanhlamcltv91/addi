@@ -49,7 +49,7 @@ public class GlobalValues
     private com.addi.plugins.PluginsManager pluginsManager;     
 
     /**stores the number format for displaying the number*/
-    private NumberFormat numFormat = new DecimalFormat("0.0000", new DecimalFormatSymbols(Locale.ENGLISH));
+    public static NumberFormat numFormat = new DecimalFormat("0.0000", new DecimalFormatSymbols(Locale.ENGLISH));
 
     /** global properties */
     private static Properties props = new Properties();  
