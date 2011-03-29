@@ -13,6 +13,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.lang.ThreadGroup;
 import java.util.Vector;
+import java.lang.*;
 
 import com.addi.R;
 import com.addi.R.id;
@@ -146,10 +147,6 @@ public class Addi extends Activity {
     	   }
        });
        
-       //KEYCODE_DPAD_DOWN
-       
-       _mCmdEditText.setOnEditorActionListener(mWriteListener);
-       
        _mCmdEditText.setOnKeyListener(new OnKeyListener() {
 
     	   @Override
@@ -169,17 +166,23 @@ public class Addi extends Activity {
     					   _mCmdEditText.setSelection(_oldCommands.get(_oldCommandIndex).length());
     				   }
     			   } else if (keyCode == KeyEvent.KEYCODE_DPAD_UP) {
-    				   if (_oldCommandIndex == -1) {
-    					   _partialCommand = _mCmdEditText.getText().toString();
-    					   _oldCommandIndex = 0;
-    					   _mCmdEditText.setText(_oldCommands.get(_oldCommandIndex));
-    					   _mCmdEditText.setSelection(_oldCommands.get(_oldCommandIndex).length());
-    				   } else if ((_oldCommandIndex+1) < _oldCommands.size()) {
-    					   _oldCommandIndex = _oldCommandIndex+1;
-    					   _mCmdEditText.setText(_oldCommands.get(_oldCommandIndex));
-    					   _mCmdEditText.setSelection(_oldCommands.get(_oldCommandIndex).length());
-    				   }
-    			   }
+    				   	if ((_oldCommandIndex+1) < _oldCommands.size()) {
+    				    	if (_oldCommandIndex == -1) {
+    				    		_partialCommand = _mCmdEditText.getText().toString();
+    				    		_oldCommandIndex = 0;
+    				    		_mCmdEditText.setText(_oldCommands.get(_oldCommandIndex));
+    				    		_mCmdEditText.setSelection(_oldCommands.get(_oldCommandIndex).length());
+    				    	} else {
+    				    		_oldCommandIndex = _oldCommandIndex+1;
+    				    		_mCmdEditText.setText(_oldCommands.get(_oldCommandIndex));
+    				    		_mCmdEditText.setSelection(_oldCommands.get(_oldCommandIndex).length());
+    				    	}
+    		   			}
+    			   } else if (keyCode == KeyEvent.KEYCODE_ENTER) {
+    	               String command = _mCmdEditText.getText().toString();
+    	               executeCmd(command,true);
+    	               return true;
+    	           }
     		   }
     		   return false;
     	   }
@@ -250,7 +253,7 @@ public class Addi extends Activity {
        		FileOutputStream output = openFileOutput(fileName, MODE_PRIVATE);
       
        		_interpreter.globals.getLocalVariables().saveVariablesOnPause(output);
-       		
+       			
        	    String fileName2 = "addiPaths";	
        	    
        	    FileOutputStream output2 = openFileOutput(fileName2, MODE_PRIVATE);
@@ -274,19 +277,7 @@ public class Addi extends Activity {
        {
        }
    }
-   
-   private TextView.OnEditorActionListener mWriteListener =
-       new TextView.OnEditorActionListener() {
-       public boolean onEditorAction(TextView view, int actionId, KeyEvent event) {
-           // If the action is a key-up event on the return key, send the message
-           if (actionId == EditorInfo.IME_NULL && event.getAction() == KeyEvent.ACTION_UP) {
-               String command = view.getText().toString();
-               executeCmd(command,true);
-           }
-           return true;
-       }
-   };
-   
+      
    private void updateResultsInUi() {
        // Back in the UI thread -- update our UI elements based on the data in mResults
 	   if (_mResults.equals("PARSER: CCX: continue") == false) {
