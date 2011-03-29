@@ -692,8 +692,8 @@ public class DoubleNumberToken extends NumberToken
         else if (Double.isNaN(re))    
             result.append("NaN");
         else
-            result.append(numFormat.format(re));
-        
+            result.append(com.addi.core.interpreter.GlobalValues.numFormat.format(re));
+
         // imaginary part of number
         if((im != 0.0) || Double.isNaN(im))
         {
@@ -713,7 +713,7 @@ public class DoubleNumberToken extends NumberToken
                 result.append("NaN");
             else
                 //result.append(getNumberFormat().format(im));
-                result.append(numFormat.format(im));
+                result.append(com.addi.core.interpreter.GlobalValues.numFormat.format(im));
             
             result.append("i");
         }
