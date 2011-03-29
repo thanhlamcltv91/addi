@@ -4,6 +4,9 @@
 
 [FAQ#How-do-I-setup-to-be-a-developer? How do I create and run an .m file?]
 
+ ==Where are the current list of functions supported?==
+  # Current functions supported can be found [http://www.jmathlib.de/docs/handbook/index.php here] (ignore plotting functions)  
+
  ==How do I create and run a .m file?==
   # Create .m file (do 1 or 2)
    # Use another app to create a .m file with the script/function you want to use.
