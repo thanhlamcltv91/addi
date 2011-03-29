@@ -1,8 +1,10 @@
 =Frequently Asked Questions=
 
+[FAQ#Where-are-the-current-list-of-functions-supported? Where are the current list of functions supported?]
+
 [FAQ#How-do-I-create-and-run-a-.m-file? How do I create and run an .m file?]
 
-[FAQ#How-do-I-setup-to-be-a-developer? How do I create and run an .m file?]
+[FAQ#How-do-I-setup-to-be-a-developer? How do I setup to be a developer?]
 
  ==Where are the current list of functions supported?==
   # Current functions supported can be found [http://www.jmathlib.de/docs/handbook/index.php here] (ignore plotting functions)  
