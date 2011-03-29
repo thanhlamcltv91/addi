@@ -19,7 +19,7 @@ public class NumberToken extends DataToken
      *          2
      *          4         */
     /**stores the number format for displaying the number*/
-    protected /*static*/ NumberFormat numFormat = NumberFormat.getInstance();
+    //protected /*static*/ NumberFormat numFormat = NumberFormat.getInstance();
 
     /**Index for real values within array*/
     protected static final int REAL = 0;
@@ -172,7 +172,7 @@ public class NumberToken extends DataToken
     public String toString(GlobalValues globals)
     {
         ErrorLogger.debugLine("NumberToken: toString(globals)");
-        numFormat = globals.getNumberFormat();
+        NumberFormat numFormat = globals.getNumberFormat();
         return toString();
     }
 
