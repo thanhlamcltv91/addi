@@ -162,6 +162,13 @@ public class Interpreter
         	}
         	expression.replace('\\', '/');
         }
+        if (expression.trim().startsWith("help ")) {
+        	String tempExp = expression.trim().substring(5).trim();
+        	if (tempExp == "") {
+        		tempExp = "\" \"";
+        	}
+        	expression = "help(\"" + tempExp + "\");";
+        }
 
         // if required rehash m-files
         if(runningStandalone)
