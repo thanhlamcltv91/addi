@@ -169,6 +169,10 @@ public class Interpreter
         	}
         	expression = "help(\"" + tempExp + "\");";
         }
+        if (expression.trim().startsWith("ed ")) {
+        	String tempExp = expression.trim().substring(3).trim();
+        	expression = "ed(\"" + tempExp + "\");";
+        }
 
         // if required rehash m-files
         if(runningStandalone)

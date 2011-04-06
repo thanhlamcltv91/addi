@@ -272,6 +272,7 @@ public class FunctionManager {
         functions.put("global","com.addi.toolbox.general");
         functions.put("harmonic","com.addi.toolbox.general");
         functions.put("help","com.addi.toolbox.general");
+        functions.put("ed","com.addi.toolbox.general");
         functions.put("imag","com.addi.toolbox.general");
         functions.put("int16","com.addi.toolbox.general");
         functions.put("int32","com.addi.toolbox.general");
