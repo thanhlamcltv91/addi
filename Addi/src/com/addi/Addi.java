@@ -104,7 +104,8 @@ public class Addi extends Activity {
     		   int lastIndx = _addiEditString.lastIndexOf("/");
     		   String dir = _addiEditString.substring(0, lastIndx);
     		   String script = _addiEditString.substring(lastIndx+1);
-    		   executeCmd("cd " + dir + "; " + script,true);
+    		   script = script.substring(0, script.length()-2);
+    		   executeCmd("cd(\"" + dir + "\"); " + script,true);
     	   } else if (resultCode == 3) {  //quit
     		   _mOutArrayAdapter.add("Exited without saving file.");
     	   }
