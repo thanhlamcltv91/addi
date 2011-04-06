@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    >
+    <EditText android:id="@+id/edit_file"        
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_weight="1"
+            android:layout_gravity="top"
+            android:textSize="12px"
+    />
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        >
+        <Button android:id="@+id/buttonSave"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Save" 
+        />
+        <Button android:id="@+id/buttonSaveRun"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Save And Run" 
+        />
+        <Button android:id="@+id/buttonQuit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Quit" 
+        />
+    </LinearLayout>
+</LinearLayout>
