@@ -67,11 +67,17 @@ public class Addi extends Activity {
    private Vector<String> _oldCommands = new Vector<String>();  
    private int _oldCommandIndex = -1;
    private String _partialCommand;
+   private String _addiEditString;
 
    // Need handler for callbacks to the UI thread
    public final Handler _mHandler = new Handler() {
-	    public void handleMessage(Message msg) {
-	    	if (msg.getData().getString("text").startsWith("STARTUPADDIPLOTWITH=")) {
+	    public void handleMessage(Message msg) { 
+			if (msg.getData().getString("text").startsWith("STARTUPADDIEDITWITH=")) {
+				_addiEditString = msg.getData().getString("text").substring(20);
+				Intent addiEditIntent = new Intent(Addi.this, AddiEdit.class);
+				addiEditIntent.putExtra("fileName", msg.getData().getString("text").substring(20)); // key/value pair, where key needs current package prefix.
+				startActivityForResult(addiEditIntent,1); 
+			} else if (msg.getData().getString("text").startsWith("STARTUPADDIPLOTWITH=")) {
 	 		   Intent addiPlotIntent = new Intent();
 	 		   addiPlotIntent.setClassName("com.addiPlot", "com.addiPlot.addiPlot");
 	 		   addiPlotIntent.putExtra("plotData", msg.getData().getString("text").substring(20)); // key/value pair, where key needs current package prefix.
@@ -85,6 +91,25 @@ public class Addi extends Activity {
 	        }
 	    };
    };
+   
+   protected void onActivityResult(int requestCode, int resultCode,
+           Intent data) {
+       if (requestCode == 1) {
+    	   if (resultCode == 0) {  // error
+    		   _mOutArrayAdapter.add("Directory not found or permissions incorrect.");
+    	   } else if (resultCode == 1) {  //save
+    		   _mOutArrayAdapter.add("File saved.");
+    	   } else if (resultCode == 2) {  //save and run
+    		   _mOutArrayAdapter.add("File save, now attempting to run.");
+    		   int lastIndx = _addiEditString.lastIndexOf("/");
+    		   String dir = _addiEditString.substring(0, lastIndx);
+    		   String script = _addiEditString.substring(lastIndx+1);
+    		   executeCmd("cd " + dir + "; " + script,true);
+    	   } else if (resultCode == 3) {  //quit
+    		   _mOutArrayAdapter.add("Exited without saving file.");
+    	   }
+       }
+   }
    
    // Create runnable for posting
    final Runnable mUpdateResults = new Runnable() {
@@ -288,6 +313,7 @@ public class Addi extends Activity {
    }
 
 	public void executeCmd(final String command, boolean displayCommand) {
+
 		if (_blockExecute == false) {
 			final Activity act = this;
 			if (displayCommand) {
