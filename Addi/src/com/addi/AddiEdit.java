@@ -114,18 +114,13 @@ public class AddiEdit extends Activity {
 	    	setResult(0);
 	    	finish();
 	    } else {
-	    	if (_mFile.canWrite()) {
-	    		if (_mFile.exists()) {
-	    			try {
-						_mFileEditText.setText(getContents(_mFile));
-					} catch (IOException e) {
-						setResult(0);
-				    	finish();
-					}
+	    	if (_mFile.exists()) {
+	    		try {
+	    			_mFileEditText.setText(getContents(_mFile));
+	    		} catch (IOException e) {
+	    			setResult(0);
+	    			finish();
 	    		}
-	    	} else {
-	    		setResult(0);
-	    		finish();
 	    	}
 	    }
 	    
@@ -178,7 +173,7 @@ public class AddiEdit extends Activity {
 	  * @throws IOException if problem encountered during write.
 	  */
 	  static public void setContents(File aFile, String aContents) throws IOException {
-		  
+		
 	    //use buffering
 	    Writer output = new BufferedWriter(new FileWriter(aFile));
 	    try {
