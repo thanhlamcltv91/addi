@@ -366,7 +366,7 @@ public class LexicalAnalyser implements TokenConstants, ErrorCodes
         boolean foundToken = false;
 
 		if( (nextChar == ' ' ) ||
-        	(nextChar == '\n') || 
+        	((nextChar == '\n') && (parseWhitespaceSwitch)) || 
 			(nextChar == '\r') || 
 			(nextChar == '\t')    ) 
 		{
