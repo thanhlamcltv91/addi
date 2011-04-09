@@ -22,7 +22,7 @@ public class Errors
     {
         String text = "";
         
-        ResourceBundle bundle = ResourceBundle.getBundle("jmathlib.resourcebundles.ErrorBundle");
+        ResourceBundle bundle = ResourceBundle.getBundle("com.addi.resourcebundles.ErrorBundle");
     
         text = bundle.getString(Integer.toString(errorCode));
 
@@ -76,7 +76,7 @@ public class Errors
     public static String getErrorText(int errorCode, Object[] params)
     {
         String text = "";
-        ResourceBundle bundle = ResourceBundle.getBundle("jmathlib.resourcebundles.ErrorBundle");
+        ResourceBundle bundle = ResourceBundle.getBundle("com.addi.resourcebundles.ErrorBundle");
         text = MessageFormat.format(bundle.getString(Integer.toString(errorCode)), params);
 
         return text;
