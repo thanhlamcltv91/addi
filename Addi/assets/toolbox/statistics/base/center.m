@@ -1,11 +1,12 @@
-## Copyright (C) 1995, 1996, 1997  Kurt Hornik
+## Copyright (C) 1995, 1996, 1997, 1998, 2000, 2002, 2004, 2005, 2006,
+##               2007, 2009 Kurt Hornik
 ##
 ## This file is part of Octave.
 ##
 ## Octave is free software; you can redistribute it and/or modify it
 ## under the terms of the GNU General Public License as published by
-## the Free Software Foundation; either version 2, or (at your option)
-## any later version.
+## the Free Software Foundation; either version 3 of the License, or (at
+## your option) any later version.
 ##
 ## Octave is distributed in the hope that it will be useful, but
 ## WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -13,9 +14,8 @@
 ## General Public License for more details.
 ##
 ## You should have received a copy of the GNU General Public License
-## along with Octave; see the file COPYING.  If not, write to the Free
-## Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-## 02110-1301, USA.
+## along with Octave; see the file COPYING.  If not, see
+## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
 ## @deftypefn {Function File} {} center (@var{x})
@@ -29,51 +29,34 @@
 ## Author: KH <Kurt.Hornik@wu-wien.ac.at>
 ## Description: Center by subtracting means
 
-function retval = center (x, varargin)
+function retval = center (x, dim)
 
-  if ((nargin != 1) && (nargin != 2))
+  if (nargin != 1 && nargin != 2)
     print_usage ();
   endif
 
-  if (isvector (x))
-    retval = x - mean (x, varargin{:});
-  
-  elseif (ismatrix (x))
-
-    if (nargin < 2)
-      dim = find (size (x) > 1, 1);
-
-      if (isempty (dim)), 
-	    dim=1; 
-      endif;
-
+  if (nargin < 2)
+    t = find (size (x) != 1);
+    if (isempty (t))
+      dim = 1;
     else
-      dim = varargin {1};
+      dim = t(1);
     endif
-    
-    sz = ones (1, ndims (x));
-    sz (dim) = size (x, dim);
-    retval = x - repmat (mean (x, dim), sz);
-
-  elseif (isempty (x))
-    retval = x;
-  else
-    error ("center: x must be a vector or a matrix");
   endif
+  n = size (x, dim);
 
+  if (n == 1)
+    retval = zeros (size (x));
+  elseif (n > 0)
+    if (isvector (x))
+      retval = x - sum (x) / n;
+    else
+      mx = sum (x, dim) / n;
+      idx(1:ndims (x)) = {':'}; 
+      idx{dim} = ones (1, n);
+      retval = x - mx(idx{:});
+    endif
+  else
+    retval = x;
+  endif
 endfunction
-
-/*
-@GROUP
-statistics
-@SYNTAX
-center(x,dim)
-@DOC
-Substract center value along the chosen dimension
-@EXAMPLES
-<programlisting>
-center([2,3,5,3],2)
-</programlisting>
-@SEE
-std, var, cov
-*/

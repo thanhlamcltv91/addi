@@ -1,11 +1,12 @@
-## Copyright (C) 1995, 1996 Kurt Hornik
+## Copyright (C) 1995, 1996, 1997, 1999, 2000, 2002, 2004, 2005, 2006,
+##               2007, 2009 Kurt Hornik
 ##
 ## This file is part of Octave.
 ##
 ## Octave is free software; you can redistribute it and/or modify it
 ## under the terms of the GNU General Public License as published by
-## the Free Software Foundation; either version 2, or (at your option)
-## any later version.
+## the Free Software Foundation; either version 3 of the License, or (at
+## your option) any later version.
 ##
 ## Octave is distributed in the hope that it will be useful, but
 ## WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -13,24 +14,21 @@
 ## General Public License for more details.
 ##
 ## You should have received a copy of the GNU General Public License
-## along with Octave; see the file COPYING.  If not, write to the Free
-## Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-## 02110-1301, USA.
+## along with Octave; see the file COPYING.  If not, see
+## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
 ## @deftypefn {Function File} {} nextpow2 (@var{x})
-## If @var{x} is a scalar, returns the first integer @var{n} such that
-## @iftex
+## If @var{x} is a scalar, return the first integer @var{n} such that
 ## @tex
-##  $2^n \ge |x|$.
+## $2^n \ge |x|$.
 ## @end tex
-## @end iftex
-## @ifinfo
-##  2^n >= abs (x).
-## @end ifinfo
+## @ifnottex
+## 2^n >= abs (x).
+## @end ifnottex
 ##
 ## If @var{x} is a vector, return @code{nextpow2 (length (@var{x}))}.
-## @seealso{pow2}
+## @seealso{pow2, log2}
 ## @end deftypefn
 
 ## Author: KH <Kurt.Hornik@wu-wien.ac.at>

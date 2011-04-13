@@ -1,11 +1,12 @@
-## Copyright (C) 1996, 1997 John W. Eaton
+## Copyright (C) 1993, 1994, 1995, 1996, 1997, 1999, 2000, 2004, 2005,
+##               2006, 2007, 2008, 2009 John W. Eaton
 ##
 ## This file is part of Octave.
 ##
 ## Octave is free software; you can redistribute it and/or modify it
 ## under the terms of the GNU General Public License as published by
-## the Free Software Foundation; either version 2, or (at your option)
-## any later version.
+## the Free Software Foundation; either version 3 of the License, or (at
+## your option) any later version.
 ##
 ## Octave is distributed in the hope that it will be useful, but
 ## WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -13,51 +14,46 @@
 ## General Public License for more details.
 ##
 ## You should have received a copy of the GNU General Public License
-## along with Octave; see the file COPYING.  If not, write to the Free
-## Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-## 02110-1301, USA.
+## along with Octave; see the file COPYING.  If not, see
+## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
 ## @deftypefn {Function File} {} logspace (@var{base}, @var{limit}, @var{n})
 ## Similar to @code{linspace} except that the values are logarithmically
 ## spaced from
-## @iftex
 ## @tex
 ## $10^{base}$ to $10^{limit}$.
 ## @end tex
-## @end iftex
-## @ifinfo
+## @ifnottex
 ## 10^base to 10^limit.
-## @end ifinfo
+## @end ifnottex
 ##
 ## If @var{limit} is equal to
-## @iftex
 ## @tex
 ## $\pi$,
 ## @end tex
-## @end iftex
-## @ifinfo
+## @ifnottex
 ## pi,
-## @end ifinfo
+## @end ifnottex
 ## the points are between
-## @iftex
 ## @tex
 ## $10^{base}$ and $\pi$,
 ## @end tex
-## @end iftex
-## @ifinfo
+## @ifnottex
 ## 10^base and pi,
-## @end ifinfo
+## @end ifnottex
 ## @emph{not}
-## @iftex
 ## @tex
 ## $10^{base}$ and $10^{\pi}$,
 ## @end tex
-## @end iftex
-## @ifinfo
+## @ifnottex
 ## 10^base and 10^pi,
-## @end ifinfo
-## in order to  be compatible with the corresponding @sc{Matlab} function.
+## @end ifnottex
+## in order to be compatible with the corresponding @sc{matlab}
+## function.
+##
+## Also for compatibility, return the second argument if fewer than two
+## values are requested.
 ## @seealso{linspace}
 ## @end deftypefn
 
@@ -77,10 +73,6 @@ function retval = logspace (x1, x2, n)
     print_usage ();
   endif
 
-  if (npoints < 2)
-    error ("logspace: npoints must be greater than 2");
-  endif
-
   if (length (x1) == 1 && length (x2) == 1)
     x2_tmp = x2;
     if (x2 == pi)
@@ -92,3 +84,20 @@ function retval = logspace (x1, x2, n)
   endif
 
 endfunction
+
+%!test
+%! x1 = logspace (1, 2);
+%! x2 = logspace (1, 2, 10);
+%! x3 = logspace (1, -2, 10);
+%! x4 = logspace (1, pi, 10);
+%! assert((size (x1) == [1, 50] && x1(1) == 10 && x1(50) == 100
+%! && size (x2) == [1, 10] && x2(1) == 10 && x2(10) == 100
+%! && size (x3) == [1, 10] && x3(1) == 10 && x3(10) == 0.01
+%! && size (x4) == [1, 10] && x4(1) == 10 && abs (x4(10) - pi) < sqrt (eps)));
+
+%!error logspace ([1, 2; 3, 4], 5, 6);
+
+%!error logspace ();
+
+%!error logspace (1, 2, 3, 4);
+
