@@ -506,7 +506,7 @@ public class FunctionManager {
         functions.put("display","toolbox/general/display.m");
         functions.put("flipdim","toolbox/general/flipdim.m");
         functions.put("fliplr","toolbox/general/fliplr.m");
-        functions.put("flipup","toolbox/general/flipup.m");
+        functions.put("flipud","toolbox/general/flipud.m");
         functions.put("getvarname","toolbox/general/getvarname.m");
         functions.put("gradient","toolbox/general/gradient.m");
         functions.put("idivide","toolbox/general/idivide.m");
