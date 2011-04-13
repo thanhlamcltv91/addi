@@ -10,13 +10,15 @@
   # Current functions supported can be found [http://www.jmathlib.de/docs/handbook/index.php here] (ignore plotting functions)  
 
  ==How do I create and run a .m file?==
-  # Create .m file (do 1 or 2)
+  # Create .m file (do 1, 2 or 3)
    # Use another app to create a .m file with the script/function you want to use.
    # Or load the .m onto your sdcard or device.
+   # In Addi, type _ed /path/filename.m_ example _ed /sdcard/test/m_
   # Go to location of .m file in Addi
    # _cd locationofyourmfile_ maybe this is _cd /sdcard_ 
-  # Run it (do 1 or 2) in Addi 
+  # Run it (do 1, 2 or 3) in Addi 
    # if it is a script: _nameoffilewithoutdotm_
+   # if it is a script and you used _ed_ to create it, you can hit the save and run button.
    # if it is a function: _return = nameoffilewithoutdotm(arg1, arg2, etc)_
 
  ==How do I setup to be a developer?==
