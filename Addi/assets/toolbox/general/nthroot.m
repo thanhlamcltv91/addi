@@ -1,11 +1,11 @@
-## Copyright (C) 2004 Paul Kienzle
+## Copyright (C) 2004, 2006, 2007, 2009 Paul Kienzle
 ##
 ## This file is part of Octave.
 ##
 ## Octave is free software; you can redistribute it and/or modify it
 ## under the terms of the GNU General Public License as published by
-## the Free Software Foundation; either version 2, or (at your option)
-## any later version.
+## the Free Software Foundation; either version 3 of the License, or (at
+## your option) any later version.
 ##
 ## Octave is distributed in the hope that it will be useful, but
 ## WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -13,9 +13,8 @@
 ## General Public License for more details.
 ##
 ## You should have received a copy of the GNU General Public License
-## along with Octave; see the file COPYING.  If not, write to the Free
-## Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-## 02110-1301, USA.
+## along with Octave; see the file COPYING.  If not, see
+## <http://www.gnu.org/licenses/>.
 ##
 ## Original version by Paul Kienzle distributed as free software in the
 ## public domain.
@@ -23,8 +22,8 @@
 ## -*- texinfo -*-
 ## @deftypefn {Function File} {} nthroot (@var{x}, @var{n})
 ## 
-## Compute the nth root of @var{x}, returning real results for real 
-## components of @var{x}. For example
+## Compute the n-th root of @var{x}, returning real results for real 
+## components of @var{x}.  For example
 ##
 ## @example
 ## @group
@@ -46,11 +45,11 @@ function y = nthroot (x, m)
   y = x.^(1./m);
 
   if (isscalar (x))
-    x = x * ones (size (m)); 
+    x *= ones (size (m)); 
   endif
 
   if (isscalar (m))
-    m = m * ones (size (x)); 
+    m *= ones (size (x)); 
   endif
 
   idx = (mod (m, 2) == 1 & imag (x) == 0 & x < 0);
@@ -66,6 +65,6 @@ function y = nthroot (x, m)
 
 endfunction
 
-//%!assert(nthroot(-1,[3,-3]), [-1,-1],eps);
-//%!assert(nthroot([-1,1],[3.1,-3]), [-1,1].^(1./[3.1,-3]));
-//%!assert(nthroot([-1+1i,-1-1i],3), [-1+1i,-1-1i].^(1/3));
+%!assert(nthroot(-1,[3,-3]), [-1,-1],eps);
+%!assert(nthroot([-1,1],[3.1,-3]), [-1,1].^(1./[3.1,-3]));
+%!assert(nthroot([-1+1i,-1-1i],3), [-1+1i,-1-1i].^(1/3));
