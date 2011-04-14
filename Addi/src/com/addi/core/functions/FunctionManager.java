@@ -288,13 +288,17 @@ public class FunctionManager {
         functions.put("wilcoxon_test","toolbox/statistics/tests/wilcoxon_test.m");
         functions.put("z_test","toolbox/statistics/tests/z_test.m");
         functions.put("z_test_2","toolbox/statistics/tests/z_test_2.m");
+        functions.put("hadamard","toolbox/specialmatrix/hadamard.m");
         functions.put("hankel","toolbox/specialmatrix/hankel.m");
         functions.put("hilb","toolbox/specialmatrix/hilb.m");
+        functions.put("invhilb","toolbox/specialmatrix/invhilb.m");
         functions.put("lauchli","toolbox/specialmatrix/lauchli.m");
+        functions.put("magic","toolbox/specialmatrix/magic.m");   
         functions.put("pascal","toolbox/specialmatrix/pascal.m");
         functions.put("rosser","toolbox/specialmatrix/rosser.m");
         functions.put("sylvester_matrix","toolbox/specialmatrix/sylvester_matrix.m");
         functions.put("toeplitz","toolbox/specialmatrix/toeplitz.m");
+        functions.put("vander","toolbox/specialmatrix/vander.m");
         functions.put("wilkinson","toolbox/specialmatrix/wilkinson.m");
         functions.put("bessel","toolbox/specialmatrix/bessel.m");
         functions.put("beta","toolbox/specialmatrix/beta.m");
@@ -470,6 +474,7 @@ public class FunctionManager {
         functions.put("setpfilecaching","com.addi.toolbox.general");
         functions.put("sign","com.addi.toolbox.general");
         functions.put("size","com.addi.toolbox.general");
+        functions.put("size_equal","com.addi.toolbox.general");
         functions.put("startup","toolbox/general/startup.m");
         functions.put("str2func","com.addi.toolbox.general");
         functions.put("struct","com.addi.toolbox.general");
@@ -631,7 +636,7 @@ public class FunctionManager {
         functions.put("lowertriangle","com.addi.toolbox.jmathlib.matrix");
         functions.put("lt","toolbox/jmathlib/matrix/lt.m");
         functions.put("lu","com.addi.toolbox.jmathlib.matrix");
-        functions.put("magic","com.addi.toolbox.jmathlib.matrix");
+        //functions.put("magic","com.addi.toolbox.jmathlib.matrix");
         functions.put("max","com.addi.toolbox.jmathlib.matrix");
         functions.put("min","com.addi.toolbox.jmathlib.matrix");
         functions.put("minus","toolbox/jmathlib/matrix/minus.m");

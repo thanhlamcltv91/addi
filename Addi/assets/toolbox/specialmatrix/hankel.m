@@ -1,11 +1,12 @@
-## Copyright (C) 1996, 1997 John W. Eaton
+## Copyright (C) 1993, 1994, 1995, 1996, 1997, 1998, 1999, 2000, 2004,
+##               2005, 2006, 2007, 2008, 2009 John W. Eaton
 ##
 ## This file is part of Octave.
 ##
 ## Octave is free software; you can redistribute it and/or modify it
 ## under the terms of the GNU General Public License as published by
-## the Free Software Foundation; either version 2, or (at your option)
-## any later version.
+## the Free Software Foundation; either version 3 of the License, or (at
+## your option) any later version.
 ##
 ## Octave is distributed in the hope that it will be useful, but
 ## WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -13,9 +14,8 @@
 ## General Public License for more details.
 ##
 ## You should have received a copy of the GNU General Public License
-## along with Octave; see the file COPYING.  If not, write to the Free
-## Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-## 02110-1301, USA.
+## along with Octave; see the file COPYING.  If not, see
+## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
 ## @deftypefn {Function File} {} hankel (@var{c}, @var{r})
@@ -27,14 +27,12 @@
 ##
 ## A Hankel matrix formed from an m-vector @var{c}, and an n-vector
 ## @var{r}, has the elements
-## @iftex
 ## @tex
 ## $$
 ## H (i, j) = \cases{c_{i+j-1},&$i+j-1\le m$;\cr r_{i+j-m},&otherwise.\cr}
 ## $$
 ## @end tex
-## @end iftex
-## @ifinfo
+## @ifnottex
 ##
 ## @example
 ## @group
@@ -42,7 +40,7 @@
 ## H(i,j) = r(i+j-m),  otherwise
 ## @end group
 ## @end example
-## @end ifinfo
+## @end ifnottex
 ## @seealso{vander, sylvester_matrix, hilb, invhilb, toeplitz}
 ## @end deftypefn
 
@@ -51,7 +49,7 @@
 function retval = hankel (c, r)
 
   if (nargin == 1)
-    r = zeros(size(c)); //resize (resize (c, 0), size(c));
+    r = resize (resize (c, 0), size(c));
   elseif (nargin != 2)
     print_usage ();
   endif
@@ -84,10 +82,10 @@ function retval = hankel (c, r)
 
   ## This should probably be done with the colon operator...
 
-  retval = zeros(nr,nc), //resize (resize (c, 0), nr, nc);
+  retval = resize (resize (c, 0), nr, nc);
 
-  for ii = 1:min (nr, nc)
-    retval (1:nr-ii+1, ii) = c (ii:nr);
+  for i = 1:min (nr, nc)
+    retval (1:nr-i+1, i) = c (i:nr);
   endfor
 
   tmp = 1;
@@ -95,27 +93,24 @@ function retval = hankel (c, r)
     tmp = nr - nc + 2;
   endif
 
-  for ii = nr:-1:tmp
-    retval (ii, 2+nr-ii:nc) = r (2:nc-nr+ii);
+  for i = nr:-1:tmp
+    retval (i, 2+nr-i:nc) = r (2:nc-nr+i);
   endfor
 
 endfunction
 
-//%!assert(hankel(1:3),[1,2,3;2,3,0;3,0,0])
-//%!assert(hankel(1),[1]);
-//%!assert(hankel(1:3,3:6),[1,2,3,4;2,3,4,5;3,4,5,6]);
-//%!assert(hankel(1:3,3:4),[1,2;2,3;3,4]);
-//%!assert(hankel(1:3,4:6),[1,2,3;2,3,5;3,5,6]);
+%!assert(hankel(1:3),[1,2,3;2,3,0;3,0,0])
+%!assert(hankel(1),[1]);
+%!assert(hankel(1:3,3:6),[1,2,3,4;2,3,4,5;3,4,5,6]);
+%!assert(hankel(1:3,3:4),[1,2;2,3;3,4]);
+%!assert(hankel(1:3,4:6),[1,2,3;2,3,5;3,5,6]);
 
-/*
-@GROUP
-specialmatrix
-@SYNTAX
-hankel()
-@DOC
+%!assert((hankel (1) == 1 && hankel ([1, 2]) == [1, 2; 2, 0]
+%! && hankel ([1, 2], [2; -1; -3]) == [1, 2, -1; 2, -1, -3]));
 
-@EXAMPLES
-@NOTES
-@SEE
-rosser
-*/
+%!error hankel ([1, 2; 3, 4], [1, 2; 3, 4]);
+
+%!error hankel ();
+
+%!error hankel (1, 2, 3);
+

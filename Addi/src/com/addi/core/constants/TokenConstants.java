@@ -13,6 +13,7 @@ public interface TokenConstants
     static final int ASSIGN_PRIORITY   = 200;  // =
     static final int BRACKET_PRIORITY  = 150;  // ( ) [ ]
     static final int POWER_PRIORITY    = 110;  // ^
+    static final int UNARY_PRIORITY    = 105;  // ++, --, ~, !, unary +, unary -
     static final int MULDIV_PRIORITY   = 100;  // * /
     static final int ADDSUB_PRIORITY   =  90;  // + -
     static final int RELATION_PRIORITY =  80;  // < <= > >=

@@ -14,7 +14,7 @@ public class UnaryOperatorToken extends OperatorToken
     public UnaryOperatorToken(char _operator) 
     {
     	/**call the super constructor, type defaults to ttoperator and operands to 1*/
-        super(0); 
+        super(UNARY_PRIORITY); 
         value = _operator;
     }
 

@@ -1,11 +1,13 @@
-## Copyright (C) 1996, 1997 John W. Eaton
+## Copyright (C) 1993, 1994, 1995, 1996, 1997, 1998, 1999, 2000, 2004,
+##               2005, 2006, 2007, 2008, 2009 John W. Eaton
+## Copyright (C) 2009 VZLU Prague
 ##
 ## This file is part of Octave.
 ##
 ## Octave is free software; you can redistribute it and/or modify it
 ## under the terms of the GNU General Public License as published by
-## the Free Software Foundation; either version 2, or (at your option)
-## any later version.
+## the Free Software Foundation; either version 3 of the License, or (at
+## your option) any later version.
 ##
 ## Octave is distributed in the hope that it will be useful, but
 ## WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -13,9 +15,8 @@
 ## General Public License for more details.
 ##
 ## You should have received a copy of the GNU General Public License
-## along with Octave; see the file COPYING.  If not, write to the Free
-## Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-## 02110-1301, USA.
+## along with Octave; see the file COPYING.  If not, see
+## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
 ## @deftypefn {Function File} {} toeplitz (@var{c}, @var{r})
@@ -26,7 +27,6 @@
 ## taken to be the same as the first column.
 ##
 ## A square Toeplitz matrix has the form:
-## @iftex
 ## @tex
 ## $$
 ## \left[\matrix{c_0    & r_1     & r_2      & \cdots & r_n\cr
@@ -36,25 +36,24 @@
 ##               c_n    & c_{n-1} & c_{n-2} & \ldots & c_0}\right]
 ## $$
 ## @end tex
-## @end iftex
-## @ifinfo
+## @ifnottex
 ##
 ## @example
 ## @group
-## c(0)  r(1)   r(2)  ...  r(n)
-## c(1)  c(0)   r(1)  ... r(n-1)
-## c(2)  c(1)   c(0)  ... r(n-2)
+## c(0)  r(1)   r(2)  @dots{}  r(n)
+## c(1)  c(0)   r(1)  @dots{} r(n-1)
+## c(2)  c(1)   c(0)  @dots{} r(n-2)
 ##  .     ,      ,   .      .
 ##  .     ,      ,     .    .
 ##  .     ,      ,       .  .
-## c(n) c(n-1) c(n-2) ...  c(0)
+## c(n) c(n-1) c(n-2) @dots{}  c(0)
 ## @end group
 ## @end example
-## @end ifinfo
+## @end ifnottex
 ## @seealso{hankel, vander, sylvester_matrix, hilb, invhilb}
 ## @end deftypefn
 
-## Author: jwe
+## Author: jwe && jh
 
 function retval = toeplitz (c, r)
 
@@ -64,19 +63,17 @@ function retval = toeplitz (c, r)
     print_usage ();
   endif
 
-  [c_nr, c_nc] = size (c);
-  [r_nr, r_nc] = size (r);
-
-  if ((c_nr != 1 && c_nc != 1) || (r_nr != 1 && r_nc != 1))
+  if (! (isvector (c) && isvector (r)))
     error ("toeplitz: expecting vector arguments");
   endif
 
-  if (c_nc != 1)
-    c = c.';
-  endif
+  nc = length (r);
+  nr = length (c);
 
-  if (r_nr != 1)
-    r = r.';
+  if (nr == 0 || nc == 0)
+    ## Empty matrix.
+    retval = zeros (nr, nc, class (c));
+    return;
   endif
 
   if (r (1) != c (1))
@@ -87,37 +84,42 @@ function retval = toeplitz (c, r)
   ## Hermitian-symmetric matrix (actually, this will really only be
   ## Hermitian-symmetric if the first element of the vector is real).
 
-  if (nargin == 1)
+  if (nargin == 1 && iscomplex (c))
     c = conj (c);
     c(1) = conj (c(1));
   endif
 
-  ## This should probably be done with the colon operator...
+  if (issparse(c) && issparse(r))
+    c = c(:).';
+    r = r(:).';
+    cidx = find(c);
+    ridx = find(r);
 
-  nc = length (r);
-  nr = length (c);
+    ## Ignore the first element in r.
+    ridx = ridx(ridx > 1);
 
-  retval = zeros(nr,nc); //resize (resize (c, 0), nr, nc);
+    ## Form matrix.
+    retval = spdiags(repmat(c(cidx),nr,1),1-cidx,nr,nc)+...
+	spdiags(repmat(r(ridx),nr,1),ridx-1,nr,nc);
+  else  
+    ## Concatenate data into a single column vector.
+    data = [r(end:-1:2)(:); c(:)];
 
-  for ii = 1:min (nc, nr)
-    retval (ii:nr, ii) = c (1:nr-ii+1);
-  endfor
+    ## Get slices.
+    slices = cellslices (data, nc:-1:1, nc+nr-1:-1:nr);
 
-  for ii = 1:min (nr, nc-1)
-    retval (ii, ii+1:nc) = r (2:nc-ii+1);
-  endfor
-
+    ## Form matrix.
+    retval = horzcat (slices{:});
+  endif
 endfunction
 
-/*
-@GROUP
-specialmatrix
-@SYNTAX
-retval = toeplitz (c, r)
-@DOC
-.
-@EXAMPLES
-@NOTES
-@SEE
-*/
+%!assert((toeplitz (1) == 1
+%! && toeplitz ([1, 2, 3], [1; -3; -5]) == [1, -3, -5; 2, 1, -3; 3, 2, 1]
+%! && toeplitz ([1, 2, 3], [1; -3i; -5i]) == [1, -3i, -5i; 2, 1, -3i; 3, 2, 1]));
+
+%!error toeplitz ([1, 2; 3, 4], 1);
+
+%!error toeplitz ();
+
+%!error toeplitz (1, 2, 3);
 
