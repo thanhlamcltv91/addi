@@ -1,11 +1,12 @@
-## Copyright (C) 1996, 1997 John W. Eaton
+## Copyright (C) 1993, 1994, 1995, 1996, 1997, 1998, 1999, 2000, 2004,
+##               2005, 2006, 2007, 2008, 2009 John W. Eaton
 ##
 ## This file is part of Octave.
 ##
 ## Octave is free software; you can redistribute it and/or modify it
 ## under the terms of the GNU General Public License as published by
-## the Free Software Foundation; either version 2, or (at your option)
-## any later version.
+## the Free Software Foundation; either version 3 of the License, or (at
+## your option) any later version.
 ##
 ## Octave is distributed in the hope that it will be useful, but
 ## WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -13,35 +14,30 @@
 ## General Public License for more details.
 ##
 ## You should have received a copy of the GNU General Public License
-## along with Octave; see the file COPYING.  If not, write to the Free
-## Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-## 02110-1301, USA.
+## along with Octave; see the file COPYING.  If not, see
+## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
 ## @deftypefn {Function File} {} hilb (@var{n})
 ## Return the Hilbert matrix of order @var{n}.  The
-## @iftex
 ## @tex
 ## $i,\,j$
 ## @end tex
-## @end iftex
-## @ifinfo
+## @ifnottex
 ## i, j
-## @end ifinfo
+## @end ifnottex
 ## element of a Hilbert matrix is defined as
-## @iftex
 ## @tex
 ## $$
 ## H (i, j) = {1 \over (i + j - 1)}
 ## $$
 ## @end tex
-## @end iftex
-## @ifinfo
+## @ifnottex
 ##
 ## @example
 ## H (i, j) = 1 / (i + j - 1)
 ## @end example
-## @end ifinfo
+## @end ifnottex
 ## @seealso{hankel, vander, sylvester_matrix, invhilb, toeplitz}
 ## @end deftypefn
 
@@ -51,15 +47,15 @@ function retval = hilb (n)
 
 
   if (nargin != 1)
-    usage ("hilb (n)");
+    print_usage ();
   endif
 
   nmax = length (n);
   if (nmax == 1)
     retval = zeros (n);
     tmp = 1:n;
-    for x=1:n,
-      retval (x, :) = 1.0 ./ (tmp + (x - 1));
+    for i = 1:n
+      retval (i, :) = 1.0 ./ (tmp + (i - 1));
     endfor
   else
     error ("hilb: expecting scalar argument, found something else");
@@ -67,15 +63,10 @@ function retval = hilb (n)
 
 endfunction
 
-/*
-@GROUP
-specialmatrix
-@SYNTAX
-answer = template (value)
-@DOC
+%!assert((hilb (2) == [1, 1/2; 1/2, 1/3]
+%! && hilb (3) == [1, 1/2, 1/3; 1/2, 1/3, 1/4; 1/3, 1/4, 1/5]));
 
-@EXAMPLES
-@NOTES
-@SEE
-rosser
-*/
+%!error hilb ();
+
+%!error hilb (1, 2);
+
