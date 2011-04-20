@@ -871,7 +871,17 @@ public class Parser extends RootObject implements TokenConstants, ErrorCodes
     		if (! ((tok.getValue()=='!') || (tok.getValue()=='~')))
     			Errors.throwParserException(" Unary operator by empty stack");
     		
-			OperandToken operand = parseArithExpression(SINGLE);
+    		//CCX don't actually want to invert whole rest of statement
+    		//only until we have an operand and the next operator is not of higher precendence 
+			OperandToken operand = null;
+			Token peekToken = null;
+			do {
+				operand = parseSingle(operandStack, SINGLE);
+				peekToken = peekNextToken();
+				if (peekToken instanceof PowerOperatorToken) {
+					operandStack.push(operand);
+				}
+			} while (peekToken instanceof PowerOperatorToken);
 			FunctionToken func = new FunctionToken("not");
 			func.setOperand(operand);
     		return func;	

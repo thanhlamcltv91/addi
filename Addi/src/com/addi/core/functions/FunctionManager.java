@@ -432,6 +432,7 @@ public class FunctionManager {
         functions.put("ischar","com.addi.toolbox.general");
         functions.put("isdefinite","toolbox/general/isdefinite.m");
         functions.put("isdouble","toolbox/general/isdouble.m");
+        functions.put("isinteger","com.addi.toolbox.general");
         functions.put("isfunctionhandle","com.addi.toolbox.general");
         functions.put("isglobal","com.addi.toolbox.general");
         functions.put("isint16","toolbox/general/isint16.m");
