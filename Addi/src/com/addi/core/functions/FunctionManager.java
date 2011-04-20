@@ -430,6 +430,7 @@ public class FunctionManager {
         functions.put("isa","com.addi.toolbox.general");
         functions.put("iscell","com.addi.toolbox.general");
         functions.put("ischar","com.addi.toolbox.general");
+        functions.put("cast","toolbox/general/cast.m");
         functions.put("isdefinite","toolbox/general/isdefinite.m");
         functions.put("isdouble","toolbox/general/isdouble.m");
         functions.put("isinteger","com.addi.toolbox.general");
