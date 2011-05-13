@@ -44,8 +44,13 @@ public class fgets extends ExternalFunction
         String line = null;
         try { 
         	line = inReader.readLine();
-        	return new CharToken( line );
+        	if (line == null) {
+        		return new Int32NumberToken(-1,0);
+        	} else {
+        		return new CharToken( line + "\n" );
+        	}
 		} catch (IOException e) {
+			throwMathLibException("fgets: failed to read from file");
 			return new Int32NumberToken(-1,0);
 		}
 
