@@ -40,6 +40,11 @@ public class fopen extends ExternalFunction
 		if(operands[0] instanceof CharToken)
 		{
 			fileName = ((CharToken)operands[0]).toString();
+			if (fileName.startsWith("/")) {
+				fileName = fileName;
+			} else {
+				fileName = globals.getWorkingDirectory().getAbsolutePath() + "/" + fileName;
+			}
 			permissions = "";
 			
 			if (getNArgIn(operands) == 2) {
