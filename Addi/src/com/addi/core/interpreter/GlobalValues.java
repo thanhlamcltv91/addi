@@ -10,7 +10,9 @@
 package com.addi.core.interpreter;
 
 import java.io.*;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Properties;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -30,6 +32,13 @@ The working directory
 These values are all private and should be access through the getter/setter functions*/
 public class GlobalValues
 {
+	/**File handles*/
+	public static Map<Integer, String> fileNames = new HashMap();
+	public static Map<Integer, String> filePermissions = new HashMap();
+	public static Map<Integer, BufferedWriter> fileWriters = new HashMap();
+	public static Map<Integer, BufferedReader> fileReaders = new HashMap();
+	public static int nextFileNum = 0;
+	
     /**A list of contexts*/
     private ContextList contextList;
     
