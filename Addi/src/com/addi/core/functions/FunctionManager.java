@@ -584,6 +584,10 @@ public class FunctionManager {
         functions.put("delete","com.addi.toolbox.io");
         functions.put("dir","com.addi.toolbox.io");
         functions.put("exist","com.addi.toolbox.io");
+        functions.put("fopen","com.addi.toolbox.io");
+        functions.put("fclose","com.addi.toolbox.io");
+        functions.put("fprintf","com.addi.toolbox.io");
+        functions.put("fgets","com.addi.toolbox.io");
         functions.put("isdirectory","com.addi.toolbox.io");
         functions.put("isfile","com.addi.toolbox.io");
         functions.put("ishidden","com.addi.toolbox.io");
