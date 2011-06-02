@@ -21,7 +21,7 @@ public class ver extends ExternalFunction
 
 		String s        = "";
  		    
-		globals.getInterpreter().displayText("Version information for JMathLib");
+		globals.getInterpreter().displayText("Version information for Addi");
 
         s = globals.getProperty("jmathlib.version");
         globals.getInterpreter().displayText("version: "+s);

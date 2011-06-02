@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -12,6 +13,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.lang.ThreadGroup;
+import java.util.ArrayList;
 import java.util.Vector;
 import java.lang.*;
 
@@ -68,6 +70,8 @@ public class Addi extends Activity {
    private int _oldCommandIndex = -1;
    private String _partialCommand;
    private String _addiEditString;
+   private ArrayList<String> _listLabels;
+   String _version = new String();
 
    // Need handler for callbacks to the UI thread
    public final Handler _mHandler = new Handler() {
@@ -137,33 +141,61 @@ public class Addi extends Activity {
        _mOutView = (ListView)findViewById(R.id.out);
        _mCmdEditText = (EditText)findViewById(R.id.edit_command);
        //_mRunButton = (Button)findViewById(R.id.button_run);
+       super.onCreate(savedInstanceState);
        
-       _mOutArrayAdapter = new ArrayAdapter<String>(this, R.layout.message);
+       
+       try {
+    	   PackageInfo pi = getPackageManager().getPackageInfo("com.addi", 0);
+    	   _version = pi.versionName;     // this is the line Eclipse complains
+       }
+       catch (PackageManager.NameNotFoundException e) {
+    	   // eat error, for testing
+    	   _version = "?";
+       }
+     
+       _listLabels = new ArrayList<String>();
+       try {
+    	   String fileName4 = "addiListView";	
+    	   FileInputStream input4 = openFileInput(fileName4);
+    	   InputStreamReader input4reader = new InputStreamReader(input4);
+    	   BufferedReader buffreader4 = new BufferedReader(input4reader);
+    	   String line4;
+    	   _listLabels.clear();
+    	   while (( line4 = buffreader4.readLine()) != null) {
+    		   _listLabels.add(line4);
+    	   }
+    	   input4.close();
+    	   input4 = openFileInput(fileName4);
+    	   
+    	   String fileName5 = "addiVersion";	
+    	   FileInputStream input5 = openFileInput(fileName5);
+    	   InputStreamReader input5reader = new InputStreamReader(input5);
+    	   BufferedReader buffreader5 = new BufferedReader(input5reader);
+    	   
+    	   String savedVersion = buffreader5.readLine();
+    	   if (!savedVersion.startsWith(_version)) {
+    		   _listLabels.add("********* Welcome to Addi " + _version + " *********");
+               executeCmd("startup;",false);
+    	   }
+    	   input5.close();
+    	   
+       } catch (IOException e) {
+    	   _listLabels.add("********* Welcome to Addi " + _version + " *********");
+           executeCmd("startup;",false);
+       }
+	
+       _mOutArrayAdapter = new ArrayAdapter<String>(this, R.layout.message, _listLabels);
        _mOutView.setAdapter(_mOutArrayAdapter);
        _mOutView.setDividerHeight(0);
        _mOutView.setDivider(new ColorDrawable(0x00FFFFFF));
-       _mOutView.setFocusable(false);
+       _mOutView.setFocusable(false);   
        _mOutView.setFocusableInTouchMode(false);
        _mOutView.setClickable(false);
        _mOutView.setDescendantFocusability(393216);
        _mOutView.setFooterDividersEnabled(false);
        _mOutView.setHeaderDividersEnabled(false);
        _mOutView.setChoiceMode(0);
-       
-       _mOutArrayAdapter.clear();
-       
-       String version = new String();
-       try {
-    	   PackageInfo pi = getPackageManager().getPackageInfo("com.addi", 0);
-    	   version = pi.versionName;     // this is the line Eclipse complains
-       }
-       catch (PackageManager.NameNotFoundException e) {
-    	   // eat error, for testing
-    	   version = "?";
-       }
-       _mOutArrayAdapter.add("********* Welcome to Addi " + version + " *********");
 
-       executeCmd("startup;",false);
        
        _mOutView.setOnTouchListener(new OnTouchListener() {
     	   @Override
@@ -273,6 +305,35 @@ public class Addi extends Activity {
        try
        {    
     	   super.onPause();
+    	   
+    	   String fileName4 = "addiListView";	
+    	   OutputStreamWriter out4 = new OutputStreamWriter(openFileOutput(fileName4, MODE_PRIVATE));
+    	   int startIndex = 0;
+    	   if (_listLabels.size() > 100) {
+    		   startIndex = _listLabels.size() - 100;
+    	   }
+    	   for (int lineLoop = startIndex; lineLoop < _listLabels.size(); lineLoop++) {
+    		   out4.write(_listLabels.get(lineLoop));
+    		   out4.write("\n");
+    	   }
+    	   out4.close();
+    	   
+    	   String fileName5 = "addiVersion";	
+    	   OutputStreamWriter out5 = new OutputStreamWriter(openFileOutput(fileName5, MODE_PRIVATE));
+    	   out5.write(_version);
+    	   out5.close();
+    	      
+    	   String fileName3 = "addiCommands";	
+       	
+    	   OutputStreamWriter out3 = new OutputStreamWriter(openFileOutput(fileName3, MODE_PRIVATE));
+   	   
+    	   for (int lineLoop = 0; lineLoop < _oldCommands.size(); lineLoop++) {
+    		   out3.write(_oldCommands.get(lineLoop));
+    		   out3.write("\n");
+    	   }
+   	    
+    	   out3.close();
+   	    
     	   String fileName = "addiVariables";
        	
        		//create streams
@@ -287,23 +348,13 @@ public class Addi extends Activity {
        	    output2.write(_interpreter.globals.getWorkingDirectory().getAbsolutePath().getBytes());
        	    
        	    output2.close();
-       	    
-       	    String fileName3 = "addiCommands";	
-    	        	
-    	    OutputStreamWriter out = new OutputStreamWriter(openFileOutput(fileName3, MODE_PRIVATE));
-    	   
-    	    for (int lineLoop = 0; lineLoop < _oldCommands.size(); lineLoop++) {
-    	    	out.write(_oldCommands.get(lineLoop));
-    	    	out.write("\n");
-    	    }
-    	    
-    	    out.close();
+       	   
        }
        catch(java.io.IOException except)
        {
        }
    }
-      
+   
    private void updateResultsInUi() {
        // Back in the UI thread -- update our UI elements based on the data in mResults
 	   if (_mResults.equals("PARSER: CCX: continue") == false) {

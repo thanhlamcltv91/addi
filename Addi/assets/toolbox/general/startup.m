@@ -6,7 +6,7 @@
 * or scripts.                       			  *			*
 *********************************************************/
 
-disp("A Mathematical Computing Environment");
+disp("A Mathematic Computing Environment");
 disp("Goal is to make it like Matlab/Octave.");
 disp("But java based and open source.");
 disp("Learn about this project at http://addi.googlecode.com");
