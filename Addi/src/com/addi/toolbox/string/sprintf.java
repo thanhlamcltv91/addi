@@ -11,38 +11,47 @@ import com.addi.core.tokens.Token;
 public class sprintf extends ExternalFunction
 {
     // format string
-    String formatS = "";
+    String formatS;
     
     //  convert string to array of bytes
-    String retString = "";
+    String retString;
     
     // position
-    int pos = -1;
+    int pos;
     
     // end of format string
-    boolean EOL = false;
+    boolean EOL;
     
     // tokens
     Token[] tok;
     
     // nTok
-    int nTok=-1;
+    int nTok;
     
     /**returns a matrix of numbers 
     * @param operands[0] = string (e.g. ["hello"]) 
     * @return a matrix of numbers                                */
     public OperandToken evaluate(Token[] operands, GlobalValues globals)
     {
+    	
+        formatS = "";
+        retString = "";
+        pos = -1;
+        EOL = false;
+        nTok=-1;
 
         // one operand 
-        if (getNArgIn(operands)<2)
-            throwMathLibException("sprintf: number of input arguments <2");
+        if (getNArgIn(operands)<1)
+            throwMathLibException("sprintf: number of input arguments <1");
 
         if ( !(operands[0] instanceof CharToken))
             throwMathLibException("sprintf: format must be a string");
 
         // get format string
         formatS = ((CharToken)operands[0]).getValue();
+        
+        if (getNArgIn(operands)==1)
+        	return new CharToken( formatS );
 
         tok = new Token[operands.length-1];
         for (int i=0; i< (operands.length-1); i++)
