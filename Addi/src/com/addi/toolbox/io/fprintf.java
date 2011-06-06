@@ -16,22 +16,17 @@ import com.addi.core.tokens.numbertokens.Int32NumberToken;
 public class fprintf extends ExternalFunction
 {
     // format string
-    String formatS = "";
-    
+    String formatS;
     //  convert string to array of bytes
-    String retString = "";
-    
+    String retString;
     // position
-    int pos = -1;
-    
+    int pos;
     // end of format string
-    boolean EOL = false;
-    
+    boolean EOL;
     // tokens
     Token[] tok;
-    
     // nTok
-    int nTok=-1;
+    int nTok;
     
     /**returns a matrix of numbers 
     * @param operands[0] = string (e.g. ["hello"]) 
@@ -41,6 +36,12 @@ public class fprintf extends ExternalFunction
 
     	BufferedWriter outWriter = null;
     	int  formatOperand;
+    	
+        formatS = "";
+        retString = "";
+        pos = -1;
+        EOL = false;
+        nTok=-1;
     	
         // one operand 
         if (getNArgIn(operands) < 1) {

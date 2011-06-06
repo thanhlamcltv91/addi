@@ -90,8 +90,10 @@ public class Addi extends Activity {
 	 		   } catch (ActivityNotFoundException e) {
 	 			   _mOutArrayAdapter.add("You should download AddiPlot for this to work.");
 	 		   }
+			} else if (msg.getData().getString("text").startsWith("PRINTADDIVERSION")) {
+				_mOutArrayAdapter.add("Addi version: " + _version);
 	        } else {
-	    	   _mOutArrayAdapter.add(msg.getData().getString("text"));
+	        	_mOutArrayAdapter.add(msg.getData().getString("text"));
 	        }
 	    };
    };

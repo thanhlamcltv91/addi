@@ -144,6 +144,8 @@ public class Interpreter
     	_act = act;
     	_assetManager = _act.getResources().getAssets();
     	
+    	expression = expression.replace("\\n", "\n");
+    	
         String answer = "";
         Parser p = new Parser(true);
         
@@ -160,7 +162,7 @@ public class Interpreter
         		tempExp = "\"" + tempExp + "\"";
         		expression = "cd " + tempExp;
         	}
-        	expression.replace('\\', '/');
+        	//expression = expression.replace('\\', '/');
         }
         if (expression.trim().startsWith("help ")) {
         	String tempExp = expression.trim().substring(5).trim();
