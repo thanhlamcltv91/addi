@@ -62,48 +62,75 @@ public class FunctionManager {
  
         mLoader = new MFileLoader();
         
-        functions.put("acos","com.addi.toolbox.trigonometric");
-        functions.put("acosh","com.addi.toolbox.trigonometric");
-        functions.put("acot","com.addi.toolbox.trigonometric");
-        functions.put("acoth","com.addi.toolbox.trigonometric");
-        functions.put("acsc","com.addi.toolbox.trigonometric");
-        functions.put("acsch","com.addi.toolbox.trigonometric");
-        functions.put("asec","com.addi.toolbox.trigonometric");
-        functions.put("asech","com.addi.toolbox.trigonometric");
-        functions.put("asin","com.addi.toolbox.trigonometric");
-        functions.put("asinh","com.addi.toolbox.trigonometric");
-        functions.put("atan","com.addi.toolbox.trigonometric");
-        functions.put("atanh","com.addi.toolbox.trigonometric");
-        functions.put("cos","com.addi.toolbox.trigonometric");
-        functions.put("cosh","com.addi.toolbox.trigonometric");
-        functions.put("cot","com.addi.toolbox.trigonometric");
-        functions.put("coth","com.addi.toolbox.trigonometric");
-        functions.put("csc","com.addi.toolbox.trigonometric");
-        functions.put("csch","com.addi.toolbox.trigonometric");
-        functions.put("degtograd","com.addi.toolbox.trigonometric");
-        functions.put("degtorad","com.addi.toolbox.trigonometric");
-        functions.put("gradtodeg","com.addi.toolbox.trigonometric");
-        functions.put("gradtorad","com.addi.toolbox.trigonometric");
-        functions.put("radtodeg","com.addi.toolbox.trigonometric");
-        functions.put("radtograd","com.addi.toolbox.trigonometric");
-        functions.put("sec","com.addi.toolbox.trigonometric");
-        functions.put("sech","com.addi.toolbox.trigonometric");
-        functions.put("sin","com.addi.toolbox.trigonometric");
-        functions.put("sinh","com.addi.toolbox.trigonometric");
-        functions.put("tan","com.addi.toolbox.trigonometric");
-        functions.put("tanh","com.addi.toolbox.trigonometric");
-        functions.put("acosd","toolbox/trigonometric/acosd.m");
-        functions.put("acotd","toolbox/trigonometric/acotd.m");
-        functions.put("acscd","toolbox/trigonometric/acscd.m");
-        functions.put("asecd","toolbox/trigonometric/asecd.m");
-        functions.put("asind","toolbox/trigonometric/asind.m");
-        functions.put("atand","toolbox/trigonometric/atand.m");
-        functions.put("cosd","toolbox/trigonometric/cosd.m");
-        functions.put("cotd","toolbox/trigonometric/cotd.m");
-        functions.put("cscd","toolbox/trigonometric/cscd.m");
-        functions.put("secd","toolbox/trigonometric/secd.m");
-        functions.put("sind","toolbox/trigonometric/sind.m");
-        functions.put("tand","toolbox/trigonometric/tand.m");
+        functions.put("lin2mu","toolbox/audio/lin2mu.m");
+        functions.put("loadaudio","toolbox/audio/loadaudio.m");
+        functions.put("mu2lin","toolbox/audio/mu2lin.m");
+        functions.put("playaudio","toolbox/audio/playaudio.m");
+        functions.put("record","toolbox/audio/record.m");
+        functions.put("saveaudio","toolbox/audio/saveaudio.m");
+        functions.put("setaudio","toolbox/audio/setaudio.m");
+        functions.put("wavread","toolbox/audio/wavread.m");
+        functions.put("wavwrite","toolbox/audio/wavwrite.m");
+        functions.put("acos","com.addi.toolbox.elfun");
+        functions.put("acosh","com.addi.toolbox.elfun");
+        functions.put("asin","com.addi.toolbox.elfun");
+        functions.put("asinh","com.addi.toolbox.elfun");
+        functions.put("atan","com.addi.toolbox.elfun");
+        functions.put("atanh","com.addi.toolbox.elfun");
+        functions.put("cos","com.addi.toolbox.elfun");
+        functions.put("cosh","com.addi.toolbox.elfun");
+        functions.put("degtograd","com.addi.toolbox.elfun");
+        functions.put("degtorad","com.addi.toolbox.elfun");
+        functions.put("gradtodeg","com.addi.toolbox.elfun");
+        functions.put("gradtorad","com.addi.toolbox.elfun");
+        functions.put("radtodeg","com.addi.toolbox.elfun");
+        functions.put("radtograd","com.addi.toolbox.elfun");
+        functions.put("sin","com.addi.toolbox.elfun");
+        functions.put("sinh","com.addi.toolbox.elfun");
+        functions.put("tan","com.addi.toolbox.elfun");
+        functions.put("tanh","com.addi.toolbox.elfun");
+        functions.put("acosd","toolbox/elfun/acosd.m");
+        functions.put("acot","toolbox/elfun/acot.m");
+        functions.put("acotd","toolbox/elfun/acotd.m");
+        functions.put("acoth","toolbox/elfun/acoth.m");
+        functions.put("acsc","toolbox/elfun/acsc.m");
+        functions.put("acscd","toolbox/elfun/acscd.m");
+        functions.put("acsch","toolbox/elfun/acsch.m");
+        functions.put("asec","toolbox/elfun/asec.m");
+        functions.put("asecd","toolbox/elfun/asecd.m");
+        functions.put("asech","toolbox/elfun/asech.m");
+        functions.put("asind","toolbox/elfun/asind.m");
+        functions.put("atand","toolbox/elfun/atand.m");
+        functions.put("cosd","toolbox/elfun/cosd.m");
+        functions.put("cot","toolbox/elfun/cot.m");
+        functions.put("cotd","toolbox/elfun/cotd.m");
+        functions.put("coth","toolbox/elfun/coth.m");
+        functions.put("csc","toolbox/elfun/csc.m");
+        functions.put("cscd","toolbox/elfun/cscd.m");
+        functions.put("csch","toolbox/elfun/csch.m");
+        functions.put("lcm","toolbox/elfun/lcm.m");
+        functions.put("sec","toolbox/elfun/sec.m");
+        functions.put("secd","toolbox/elfun/secd.m");
+        functions.put("sech","toolbox/elfun/sech.m");
+        functions.put("sind","toolbox/elfun/sind.m");
+        functions.put("tand","toolbox/elfun/tand.m");
+        functions.put("convhull","toolbox/geometry/convhull.m");
+        functions.put("delaunay","toolbox/geometry/delaunay.m");
+        functions.put("delaunay3","toolbox/geometry/delaunay3.m");
+        functions.put("delaunayn","toolbox/geometry/delaunayn.m");
+        functions.put("dsearch","toolbox/geometry/dsearch.m");
+        functions.put("dsearchn","toolbox/geometry/dsearchn.m");
+        functions.put("griddata","toolbox/geometry/griddata.m");
+        functions.put("griddata3","toolbox/geometry/griddata3.m");
+        functions.put("griddatan","toolbox/geometry/griddatan.m");
+        functions.put("inpolygon","toolbox/geometry/inpolygon.m");
+        functions.put("rectint","toolbox/geometry/rectint.m");
+        functions.put("trimesh","toolbox/geometry/trimesh.m");
+        functions.put("triplot","toolbox/geometry/triplot.m");
+        functions.put("trisurf","toolbox/geometry/trisurf.m");
+        functions.put("tsearchn","toolbox/geometry/tsearchn.m");
+        functions.put("voronoi","toolbox/geometry/voronoi.m");
+        functions.put("voronoin","toolbox/geometry/voronoin.m");
         functions.put("time","com.addi.toolbox.time");
         functions.put("tic","com.addi.toolbox.time");
         functions.put("toc","com.addi.toolbox.time");
@@ -319,7 +346,12 @@ public class FunctionManager {
         functions.put("triangle_sw","toolbox/signal/triangle_sw.m");
         functions.put("complement","toolbox/set/complement.m");
         functions.put("create_set","toolbox/set/create_set.m");
+        functions.put("intersect","toolbox/set/intersect.m");
+        functions.put("ismember","toolbox/set/ismember.m");
+        functions.put("setdiff","toolbox/set/setdiff.m");
+        functions.put("setxor","toolbox/set/setxor.m");
         functions.put("union","toolbox/set/union.m");
+        functions.put("unique","toolbox/set/unique.m");
         functions.put("qconj","toolbox/quaternion/qconj.m");
         functions.put("qderiv","toolbox/quaternion/qderiv.m");
         functions.put("qderivmat","toolbox/quaternion/qderivmat.m");
@@ -796,7 +828,7 @@ public class FunctionManager {
                         return func;
                     }
                 }
-                //CCX functionLoader.loadClass("com.addi.toolbox.trigonometric." + funcName);
+                //CCX functionLoader.loadClass("com.addi.toolbox.elfun." + funcName);
 
                 // functions not found (no class or m- or p-file)
                 //
@@ -867,7 +899,6 @@ public class FunctionManager {
 	           } else {
 	              try { 
 	                  func = (Function)( Class.forName( functions.get(funcName)+ "." + funcName ).newInstance() );
-	                 //func = new com.addi.toolbox.trigonometric.sin();
 	              } catch (ClassNotFoundException e) {
 	                 func = null;
 	              }
