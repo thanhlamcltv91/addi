@@ -1,11 +1,12 @@
-## Copyright (C) 1996, 1997 John W. Eaton
+## Copyright (C) 1994, 1995, 1996, 1997, 1998, 1999, 2000, 2003, 2005,
+##               2006, 2007, 2009 John W. Eaton
 ##
 ## This file is part of Octave.
 ##
 ## Octave is free software; you can redistribute it and/or modify it
 ## under the terms of the GNU General Public License as published by
-## the Free Software Foundation; either version 2, or (at your option)
-## any later version.
+## the Free Software Foundation; either version 3 of the License, or (at
+## your option) any later version.
 ##
 ## Octave is distributed in the hope that it will be useful, but
 ## WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -13,9 +14,8 @@
 ## General Public License for more details.
 ##
 ## You should have received a copy of the GNU General Public License
-## along with Octave; see the file COPYING.  If not, write to the Free
-## Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-## 02110-1301, USA.
+## along with Octave; see the file COPYING.  If not, see
+## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
 ## @deftypefn {Function File} {} colormap (@var{map})
@@ -37,8 +37,6 @@
 ## Author: Tony Richardson <arichard@stark.cc.oh.us>
 ## Created: July 1994
 ## Adapted-By: jwe
-
-## PKG_ADD: mark_as_command colormap
 
 function cmap = colormap (map)
 
@@ -70,22 +68,8 @@ function cmap = colormap (map)
   endif
 
   ## Return current color map.
-  if (nargout > 0)
+  if (nargout > 0 || (nargout == 0 && nargin == 0))
     cmap = get (gcf (), "colormap");
   endif
 
 endfunction
-
-/*
-@GROUP
-image
-@SYNTAX
-colormap
-@DOC
-.
-@EXAMPLES
-<programlisting>
-.
-</programlisting>
-@SEE
-*/

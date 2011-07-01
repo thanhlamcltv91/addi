@@ -1,11 +1,11 @@
-## Copyright (C) 2000 Paul Kienzle
+## Copyright (C) 2000, 2006, 2007, 2008, 2009 Paul Kienzle
 ##
 ## This file is part of Octave.
 ##
 ## Octave is free software; you can redistribute it and/or modify it
 ## under the terms of the GNU General Public License as published by
-## the Free Software Foundation; either version 2, or (at your option)
-## any later version.
+## the Free Software Foundation; either version 3 of the License, or (at
+## your option) any later version.
 ##
 ## Octave is distributed in the hope that it will be useful, but
 ## WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -13,9 +13,8 @@
 ## General Public License for more details.
 ##
 ## You should have received a copy of the GNU General Public License
-## along with Octave; see the file COPYING.  If not, write to the Free
-## Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-## 02110-1301, USA.
+## along with Octave; see the file COPYING.  If not, see
+## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
 ## @deftypefn {Function File} {[@var{x}, @var{p}, @var{n}, @var{k}, @var{d}] =} unmkpp (@var{pp})
@@ -25,13 +24,13 @@
 ##
 ## @table @asis
 ## @item @var{x}
-## Samples points.
+## Sample points.
 ## @item @var{p}
-## Polynomial coefficients for points in sample interval. @code{@var{p}
+## Polynomial coefficients for points in sample interval.  @code{@var{p}
 ## (@var{i}, :)} contains the coefficients for the polynomial over
-## interval @var{i} ordered from highest to lowest. If @code{@var{d} >
-## 1}, @code{@var{p} (@var{r}, @var{i}, :)} contains the coeffients for 
-## the r-th polynomial defined on interval @var{i}. However, this is 
+## interval @var{i} ordered from highest to lowest.  If @code{@var{d} >
+## 1}, @code{@var{p} (@var{r}, @var{i}, :)} contains the coefficients for 
+## the r-th polynomial defined on interval @var{i}.  However, this is 
 ## stored as a 2-D array such that @code{@var{c} = reshape (@var{p} (:,
 ## @var{j}), @var{n}, @var{d})} gives @code{@var{c} (@var{i},  @var{r})}
 ## is the j-th coefficient of the r-th polynomial over the i-th interval.
@@ -59,16 +58,3 @@ function [x, P, n, k, d] = unmkpp (pp)
   k = pp.k;
   d = pp.d;
 endfunction
-
-/*
-@GROUP
-polynomial
-@SYNTAX
-[x, P, n, k, d] = unmkpp (pp)
-@DOC
-.
-@NOTES
-@EXAMPLES
-@SEE
-poly, polyreduce, polyval, roots, polyinteg
-*/

@@ -1,11 +1,12 @@
-## Copyright (C) 1996, 1997 John W. Eaton
+## Copyright (C) 1993, 1994, 1995, 1996, 1997, 1999, 2005, 2006, 2007, 2008
+##               John W. Eaton
 ##
 ## This file is part of Octave.
 ##
 ## Octave is free software; you can redistribute it and/or modify it
 ## under the terms of the GNU General Public License as published by
-## the Free Software Foundation; either version 2, or (at your option)
-## any later version.
+## the Free Software Foundation; either version 3 of the License, or (at
+## your option) any later version.
 ##
 ## Octave is distributed in the hope that it will be useful, but
 ## WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -13,9 +14,8 @@
 ## General Public License for more details.
 ##
 ## You should have received a copy of the GNU General Public License
-## along with Octave; see the file COPYING.  If not, write to the Free
-## Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-## 02110-1301, USA.
+## along with Octave; see the file COPYING.  If not, see
+## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
 ## @deftypefn {Function File} {} trace (@var{a})
@@ -27,11 +27,14 @@
 function y = trace (x)
 
   if (nargin != 1)
-    usage ("trace (x)");
+    print_usage ();
   endif
 
-  [nr, nc] = size (x);
-  if ((nr == 1) || (nc == 1))
+  if (ndims (x) > 2)
+    error ("trace: only valid on 2-D objects");
+  elseif (isempty (x))
+    y = 0;
+  elseif (any (size (x) == 1))
     y = x(1);
   else
     y = sum (diag (x));
@@ -39,18 +42,12 @@ function y = trace (x)
 
 endfunction
 
-/*
-@GROUP
-linearalgebra
-@SYNTAX
-trace(array)
-@DOC
-.
-@EXAMPLES
-.
-@NOTES
-.
-@SEE
-sum
-*/
-
+%!assert(trace ([1, 2; 3, 4]) == 5);
+%!assert(trace ([1, 2; 3, 4; 5, 6]) == 5);
+%!assert(trace ([1, 3, 5; 2, 4, 6]) == 5);
+%!assert(trace ([]), 0);
+%!assert(trace (randn(1,0)), 0);
+%!
+%!error trace ();
+%!error trace (1, 2);
+%!error <only valid on 2-D objects> trace(reshape(1:9,[1,3,3]));

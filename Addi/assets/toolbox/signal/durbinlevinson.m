@@ -1,11 +1,12 @@
-## Copyright (C) 1995  Friedrich Leisch
+## Copyright (C) 1995, 1998, 2000, 2002, 2005, 2006, 2007, 2009
+##               Friedrich Leisch
 ##
 ## This file is part of Octave.
 ##
 ## Octave is free software; you can redistribute it and/or modify it
 ## under the terms of the GNU General Public License as published by
-## the Free Software Foundation; either version 2, or (at your option)
-## any later version.
+## the Free Software Foundation; either version 3 of the License, or (at
+## your option) any later version.
 ##
 ## Octave is distributed in the hope that it will be useful, but
 ## WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -13,15 +14,14 @@
 ## General Public License for more details.
 ##
 ## You should have received a copy of the GNU General Public License
-## along with Octave; see the file COPYING.  If not, write to the Free
-## Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-## 02110-1301, USA.
+## along with Octave; see the file COPYING.  If not, see
+## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
 ## @deftypefn {Function File} {} durbinlevinson (@var{c}, @var{oldphi}, @var{oldv})
 ## Perform one step of the Durbin-Levinson algorithm.
 ##
-## The vector @var{c} specifies the autocovariances @code{[gamma_0, ...,
+## The vector @var{c} specifies the autocovariances @code{[gamma_0, @dots{},
 ## gamma_t]} from lag 0 to @var{t}, @var{oldphi} specifies the
 ## coefficients based on @var{c}(@var{t}-1) and @var{oldv} specifies the
 ## corresponding error.
@@ -40,7 +40,7 @@ function [newphi, newv] = durbinlevinson (c, oldphi, oldv)
   endif
 
   if (columns (c) > 1)
-    c=c';
+    c = c';
   endif
 
   newphi = 0;
@@ -92,18 +92,3 @@ function [newphi, newv] = durbinlevinson (c, oldphi, oldv)
   endif
 
 endfunction
-
-/*
-@GROUP
-signal
-@SYNTAX
-durbinlevinson()
-@DOC
-.
-@EXAMPLES
-.
-@NOTES
-.
-@SEE
-bartlett, hamming, hanning
-*/

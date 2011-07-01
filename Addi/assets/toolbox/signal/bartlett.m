@@ -1,11 +1,12 @@
-## Copyright (C) 1995, 1996, 1997  Andreas Weingessel
+## Copyright (C) 1995, 1996, 1997, 1998, 2000, 2002, 2005, 2006, 2007, 2009
+##               Andreas Weingessel
 ##
 ## This file is part of Octave.
 ##
 ## Octave is free software; you can redistribute it and/or modify it
 ## under the terms of the GNU General Public License as published by
-## the Free Software Foundation; either version 2, or (at your option)
-## any later version.
+## the Free Software Foundation; either version 3 of the License, or (at
+## your option) any later version.
 ##
 ## Octave is distributed in the hope that it will be useful, but
 ## WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -13,17 +14,16 @@
 ## General Public License for more details.
 ##
 ## You should have received a copy of the GNU General Public License
-## along with Octave; see the file COPYING.  If not, write to the Free
-## Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-## 02110-1301, USA.
+## along with Octave; see the file COPYING.  If not, see
+## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
 ## @deftypefn {Function File} {} bartlett (@var{m})
 ## Return the filter coefficients of a Bartlett (triangular) window of
 ## length @var{m}.
 ##
-## For a definition of the Bartlett window, see e.g. A. V. Oppenheim &
-## R. W. Schafer, "Discrete-Time Signal Processing".
+## For a definition of the Bartlett window, see e.g., A. V. Oppenheim &
+## R. W. Schafer, @cite{Discrete-Time Signal Processing}.
 ## @end deftypefn
 
 ## Author: AW <Andreas.Weingessel@ci.tuwien.ac.at>
@@ -32,7 +32,7 @@
 function c = bartlett (m)
 
   if (nargin != 1)
-    usage ("bartlett (m)");
+    print_usage ();
   endif
 
   if (! (isscalar (m) && (m == round (m)) && (m > 0)))
@@ -48,18 +48,3 @@ function c = bartlett (m)
   endif
 
 endfunction
-
-/*
-@GROUP
-signal
-@SYNTAX
-answer = template (value)
-@DOC
-.
-@EXAMPLES
-.
-@NOTES
-.
-@SEE
-blackman, hamming, hanning
-*/

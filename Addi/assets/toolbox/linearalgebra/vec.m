@@ -1,11 +1,12 @@
-## Copyright (C) 1995, 1996  Kurt Hornik
+## Copyright (C) 1995, 1996, 1999, 2000, 2002, 2004, 2005, 2006, 2007, 2008
+##               Kurt Hornik
 ##
 ## This file is part of Octave.
 ##
 ## Octave is free software; you can redistribute it and/or modify it
 ## under the terms of the GNU General Public License as published by
-## the Free Software Foundation; either version 2, or (at your option)
-## any later version.
+## the Free Software Foundation; either version 3 of the License, or (at
+## your option) any later version.
 ##
 ## Octave is distributed in the hope that it will be useful, but
 ## WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -13,9 +14,8 @@
 ## General Public License for more details.
 ##
 ## You should have received a copy of the GNU General Public License
-## along with Octave; see the file COPYING.  If not, write to the Free
-## Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-## 02110-1301, USA.
+## along with Octave; see the file COPYING.  If not, see
+## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
 ## @deftypefn {Function File} {} vec (@var{x})
@@ -33,24 +33,16 @@
 function v = vec (x)
 
   if (nargin != 1)
-    usage ("vec (x)");
+    print_usage ();
   endif
 
   v = x(:);
 
 endfunction
 
-/*
-@GROUP
-linearalgebra
-@SYNTAX
-vec(value)
-@DOC
-.
-@EXAMPLES
-.
-@NOTES
-.
-@SEE
-sum
-*/
+%!assert(vec ([1, 2; 3, 4]) == [1; 3; 2; 4] && vec ([1, 3, 2, 4]) == [1; 3; 2; 4]);
+
+%!error vec ();
+
+%!error vec (1, 2);
+

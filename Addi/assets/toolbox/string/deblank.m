@@ -1,11 +1,12 @@
-## Copyright (C) 1996 Kurt Hornik
+## Copyright (C) 1996, 1998, 1999, 2000, 2002, 2004, 2005, 2006, 2007, 2008
+##               Kurt Hornik
 ##
 ## This file is part of Octave.
 ##
 ## Octave is free software; you can redistribute it and/or modify it
 ## under the terms of the GNU General Public License as published by
-## the Free Software Foundation; either version 2, or (at your option)
-## any later version.
+## the Free Software Foundation; either version 3 of the License, or (at
+## your option) any later version.
 ##
 ## Octave is distributed in the hope that it will be useful, but
 ## WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -13,9 +14,8 @@
 ## General Public License for more details.
 ##
 ## You should have received a copy of the GNU General Public License
-## along with Octave; see the file COPYING.  If not, write to the Free
-## Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-## 02110-1301, USA.
+## along with Octave; see the file COPYING.  If not, see
+## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
 ## @deftypefn {Function File} {} deblank (@var{s})
@@ -28,43 +28,59 @@
 ## Author: Kurt Hornik <Kurt.Hornik@wu-wien.ac.at>
 ## Adapted-By: jwe
 
-function s = deblank(s)
+function s = deblank (s)
 
   if (nargin != 1)
-    usage ("deblank (s)");
+    print_usage ();
   endif
 
-  if (ischar(s))
+  char_arg = ischar (s);
 
-    k = find(((!isspace(s)) && (s != " ")));
-    
-    if ((isempty(s) || isempty(k)))
-      s = "";
-    else
-      s = s(:,1:ceil(max(k) / rows(s)))
+  if (char_arg || isnumeric (s))
+
+    if (! isempty (s))
+      if (char_arg)
+	k = find (! isspace (s) & s != "\0");
+      else
+	warning ("deblank: expecting character string argument")
+	k = find (s != 0);
+      endif
+
+      if (isempty (k))
+	s = resize (s, 0, 0);
+      else
+	s = s(:,1:ceil (max (k) / rows (s)));
+      endif
     endif
 
   elseif (iscell(s))
 
-    for ii = 1:numel(s),
-      s{ii} = deblank(s{ii});
-    endfor
+    s = cellfun (@deblank, s, "UniformOutput", false);
 
   else
-    error ("deblank: expecting string argument");
+    error ("deblank: expecting character string argument");
   endif
 
 endfunction
 
-/*
-@GROUP
-char
-@SYNTAX
-deblank
-@DOC
-Outputs a number of spaces equal to number.
-@NOTES
-@EXAMPLES
-@SEE
-blanks
-*/
+%!assert (strcmp (deblank (" f o o  "), " f o o"));
+
+%!assert (deblank ([]), [])
+%!assert (deblank ({}), {})
+%!assert (deblank (""), "")
+
+%!assert (deblank ([0,0,0]), [])
+%!assert (deblank ('   '), '')
+%!assert (deblank ("   "), "")
+
+%!assert (typeinfo (deblank ("   ")), "string")
+%!assert (typeinfo (deblank ('   ')), "sq_string")
+
+%!assert (deblank ([1,2,0]), [1,2])
+%!assert (deblank ([1,2,0,32]), [1,2,0,32])
+
+%!assert (deblank (int8 ([1,2,0])), int8 ([1,2]))
+
+%!error deblank ();
+
+%!error deblank ("foo", "bar");

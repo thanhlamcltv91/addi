@@ -1,11 +1,12 @@
-## Copyright (C) 1995, 1996  Kurt Hornik
+## Copyright (C) 1995, 1996, 1999, 2000, 2002, 2005, 2006, 2007, 2009
+##               Kurt Hornik
 ##
 ## This file is part of Octave.
 ##
 ## Octave is free software; you can redistribute it and/or modify it
 ## under the terms of the GNU General Public License as published by
-## the Free Software Foundation; either version 2, or (at your option)
-## any later version.
+## the Free Software Foundation; either version 3 of the License, or (at
+## your option) any later version.
 ##
 ## Octave is distributed in the hope that it will be useful, but
 ## WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -13,67 +14,54 @@
 ## General Public License for more details.
 ##
 ## You should have received a copy of the GNU General Public License
-## along with Octave; see the file COPYING.  If not, write to the Free
-## Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-## 02110-1301, USA.
+## along with Octave; see the file COPYING.  If not, see
+## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
 ## @deftypefn {Function File} {} commutation_matrix (@var{m}, @var{n})
 ## Return the commutation matrix
-## @iftex
 ## @tex
 ##  $K_{m,n}$
 ## @end tex
-## @end iftex
-## @ifinfo
+## @ifnottex
 ##  K(m,n)
-## @end ifinfo
+## @end ifnottex
 ##  which is the unique
-## @iftex
 ## @tex
 ##  $m n \times m n$
 ## @end tex
-## @end iftex
-## @ifinfo
+## @ifnottex
 ##  @var{m}*@var{n} by @var{m}*@var{n}
-## @end ifinfo
+## @end ifnottex
 ##  matrix such that
-## @iftex
 ## @tex
 ##  $K_{m,n} \cdot {\rm vec} (A) = {\rm vec} (A^T)$
 ## @end tex
-## @end iftex
-## @ifinfo
+## @ifnottex
 ##  @math{K(m,n) * vec(A) = vec(A')}
-## @end ifinfo
+## @end ifnottex
 ##  for all
-## @iftex
 ## @tex
 ##  $m\times n$
 ## @end tex
-## @end iftex
-## @ifinfo
+## @ifnottex
 ##  @math{m} by @math{n}
-## @end ifinfo
+## @end ifnottex
 ##  matrices
-## @iftex
 ## @tex
 ##  $A$.
 ## @end tex
-## @end iftex
-## @ifinfo
+## @ifnottex
 ##  @math{A}.
-## @end ifinfo
+## @end ifnottex
 ##
 ## If only one argument @var{m} is given,
-## @iftex
 ## @tex
 ##  $K_{m,m}$
 ## @end tex
-## @end iftex
-## @ifinfo
+## @ifnottex
 ##  @math{K(m,m)}
-## @end ifinfo
+## @end ifnottex
 ##  is returned.
 ##
 ## See Magnus and Neudecker (1988), Matrix differential calculus with
@@ -101,24 +89,10 @@ function k = commutation_matrix (m, n)
 
   ## It is clearly possible to make this a LOT faster!
   k = zeros (m * n, m * n);
-  for ii = 1 : m
-    for jj = 1 : n
-      k ((ii - 1) * n + jj, (jj - 1) * m + ii) = 1;
+  for i = 1 : m
+    for j = 1 : n
+      k ((i - 1) * n + j, (j - 1) * m + i) = 1;
     endfor
   endfor
 
 endfunction
-
-/*
-@GROUP
-LinearAlgebra
-@SYNTAX
-commutation_matrix
-@DOC
-.
-@EXAMPLES
-<programlisting>
-</programlisting>
-@NOTES
-@SEE
-*/
