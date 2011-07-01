@@ -1,11 +1,12 @@
-## Copyright (C) 1995, 1996  Kurt Hornik
+## Copyright (C) 1995, 1996, 1999, 2000, 2002, 2005, 2006, 2007, 2009
+##               Kurt Hornik
 ##
 ## This file is part of Octave.
 ##
 ## Octave is free software; you can redistribute it and/or modify it
 ## under the terms of the GNU General Public License as published by
-## the Free Software Foundation; either version 2, or (at your option)
-## any later version.
+## the Free Software Foundation; either version 3 of the License, or (at
+## your option) any later version.
 ##
 ## Octave is distributed in the hope that it will be useful, but
 ## WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -13,57 +14,46 @@
 ## General Public License for more details.
 ##
 ## You should have received a copy of the GNU General Public License
-## along with Octave; see the file COPYING.  If not, write to the Free
-## Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-## 02110-1301, USA.
+## along with Octave; see the file COPYING.  If not, see
+## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
 ## @deftypefn {Function File} {} duplication_matrix (@var{n})
 ## Return the duplication matrix
-## @iftex
 ## @tex
 ##  $D_n$
 ## @end tex
-## @end iftex
-## @ifinfo
+## @ifnottex
 ##  @math{Dn}
-## @end ifinfo
+## @end ifnottex
 ##  which is the unique
-## @iftex
 ## @tex
 ##  $n^2 \times n(n+1)/2$
 ## @end tex
-## @end iftex
-## @ifinfo
+## @ifnottex
 ##  @math{n^2} by @math{n*(n+1)/2}
-## @end ifinfo
+## @end ifnottex
 ##  matrix such that
-## @iftex
 ## @tex
 ##  $D_n * {\rm vech} (A) = {\rm vec} (A)$
 ## @end tex
-## @end iftex
-## @ifinfo
+## @ifnottex
 ##  @math{Dn vech (A) = vec (A)}
-## @end ifinfo
+## @end ifnottex
 ##  for all symmetric
-## @iftex
 ## @tex
 ##  $n \times n$
 ## @end tex
-## @end iftex
-## @ifinfo
+## @ifnottex
 ##  @math{n} by @math{n}
-## @end ifinfo
+## @end ifnottex
 ##  matrices
-## @iftex
 ## @tex
 ##  $A$.
 ## @end tex
-## @end iftex
-## @ifinfo
+## @ifnottex
 ##  @math{A}.
-## @end ifinfo
+## @end ifnottex
 ##
 ## See Magnus and Neudecker (1988), Matrix differential calculus with
 ## applications in statistics and econometrics.
@@ -87,27 +77,13 @@ function d = duplication_matrix (n)
 
   ## It is clearly possible to make this a LOT faster!
   count = 0;
-  for jj = 1 : n
-    d ((jj - 1) * n + jj, count + jj) = 1;
-    for ii = (jj + 1) : n
-      d ((jj - 1) * n + ii, count + ii) = 1;
-      d ((ii - 1) * n + jj, count + ii) = 1;
+  for j = 1 : n
+    d ((j - 1) * n + j, count + j) = 1;
+    for i = (j + 1) : n
+      d ((j - 1) * n + i, count + i) = 1;
+      d ((i - 1) * n + j, count + i) = 1;
     endfor
-    count = count + n - jj;
+    count = count + n - j;
   endfor
 
 endfunction
-
-/*
-@GROUP
-LinearAlgebra
-@SYNTAX
-duplication_matrix
-@DOC
-.
-@EXAMPLES
-<programlisting>
-</programlisting>
-@NOTES
-@SEE
-*/

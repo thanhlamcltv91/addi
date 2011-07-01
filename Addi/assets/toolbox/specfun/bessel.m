@@ -1,11 +1,12 @@
-## Copyright (C) 1996, 1997 John W. Eaton
+## Copyright (C) 1996, 1997, 1999, 2000, 2005, 2007, 2008, 2009
+##               John W. Eaton
 ##
 ## This file is part of Octave.
 ##
 ## Octave is free software; you can redistribute it and/or modify it
 ## under the terms of the GNU General Public License as published by
-## the Free Software Foundation; either version 2, or (at your option)
-## any later version.
+## the Free Software Foundation; either version 3 of the License, or (at
+## your option) any later version.
 ##
 ## Octave is distributed in the hope that it will be useful, but
 ## WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -13,41 +14,66 @@
 ## General Public License for more details.
 ##
 ## You should have received a copy of the GNU General Public License
-## along with Octave; see the file COPYING.  If not, write to the Free
-## Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-## 02110-1301, USA.
+## along with Octave; see the file COPYING.  If not, see
+## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Mapping Function} {} besseli (@var{alpha}, @var{x})
-## @deftypefnx {Mapping Function} {} besselj (@var{alpha}, @var{x})
-## @deftypefnx {Mapping Function} {} besselk (@var{alpha}, @var{x})
-## @deftypefnx {Mapping Function} {} bessely (@var{alpha}, @var{x})
-## Compute Bessel functions of the following types:
-##
+## @deftypefn {Loadable Function} {[@var{j}, @var{ierr}] =} besselj (@var{alpha}, @var{x}, @var{opt})
+## @deftypefnx {Loadable Function} {[@var{y}, @var{ierr}] =} bessely (@var{alpha}, @var{x}, @var{opt})
+## @deftypefnx {Loadable Function} {[@var{i}, @var{ierr}] =} besseli (@var{alpha}, @var{x}, @var{opt})
+## @deftypefnx {Loadable Function} {[@var{k}, @var{ierr}] =} besselk (@var{alpha}, @var{x}, @var{opt})
+## @deftypefnx {Loadable Function} {[@var{h}, @var{ierr}] =} besselh (@var{alpha}, @var{k}, @var{x}, @var{opt})
+## Compute Bessel or Hankel functions of various kinds:
+## 
 ## @table @code
 ## @item besselj
-## Bessel functions of the first kind.
-##
+## Bessel functions of the first kind.  If the argument @var{opt} is supplied, 
+## the result is multiplied by @code{exp(-abs(imag(x)))}.
 ## @item bessely
-## Bessel functions of the second kind.
-##
+## Bessel functions of the second kind.  If the argument @var{opt} is supplied,
+## the result is multiplied by @code{exp(-abs(imag(x)))}.
 ## @item besseli
-## Modified Bessel functions of the first kind.
-##
+## Modified Bessel functions of the first kind.  If the argument @var{opt} is supplied,
+## the result is multiplied by @code{exp(-abs(real(x)))}.
 ## @item besselk
-## Modified Bessel functions of the second kind.
+## Modified Bessel functions of the second kind.  If the argument @var{opt} is supplied,
+## the result is multiplied by @code{exp(x)}.
+## @item besselh
+## Compute Hankel functions of the first (@var{k} = 1) or second (@var{k}
+## = 2) kind.  If the argument @var{opt} is supplied, the result is multiplied by
+## @code{exp (-I*@var{x})} for @var{k} = 1 or @code{exp (I*@var{x})} for
+## @var{k} = 2.
 ## @end table
-##
-## The second argument, @var{x}, must be a real matrix, vector, or scalar.
-##
-## The first argument, @var{alpha}, must be greater than or equal to zero.
-## If @var{alpha} is a range, it must have an increment equal to one.
-##
+## 
 ## If @var{alpha} is a scalar, the result is the same size as @var{x}.
-##
-## If @var{alpha} is a range, @var{x} must be a vector or scalar, and the
-## result is a matrix with @code{length(@var{x})} rows and
-## @code{length(@var{alpha})} columns.
+## If @var{x} is a scalar, the result is the same size as @var{alpha}.
+## If @var{alpha} is a row vector and @var{x} is a column vector, the
+## result is a matrix with @code{length (@var{x})} rows and
+## @code{length (@var{alpha})} columns.  Otherwise, @var{alpha} and
+## @var{x} must conform and the result will be the same size.
+## 
+## The value of @var{alpha} must be real.  The value of @var{x} may be
+## complex.
+## 
+## If requested, @var{ierr} contains the following status information
+## and is the same size as the result.
+## 
+## @enumerate 0
+## @item
+## Normal return.
+## @item
+## Input error, return @code{NaN}.
+## @item
+## Overflow, return @code{Inf}.
+## @item
+## Loss of significance by argument reduction results in less than
+## half of machine accuracy.
+## @item
+## Complete loss of significance by argument reduction, return @code{NaN}.
+## @item
+## Error---no computation, algorithm termination condition not met,
+## return @code{NaN}.
+## @end enumerate
 ## @end deftypefn
 
 function bessel ()

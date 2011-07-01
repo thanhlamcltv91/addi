@@ -1,11 +1,12 @@
-## Copyright (C) 1996, 1997 John W. Eaton
+## Copyright (C) 1994, 1995, 1996, 1997, 1999, 2000, 2005, 2006, 2007,
+##               2008, 2009 John W. Eaton
 ##
 ## This file is part of Octave.
 ##
 ## Octave is free software; you can redistribute it and/or modify it
 ## under the terms of the GNU General Public License as published by
-## the Free Software Foundation; either version 2, or (at your option)
-## any later version.
+## the Free Software Foundation; either version 3 of the License, or (at
+## your option) any later version.
 ##
 ## Octave is distributed in the hope that it will be useful, but
 ## WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -13,17 +14,33 @@
 ## General Public License for more details.
 ##
 ## You should have received a copy of the GNU General Public License
-## along with Octave; see the file COPYING.  If not, write to the Free
-## Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-## 02110-1301, USA.
+## along with Octave; see the file COPYING.  If not, see
+## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
 ## @deftypefn {Function File} {} poly (@var{a})
 ## If @var{a} is a square @math{N}-by-@math{N} matrix, @code{poly (@var{a})}
 ## is the row vector of the coefficients of @code{det (z * eye (N) - a)},
-## the characteristic polynomial of @var{a}.  If @var{x} is a vector,
-## @code{poly (@var{x})} is a vector of coefficients of the polynomial
-## whose roots are the elements of @var{x}.
+## the characteristic polynomial of @var{a}.  As an example we can use
+## this to find the eigenvalues of @var{a} as the roots of @code{poly (@var{a})}.
+## @example
+## @group
+## roots(poly(eye(3)))
+## @result{} 1.00000 + 0.00000i
+## @result{} 1.00000 - 0.00000i
+## @result{} 1.00000 + 0.00000i
+## @end group
+## @end example
+## In real-life examples you should, however, use the @code{eig} function
+## for computing eigenvalues.
+##
+## If @var{x} is a vector, @code{poly (@var{x})} is a vector of coefficients
+## of the polynomial whose roots are the elements of @var{x}.  That is,
+## of @var{c} is a polynomial, then the elements of 
+## @code{@var{d} = roots (poly (@var{c}))} are contained in @var{c}.
+## The vectors @var{c} and @var{d} are, however, not equal due to sorting
+## and numerical errors.
+## @seealso{eig, roots}
 ## @end deftypefn
 
 ## Author: KH <Kurt.Hornik@wu-wien.ac.at>
@@ -51,8 +68,8 @@ function y = poly (x)
 
   y = zeros (1, n+1);
   y(1) = 1;
-  for jj = 1:n;
-    y(2:(jj+1)) = y(2:(jj+1)) - v(jj) .* y(1:jj);
+  for j = 1:n;
+    y(2:(j+1)) = y(2:(j+1)) - v(j) .* y(1:j);
   endfor
 
   if (all (all (imag (x) == 0)))
@@ -61,16 +78,11 @@ function y = poly (x)
 
 endfunction
 
-/*
-@GROUP
-polynomial
-@SYNTAX
-y = poly (x)
-@DOC
-.
-@NOTES
-@EXAMPLES
-@SEE
-mkpp, polyreduce, polyval, roots, unmkpp
-*/
+%!assert(all (all (poly ([1, 2, 3]) == [1, -6, 11, -6])));
+
+%!assert(all (all (abs (poly ([1, 2; 3, 4]) - [1, -5, -2]) < sqrt (eps))));
+
+%!error poly ([1, 2, 3; 4, 5, 6]);
+
+%!assert(poly ([]),1);
 

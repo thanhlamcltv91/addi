@@ -1,11 +1,12 @@
-## Copyright (C) 1996, 1997 John W. Eaton
+## Copyright (C) 1994, 1995, 1996, 1997, 1998, 1999, 2000, 2002, 2004,
+##               2005, 2006, 2007, 2008, 2009 John W. Eaton
 ##
 ## This file is part of Octave.
 ##
 ## Octave is free software; you can redistribute it and/or modify it
 ## under the terms of the GNU General Public License as published by
-## the Free Software Foundation; either version 2, or (at your option)
-## any later version.
+## the Free Software Foundation; either version 3 of the License, or (at
+## your option) any later version.
 ##
 ## Octave is distributed in the hope that it will be useful, but
 ## WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -13,9 +14,8 @@
 ## General Public License for more details.
 ##
 ## You should have received a copy of the GNU General Public License
-## along with Octave; see the file COPYING.  If not, write to the Free
-## Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-## 02110-1301, USA.
+## along with Octave; see the file COPYING.  If not, see
+## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
 ## @deftypefn {Function File} {} compan (@var{c})
@@ -23,7 +23,6 @@
 ## vector @var{c}.
 ##
 ## The companion matrix is
-## @iftex
 ## @tex
 ## $$
 ## A = \left[\matrix{
@@ -34,20 +33,20 @@
 ##      0    &     0    & \cdots &     1    &         0}\right].
 ## $$
 ## @end tex
-## @end iftex
-## @ifinfo
+## @ifnottex
 ##
+## @c Set example in small font to prevent overfull line
 ## @smallexample
 ##      _                                                        _
-##     |  -c(2)/c(1)   -c(3)/c(1)  ...  -c(N)/c(1)  -c(N+1)/c(1)  |
-##     |       1            0      ...       0             0      |
-##     |       0            1      ...       0             0      |
+##     |  -c(2)/c(1)   -c(3)/c(1)  @dots{}  -c(N)/c(1)  -c(N+1)/c(1)  |
+##     |       1            0      @dots{}       0             0      |
+##     |       0            1      @dots{}       0             0      |
 ## A = |       .            .   .            .             .      |
 ##     |       .            .       .        .             .      |
 ##     |       .            .           .    .             .      |
-##     |_      0            0      ...       1             0     _|
+##     |_      0            0      @dots{}       1             0     _|
 ## @end smallexample
-## @end ifinfo
+## @end ifnottex
 ##
 ## The eigenvalues of the companion matrix are equal to the roots of the
 ## polynomial.
@@ -69,12 +68,6 @@ function A = compan (c)
     error ("compan: expecting a vector argument");
   endif
 
-  ## Ensure that c is a row vector.
-
-  if (rows (c) > 1)
-    c = c.';
-  endif
-
   n = length (c);
 
   if (n == 1)
@@ -86,14 +79,15 @@ function A = compan (c)
 
 endfunction
 
-/*
-@GROUP
-polynomial
-@SYNTAX
-A = compan(c)
-@DOC
-.
-@NOTES
-@EXAMPLES
-@SEE
-*/
+%!assert(all (all (compan ([1, 2, 3]) == [-2, -3; 1, 0])));
+
+%!assert(all (all (compan ([1; 2; 3]) == [-2, -3; 1, 0])));
+
+%!assert(isempty (compan (4)));
+
+%!assert(all (all (compan ([3, 2, 1]) == [-2/3, -1/3; 1, 0])));
+
+%!error compan ([1,2;3,4]);
+
+%!error compan ([]);
+
