@@ -13,6 +13,7 @@ import java.util.*;
 import java.io.*;
 
 import com.addi.core.tokens.*;
+import com.addi.core.tokens.numbertokens.DoubleNumberToken;
 
 /**Class used to store all the declared variables within a context*/
 public class VariableList implements Cloneable, java.io.Serializable 
@@ -80,6 +81,13 @@ public class VariableList implements Cloneable, java.io.Serializable
 	@return the variable represented with the name name*/
     public Variable getVariable(String name)
     {
+    	if ((name.compareTo("i") == 0) || (name.compareTo("j") == 0)) {
+    		if (variables.containsKey(name) == true) {
+    			return ((Variable)variables.get(name));
+    		} else {
+    			return new Variable(name,new DoubleNumberToken("0", "1"));
+    		}
+    	}
         return ((Variable)variables.get(name));
     }
 
@@ -87,6 +95,10 @@ public class VariableList implements Cloneable, java.io.Serializable
     @param name = the name of a variable */
     public boolean isVariable(String name)
     {
+    	//if i or j, just return true, if it doesn't exist, we will make it look like it does later
+    	if ((name.compareTo("i") == 0) || (name.compareTo("j") == 0))
+    		return true;
+    	
         return variables.containsKey(name);
     }
 
