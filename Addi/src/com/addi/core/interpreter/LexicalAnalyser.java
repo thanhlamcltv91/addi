@@ -616,18 +616,7 @@ public class LexicalAnalyser implements TokenConstants, ErrorCodes
             }
             String name = sBuffer.toString();
     
-            if( name.equals("i") ||
-                name.equals("j") )
-            {
-                //ErrorLogger.debugLine("LexAna: ImaginaryNumber = "+name);
-
-                int value = 1;
-                if(negative)
-                    value = -1;
-
-                nextToken = new DoubleNumberToken(0,value);
-            }
-            else if(name.equals("Inf") || name.equals("inf"))
+            if(name.equals("Inf") || name.equals("inf"))
             {
             	// positive and negative infinity
                 if(negative)
