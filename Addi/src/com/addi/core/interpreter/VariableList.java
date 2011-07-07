@@ -81,13 +81,6 @@ public class VariableList implements Cloneable, java.io.Serializable
 	@return the variable represented with the name name*/
     public Variable getVariable(String name)
     {
-    	if ((name.compareTo("i") == 0) || (name.compareTo("j") == 0)) {
-    		if (variables.containsKey(name) == true) {
-    			return ((Variable)variables.get(name));
-    		} else {
-    			return new Variable(name,new DoubleNumberToken("0", "1"));
-    		}
-    	}
         return ((Variable)variables.get(name));
     }
 

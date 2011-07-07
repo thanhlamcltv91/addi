@@ -167,6 +167,11 @@ public class VariableToken extends DataToken implements ErrorCodes
             if (name.equals("e"))
                 return new DoubleNumberToken(2.718281828459046);
 
+            if (name.equals("i"))
+                return new DoubleNumberToken("0","1");
+            
+            if (name.equals("j"))
+                return new DoubleNumberToken("0","1");
             
     	    ErrorLogger.debugLine("VariableToken: var " + name + " not found: check functions");
     
