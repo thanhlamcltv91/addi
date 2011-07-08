@@ -16,7 +16,6 @@
 // along with Addi. If not, see <http://www.gnu.org/licenses/>.
 
 package com.addi.toolbox.crypto;
- * */
 
 import com.addi.core.functions.ExternalFunction;
 import com.addi.core.interpreter.GlobalValues;
