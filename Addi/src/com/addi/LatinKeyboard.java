@@ -16,7 +16,7 @@
 
 package com.addi;
 
-import android.R;
+import com.addi.R;
 import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.XmlResourceParser;

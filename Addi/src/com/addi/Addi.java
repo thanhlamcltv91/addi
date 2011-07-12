@@ -71,8 +71,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class Addi extends Activity {
-	
+public class Addi extends Activity {	
    private ArrayAdapter<String> _mOutArrayAdapter;
    private ListView _mOutView;
    private EditText _mCmdEditText;
