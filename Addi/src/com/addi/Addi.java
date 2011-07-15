@@ -48,11 +48,14 @@ import android.content.res.AssetManager;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.drawable.ColorDrawable;
+import android.inputmethodservice.Keyboard;
+import android.inputmethodservice.KeyboardView;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -67,6 +70,7 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -88,6 +92,8 @@ public class Addi extends Activity {
    private String _addiEditString;
    private ArrayList<String> _listLabels;
    String _version = new String();
+   private MyKeyboard _keyboard;
+   LinearLayout _keyboardLayout;
 
    // Need handler for callbacks to the UI thread
    public final Handler _mHandler = new Handler() {
@@ -160,7 +166,6 @@ public class Addi extends Activity {
        _mCmdEditText = (EditText)findViewById(R.id.edit_command);
        //_mRunButton = (Button)findViewById(R.id.button_run);
        super.onCreate(savedInstanceState);
-       
        
        try {
     	   PackageInfo pi = getPackageManager().getPackageInfo("com.addi", 0);
@@ -418,5 +423,35 @@ public class Addi extends Activity {
 			_mHandler.post(mUpdateResults);
        }
    };
+   
+   public void sendKey(){
+	   
+   }
+   
+   boolean _prevLandscape = false;
+   void setKeyboardVisibility(Configuration c)
+   {
+	   boolean landscape = (c.orientation == Configuration.ORIENTATION_LANDSCAPE);
+	   if (landscape != _prevLandscape || _keyboard == null) {
+		  // Must recreate KeyboardView on orientation change because it caches the x,y for its preview popups
+          // http://code.google.com/p/android/issues/detail?id=4559
+          if (_keyboard != null) _keyboardLayout.removeView(_keyboard);
+          _keyboard = new MyKeyboard(this, false, false);
+          LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT, 0);
+          lp.gravity = Gravity.BOTTOM;
+          _keyboardLayout.addView(keyboard, lp);
+       }  
+       //keyboard.setKeys(lastKeys, landscape);
+       //keyboard.setVisibility( (c.hardKeyboardHidden == Configuration.HARDKEYBOARDHIDDEN_NO)
+       // ? View.GONE : View.VISIBLE );
+       _keyboard.setKeys( (c.hardKeyboardHidden == Configuration.HARDKEYBOARDHIDDEN_NO) ? "ur" : lastKeys, landscape );
+       _prevLandscape = landscape;
+   }
+
+   public void onConfigurationChanged(Configuration newConfig)
+   {
+	   setKeyboardVisibility(newConfig);
+	   super.onConfigurationChanged(newConfig);
+   }
    
 }
