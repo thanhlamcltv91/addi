@@ -96,6 +96,9 @@ public class Addi extends Activity implements OnKeyListener,OnKeyboardActionList
 	private String _addiEditString;
 	private ArrayList<String> _listLabels;
 	String _version = new String();
+	private  LinearLayout _mainView;
+	private KeyboardView _myKeyboardView;
+	private Keyboard _myKeyboard;
 
 	// Need handler for callbacks to the UI thread
 	public final Handler _mHandler = new Handler() {
@@ -167,14 +170,10 @@ public class Addi extends Activity implements OnKeyListener,OnKeyboardActionList
 		_mOutView = (ListView)findViewById(R.id.out);
 		_mCmdEditText = (EditText)findViewById(R.id.edit_command);
 
-
-		Keyboard myKeyboard = new Keyboard(this,R.xml.qwerty);
-		KeyboardView myKeyboardView = (KeyboardView) findViewById(R.id.keyboardView);  
-		myKeyboardView.setKeyboard(myKeyboard);  
-		myKeyboardView.setEnabled(true);  
-		myKeyboardView.setPreviewEnabled(true);  
-		myKeyboardView.setOnKeyListener(this);  
-		myKeyboardView.setOnKeyboardActionListener(this); 
+		_mainView = (LinearLayout)findViewById(R.id.wrapView);
+		
+		makeKeyboardView();
+		_mainView.addView(_myKeyboardView);
 
 		super.onCreate(savedInstanceState);
 
@@ -343,18 +342,17 @@ public class Addi extends Activity implements OnKeyListener,OnKeyboardActionList
 
 	@Override
 	public void onConfigurationChanged(Configuration newConfig)
-	{
-		KeyboardView keyboardView = (KeyboardView) findViewById(R.id.keyboardView);  
-		int visibility = keyboardView.getVisibility();  
-		switch (visibility) {  
-		case View.VISIBLE:  
-			keyboardView.setVisibility(View.GONE);
-			keyboardView.invalidate();
-			keyboardView.setVisibility(View.VISIBLE);
-			keyboardView.invalidate();
-			break;    
-		}
+	{  
+		
+		int visibility = _myKeyboardView.getVisibility();
+		_mainView.removeView(_myKeyboardView);
 		super.onConfigurationChanged(newConfig);
+		//boolean landscape = (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE);
+		//_mainView.setOrientation( landscape ? LinearLayout.HORIZONTAL : LinearLayout.VERTICAL);
+		makeKeyboardView();
+		_mainView.addView(_myKeyboardView);
+		_myKeyboardView.setVisibility(visibility);
+		
 	}
 
 	/** Called when the activity is put into background. */
@@ -499,34 +497,48 @@ public class Addi extends Activity implements OnKeyListener,OnKeyboardActionList
 		int start = _mCmdEditText.getSelectionStart();
 		int end = _mCmdEditText.getSelectionEnd();
 		_mCmdEditText.getText().replace(Math.min(start, end), Math.max(start, end),
-		        textToInsert, 0, textToInsert.length());
-		for (int keyCode : keyCodes) {    
-		}  
+				textToInsert, 0, textToInsert.length());
+		//for (int keyCode : keyCodes) {    
+		//}  
 	} 
-	
-	private void enableKeyboardVisibility() {  
-		KeyboardView keyboardView = (KeyboardView) findViewById(R.id.keyboardView);  
-		int visibility = keyboardView.getVisibility();  
+
+	private void enableKeyboardVisibility() {    
+		int visibility = _myKeyboardView.getVisibility();  
 		switch (visibility) {    
 		case View.GONE:  
 		case View.INVISIBLE:  
-			keyboardView.setVisibility(View.VISIBLE);  
+			_myKeyboardView.setVisibility(View.VISIBLE);  
 			break;  
 		}  
 	}
 
-	private void toggleKeyboardVisibility() {  
-		KeyboardView keyboardView = (KeyboardView) findViewById(R.id.keyboardView);  
-		int visibility = keyboardView.getVisibility();  
+	private void toggleKeyboardVisibility() {   
+		int visibility = _myKeyboardView.getVisibility();  
 		switch (visibility) {  
 		case View.VISIBLE:  
-			keyboardView.setVisibility(View.INVISIBLE);  
+			_myKeyboardView.setVisibility(View.INVISIBLE);  
 			break;  
 		case View.GONE:  
 		case View.INVISIBLE:  
-			keyboardView.setVisibility(View.VISIBLE);  
+			_myKeyboardView.setVisibility(View.VISIBLE);  
 			break;  
 		}  
+	}
+
+	private void makeKeyboardView () {
+		_myKeyboard = new Keyboard(this,R.xml.qwerty);
+		_myKeyboardView = new KeyboardView(this, null);
+		_myKeyboardView.setKeyboard(_myKeyboard);  
+		_myKeyboardView.setEnabled(true);  
+		_myKeyboardView.setPreviewEnabled(true);  
+		_myKeyboardView.setOnKeyListener(this);  
+		_myKeyboardView.setOnKeyboardActionListener(this); 
+		_myKeyboardView.setVisibility(View.GONE);
+		_myKeyboardView.setFocusable(false);
+		_myKeyboardView.setFocusableInTouchMode(false);
+		LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT, 0);
+		lp.gravity = Gravity.BOTTOM;
+		_myKeyboardView.setLayoutParams(lp);
 	}
 
 }
