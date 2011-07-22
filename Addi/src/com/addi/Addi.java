@@ -52,6 +52,7 @@ import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.inputmethodservice.InputMethodService;
 import android.inputmethodservice.Keyboard;
 import android.inputmethodservice.KeyboardView;
 import android.inputmethodservice.KeyboardView.OnKeyboardActionListener;
@@ -87,7 +88,6 @@ public class Addi extends Activity implements OnKeyListener,OnKeyboardActionList
 	private ArrayAdapter<String> _mOutArrayAdapter;
 	private ListView _mOutView;
 	public  EditText _mCmdEditText;
-	private Button _mRunButton;
 	private Interpreter _interpreter;
 	private String _mResults = "";
 	private String _prevCmd = "";	
@@ -103,11 +103,14 @@ public class Addi extends Activity implements OnKeyListener,OnKeyboardActionList
 	private  LinearLayout _mainView;
 	private KeyboardView _myKeyboardView;
 	private Keyboard _myKeyboard;
+	private Keyboard _myKeyboardShifted;
 	private String _mWordSeparators;
 	private boolean _mCompletionOn;
+	private boolean _mPredictionOn;
 	private CandidateView _mCandidateView;
     private CompletionInfo[] _mCompletions;
     private StringBuilder _mComposing = new StringBuilder();
+    private imsExtend _imsExtend = new imsExtend();
 
 	// Need handler for callbacks to the UI thread
 	public final Handler _mHandler = new Handler() {
@@ -488,9 +491,9 @@ public class Addi extends Activity implements OnKeyListener,OnKeyboardActionList
         if (attr != null 
                 && mInputView != null && mQwertyKeyboard == mInputView.getKeyboard()) {
             int caps = 0;
-            EditorInfo ei = getCurrentInputEditorInfo();
+            EditorInfo ei = _imsExtend.getCurrentInputEditorInfo();
             if (ei != null && ei.inputType != EditorInfo.TYPE_NULL) {
-                caps = getCurrentInputConnection().getCursorCapsMode(attr.inputType);
+                caps = _imsExtend.getCurrentInputConnection().getCursorCapsMode(attr.inputType);
             }
             mInputView.setShifted(mCapsLock || caps != 0);
         }
@@ -511,9 +514,9 @@ public class Addi extends Activity implements OnKeyListener,OnKeyboardActionList
      * Helper to send a key down / key up pair to the current editor.
      */
     private void keyDownUp(int keyEventCode) {
-        getCurrentInputConnection().sendKeyEvent(
+        _imsExtend.getCurrentInputConnection().sendKeyEvent(
                 new KeyEvent(KeyEvent.ACTION_DOWN, keyEventCode));
-        getCurrentInputConnection().sendKeyEvent(
+        _imsExtend.getCurrentInputConnection().sendKeyEvent(
                 new KeyEvent(KeyEvent.ACTION_UP, keyEventCode));
     }
     
@@ -529,7 +532,7 @@ public class Addi extends Activity implements OnKeyListener,OnKeyboardActionList
                 if (keyCode >= '0' && keyCode <= '9') {
                     keyDownUp(keyCode - '0' + KeyEvent.KEYCODE_0);
                 } else {
-                    getCurrentInputConnection().commitText(String.valueOf((char) keyCode), 1);
+                	_imsExtend.getCurrentInputConnection().commitText(String.valueOf((char) keyCode), 1);
                 }
                 break;
         }
@@ -555,9 +558,9 @@ public class Addi extends Activity implements OnKeyListener,OnKeyboardActionList
     public void setSuggestions(List<String> suggestions, boolean completions,
             boolean typedWordValid) {
         if (suggestions != null && suggestions.size() > 0) {
-            setCandidatesViewShown(true);
-        } else if (isExtractViewShown()) {
-            setCandidatesViewShown(true);
+            _imsExtend.setCandidatesViewShown(true);
+        } else if (_imsExtend.isExtractViewShown()) {
+            _imsExtend.setCandidatesViewShown(true);
         }
         if (_mCandidateView != null) {
             _mCandidateView.setSuggestions(suggestions, completions, typedWordValid);
@@ -568,16 +571,16 @@ public class Addi extends Activity implements OnKeyListener,OnKeyboardActionList
         final int length = _mComposing.length();
         if (length > 1) {
             _mComposing.delete(length - 1, length);
-            //?getCurrentInputConnection().setComposingText(mComposing, 1);
+            _imsExtend.getCurrentInputConnection().setComposingText(_mComposing, 1);
             updateCandidates();
         } else if (length > 0) {
             _mComposing.setLength(0);
-            //?getCurrentInputConnection().commitText("", 0);
+            _imsExtend.getCurrentInputConnection().commitText("", 0);
             updateCandidates();
         } else {
             keyDownUp(KeyEvent.KEYCODE_DEL);
         }
-        updateShiftKeyState(getCurrentInputEditorInfo());
+        updateShiftKeyState(_imsExtend.getCurrentInputEditorInfo());
     }
 
     private void handleShift() {
@@ -607,21 +610,20 @@ public class Addi extends Activity implements OnKeyListener,OnKeyboardActionList
                 primaryCode = Character.toUpperCase(primaryCode);
             }
         }
-        if (isAlphabet(primaryCode) && mPredictionOn) {
+        if (isAlphabet(primaryCode) && _mPredictionOn) {
             _mComposing.append((char) primaryCode);
-            getCurrentInputConnection().setComposingText(mComposing, 1);
-            updateShiftKeyState(getCurrentInputEditorInfo());
+            _imsExtend.getCurrentInputConnection().setComposingText(_mComposing, 1);
+            updateShiftKeyState(_imsExtend.getCurrentInputEditorInfo());
             updateCandidates();
         } else {
-            getCurrentInputConnection().commitText(
+        	_imsExtend.getCurrentInputConnection().commitText(
                     String.valueOf((char) primaryCode), 1);
         }
     }
 
     private void handleClose() {
-        commitTyped(getCurrentInputConnection());
-        requestHideSelf(0);
-        mInputView.closing();
+        commitTyped(_imsExtend.getCurrentInputConnection());
+        _myKeyboardView.setVisibility(View.VISIBLE);
     }
 
     private String getWordSeparators() {
@@ -641,16 +643,16 @@ public class Addi extends Activity implements OnKeyListener,OnKeyboardActionList
         if (_mCompletionOn && _mCompletions != null && index >= 0
                 && index < _mCompletions.length) {
             CompletionInfo ci = _mCompletions[index];
-            //getCurrentInputConnection().commitCompletion(ci);
+            _imsExtend.getCurrentInputConnection().commitCompletion(ci);
             if (_mCandidateView != null) {
                 _mCandidateView.clear();
             }
-            //updateShiftKeyState(getCurrentInputEditorInfo());
+            updateShiftKeyState(_imsExtend.getCurrentInputEditorInfo());
         } else if (_mComposing.length() > 0) {
             // If we were generating candidate suggestions for the current
             // text, we would commit one of them here.  But for this sample,
             // we will just commit the current text.
-            //?commitTyped(getCurrentInputConnection());
+            commitTyped(_imsExtend.getCurrentInputConnection());
         }
     }
     
@@ -724,6 +726,7 @@ public class Addi extends Activity implements OnKeyListener,OnKeyboardActionList
 
 	private void makeKeyboardView () {
 		_myKeyboard = new Keyboard(this,R.xml.qwerty);
+		_myKeyboardShifted = new Keyboard(this,R.xml.symbols_shift);
 		_myKeyboardView = new KeyboardView(this, null);
 		_myKeyboardView.setKeyboard(_myKeyboard);  
 		_myKeyboardView.setEnabled(true);  
@@ -737,9 +740,5 @@ public class Addi extends Activity implements OnKeyListener,OnKeyboardActionList
 		lp.gravity = Gravity.BOTTOM;
 		_myKeyboardView.setLayoutParams(lp);
 	}
-
-
-	
-	
 
 }
