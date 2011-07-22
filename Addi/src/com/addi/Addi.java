@@ -44,6 +44,7 @@ import com.addi.core.interpreter.*;
 
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
+import android.content.Context;
 import android.content.Intent; 
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -76,6 +77,7 @@ import android.view.View.OnTouchListener;
 import android.view.inputmethod.CompletionInfo;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputConnection;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -83,6 +85,7 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.content.*;
 
 public class Addi extends Activity implements OnKeyListener,OnKeyboardActionListener {	
 	private ArrayAdapter<String> _mOutArrayAdapter;
@@ -257,10 +260,13 @@ public class Addi extends Activity implements OnKeyListener,OnKeyboardActionList
 			@Override
 			public boolean onTouch(View view, MotionEvent event) {
 				enableKeyboardVisibility();
-				return false;
+				_mCmdEditText.onTouchEvent(event);
+				InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+				imm.hideSoftInputFromWindow(_mCmdEditText.getWindowToken(), 0);
+				return true;
 			}
 		});
-
+		
 		_mCmdEditText.setOnKeyListener(new OnKeyListener() {	   
 
 			@Override
@@ -487,7 +493,7 @@ public class Addi extends Activity implements OnKeyListener,OnKeyboardActionList
      * Helper to update the shift state of our keyboard based on the initial
      * editor state.
      */
-    private void updateShiftKeyState(EditorInfo attr) {
+/*    private void updateShiftKeyState(EditorInfo attr) {
         if (attr != null 
                 && mInputView != null && mQwertyKeyboard == mInputView.getKeyboard()) {
             int caps = 0;
@@ -497,7 +503,7 @@ public class Addi extends Activity implements OnKeyListener,OnKeyboardActionList
             }
             mInputView.setShifted(mCapsLock || caps != 0);
         }
-    }
+    }*/
     
     /**
      * Helper to determine if a given character code is alphabetic.
@@ -580,10 +586,10 @@ public class Addi extends Activity implements OnKeyListener,OnKeyboardActionList
         } else {
             keyDownUp(KeyEvent.KEYCODE_DEL);
         }
-        updateShiftKeyState(_imsExtend.getCurrentInputEditorInfo());
+        //updateShiftKeyState(_imsExtend.getCurrentInputEditorInfo());
     }
 
-    private void handleShift() {
+/*    private void handleShift() {
         if (mInputView == null) {
             return;
         }
@@ -602,18 +608,19 @@ public class Addi extends Activity implements OnKeyListener,OnKeyboardActionList
             mInputView.setKeyboard(mSymbolsKeyboard);
             mSymbolsKeyboard.setShifted(false);
         }
-    }
+    }*/
+    
     
     private void handleCharacter(int primaryCode, int[] keyCodes) {
-        if (isInputViewShown()) {
-            if (mInputView.isShifted()) {
-                primaryCode = Character.toUpperCase(primaryCode);
-            }
-        }
+        //if (isInputViewShown()) {
+        //    if (mInputView.isShifted()) {
+        //        primaryCode = Character.toUpperCase(primaryCode);
+        //    }
+        //}
         if (isAlphabet(primaryCode) && _mPredictionOn) {
             _mComposing.append((char) primaryCode);
             _imsExtend.getCurrentInputConnection().setComposingText(_mComposing, 1);
-            updateShiftKeyState(_imsExtend.getCurrentInputEditorInfo());
+            //updateShiftKeyState(_imsExtend.getCurrentInputEditorInfo());
             updateCandidates();
         } else {
         	_imsExtend.getCurrentInputConnection().commitText(
@@ -647,7 +654,7 @@ public class Addi extends Activity implements OnKeyListener,OnKeyboardActionList
             if (_mCandidateView != null) {
                 _mCandidateView.clear();
             }
-            updateShiftKeyState(_imsExtend.getCurrentInputEditorInfo());
+            //updateShiftKeyState(_imsExtend.getCurrentInputEditorInfo());
         } else if (_mComposing.length() > 0) {
             // If we were generating candidate suggestions for the current
             // text, we would commit one of them here.  But for this sample,
@@ -679,17 +686,17 @@ public class Addi extends Activity implements OnKeyListener,OnKeyboardActionList
     public void onRelease(int primaryCode) {
     }
     
-	@Override
+/*	@Override
 	public void onText(CharSequence arg0) {
 		// TODO Auto-generated method stub
-	}
+	}*/
 
 	@Override
 	public boolean onKey(View v, int keyCode, KeyEvent event) {    
 		return false;  
 	}  
 
-	@Override  
+/*	@Override  
 	public void onKey(int primaryCode, int[] keyCodes) {
 		char charKeyCode = (char)primaryCode;
 		String textToInsert = "" + charKeyCode;
@@ -699,7 +706,51 @@ public class Addi extends Activity implements OnKeyListener,OnKeyboardActionList
 				textToInsert, 0, textToInsert.length());
 		//for (int keyCode : keyCodes) {    
 		//}  
-	} 
+	} */
+	
+    // Implementation of KeyboardViewListener
+
+    public void onKey(int primaryCode, int[] keyCodes) {
+        if (isWordSeparator(primaryCode)) {
+            // Handle separator
+            if (_mComposing.length() > 0) {
+                commitTyped(_imsExtend.getCurrentInputConnection());
+            }
+            sendKey(primaryCode);
+            //updateShiftKeyState(_imsExtend.getCurrentInputEditorInfo());
+        } else if (primaryCode == Keyboard.KEYCODE_DELETE) {
+            handleBackspace();
+        //} else if (primaryCode == Keyboard.KEYCODE_SHIFT) {
+        //    handleShift();
+        } else if (primaryCode == Keyboard.KEYCODE_CANCEL) {
+            handleClose();
+            return;
+        //} else if (primaryCode == LatinKeyboardView.KEYCODE_OPTIONS) {
+        //    // Show a menu or somethin'
+        } else if ((primaryCode == Keyboard.KEYCODE_MODE_CHANGE) || (primaryCode == Keyboard.KEYCODE_SHIFT)) {
+            Keyboard current = _myKeyboardView.getKeyboard();
+            if (current == _myKeyboard) {
+                current = _myKeyboardShifted;
+            } else {
+                current = _myKeyboard;
+            }
+            _myKeyboardView.setKeyboard(current);
+        } else {
+            handleCharacter(primaryCode, keyCodes);
+        }
+    }
+
+    public void onText(CharSequence text) {
+        InputConnection ic = _imsExtend.getCurrentInputConnection();
+        if (ic == null) return;
+        ic.beginBatchEdit();
+        if (_mComposing.length() > 0) {
+            commitTyped(ic);
+        }
+        ic.commitText(text, 0);
+        ic.endBatchEdit();
+        //updateShiftKeyState(_imsExtend.getCurrentInputEditorInfo());
+    }
 
 	private void enableKeyboardVisibility() {    
 		int visibility = _myKeyboardView.getVisibility();  
