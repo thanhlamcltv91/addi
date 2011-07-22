@@ -33,6 +33,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.lang.ThreadGroup;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Vector;
 import java.lang.*;
 
@@ -57,6 +58,7 @@ import android.inputmethodservice.KeyboardView.OnKeyboardActionListener;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.text.InputType;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
@@ -70,7 +72,9 @@ import android.view.Window;
 import android.view.View.OnClickListener;
 import android.view.View.OnKeyListener;
 import android.view.View.OnTouchListener;
+import android.view.inputmethod.CompletionInfo;
 import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputConnection;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -99,6 +103,11 @@ public class Addi extends Activity implements OnKeyListener,OnKeyboardActionList
 	private  LinearLayout _mainView;
 	private KeyboardView _myKeyboardView;
 	private Keyboard _myKeyboard;
+	private String _mWordSeparators;
+	private boolean _mCompletionOn;
+	private CandidateView _mCandidateView;
+    private CompletionInfo[] _mCompletions;
+    private StringBuilder _mComposing = new StringBuilder();
 
 	// Need handler for callbacks to the UI thread
 	public final Handler _mHandler = new Handler() {
@@ -162,6 +171,9 @@ public class Addi extends Activity implements OnKeyListener,OnKeyboardActionList
 		res.updateConfiguration(conf, dm);
 
 		super.onCreate(savedInstanceState);
+		
+		_mWordSeparators = getResources().getString(R.string.word_separators);
+		
 		setContentView(R.layout.main);
 
 		_interpreter = new Interpreter(true);
@@ -242,7 +254,7 @@ public class Addi extends Activity implements OnKeyListener,OnKeyboardActionList
 			@Override
 			public boolean onTouch(View view, MotionEvent event) {
 				enableKeyboardVisibility();
-				return true;
+				return false;
 			}
 		});
 
@@ -456,34 +468,219 @@ public class Addi extends Activity implements OnKeyListener,OnKeyboardActionList
 			_mHandler.post(mUpdateResults);
 		}
 	};
+	
+    /**
+     * Helper function to commit any text being composed in to the editor.
+     */
+    private void commitTyped(InputConnection inputConnection) {
+        if (_mComposing.length() > 0) {
+            inputConnection.commitText(_mComposing, _mComposing.length());
+            _mComposing.setLength(0);
+            updateCandidates();
+        }
+    }
 
-	@Override  
-	public void swipeUp() {  
-	}  
+    /**
+     * Helper to update the shift state of our keyboard based on the initial
+     * editor state.
+     */
+    private void updateShiftKeyState(EditorInfo attr) {
+        if (attr != null 
+                && mInputView != null && mQwertyKeyboard == mInputView.getKeyboard()) {
+            int caps = 0;
+            EditorInfo ei = getCurrentInputEditorInfo();
+            if (ei != null && ei.inputType != EditorInfo.TYPE_NULL) {
+                caps = getCurrentInputConnection().getCursorCapsMode(attr.inputType);
+            }
+            mInputView.setShifted(mCapsLock || caps != 0);
+        }
+    }
+    
+    /**
+     * Helper to determine if a given character code is alphabetic.
+     */
+    private boolean isAlphabet(int code) {
+        if (Character.isLetter(code)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+    
+    /**
+     * Helper to send a key down / key up pair to the current editor.
+     */
+    private void keyDownUp(int keyEventCode) {
+        getCurrentInputConnection().sendKeyEvent(
+                new KeyEvent(KeyEvent.ACTION_DOWN, keyEventCode));
+        getCurrentInputConnection().sendKeyEvent(
+                new KeyEvent(KeyEvent.ACTION_UP, keyEventCode));
+    }
+    
+    /**
+     * Helper to send a character to the editor as raw key events.
+     */
+    private void sendKey(int keyCode) {
+        switch (keyCode) {
+            case '\n':
+                keyDownUp(KeyEvent.KEYCODE_ENTER);
+                break;
+            default:
+                if (keyCode >= '0' && keyCode <= '9') {
+                    keyDownUp(keyCode - '0' + KeyEvent.KEYCODE_0);
+                } else {
+                    getCurrentInputConnection().commitText(String.valueOf((char) keyCode), 1);
+                }
+                break;
+        }
+    }
+	
+    /**
+     * Update the list of available candidates from the current composing
+     * text.  This will need to be filled in by however you are determining
+     * candidates.
+     */
+    private void updateCandidates() {
+        if (!_mCompletionOn) {
+            if (_mComposing.length() > 0) {
+                ArrayList<String> list = new ArrayList<String>();
+                list.add(_mComposing.toString());
+                setSuggestions(list, true, true);
+            } else {
+                setSuggestions(null, false, false);
+            }
+        }
+    }
+    
+    public void setSuggestions(List<String> suggestions, boolean completions,
+            boolean typedWordValid) {
+        if (suggestions != null && suggestions.size() > 0) {
+            setCandidatesViewShown(true);
+        } else if (isExtractViewShown()) {
+            setCandidatesViewShown(true);
+        }
+        if (_mCandidateView != null) {
+            _mCandidateView.setSuggestions(suggestions, completions, typedWordValid);
+        }
+    }
+    
+    private void handleBackspace() {
+        final int length = _mComposing.length();
+        if (length > 1) {
+            _mComposing.delete(length - 1, length);
+            //?getCurrentInputConnection().setComposingText(mComposing, 1);
+            updateCandidates();
+        } else if (length > 0) {
+            _mComposing.setLength(0);
+            //?getCurrentInputConnection().commitText("", 0);
+            updateCandidates();
+        } else {
+            keyDownUp(KeyEvent.KEYCODE_DEL);
+        }
+        updateShiftKeyState(getCurrentInputEditorInfo());
+    }
 
-	@Override  
-	public void swipeRight() {  
-	}  
+    private void handleShift() {
+        if (mInputView == null) {
+            return;
+        }
+        
+        Keyboard currentKeyboard = mInputView.getKeyboard();
+        if (mQwertyKeyboard == currentKeyboard) {
+            // Alphabet keyboard
+            checkToggleCapsLock();
+            mInputView.setShifted(mCapsLock || !mInputView.isShifted());
+        } else if (currentKeyboard == mSymbolsKeyboard) {
+            mSymbolsKeyboard.setShifted(true);
+            mInputView.setKeyboard(mSymbolsShiftedKeyboard);
+            mSymbolsShiftedKeyboard.setShifted(true);
+        } else if (currentKeyboard == mSymbolsShiftedKeyboard) {
+            mSymbolsShiftedKeyboard.setShifted(false);
+            mInputView.setKeyboard(mSymbolsKeyboard);
+            mSymbolsKeyboard.setShifted(false);
+        }
+    }
+    
+    private void handleCharacter(int primaryCode, int[] keyCodes) {
+        if (isInputViewShown()) {
+            if (mInputView.isShifted()) {
+                primaryCode = Character.toUpperCase(primaryCode);
+            }
+        }
+        if (isAlphabet(primaryCode) && mPredictionOn) {
+            _mComposing.append((char) primaryCode);
+            getCurrentInputConnection().setComposingText(mComposing, 1);
+            updateShiftKeyState(getCurrentInputEditorInfo());
+            updateCandidates();
+        } else {
+            getCurrentInputConnection().commitText(
+                    String.valueOf((char) primaryCode), 1);
+        }
+    }
 
-	@Override  
-	public void swipeLeft() {  
-	}  
+    private void handleClose() {
+        commitTyped(getCurrentInputConnection());
+        requestHideSelf(0);
+        mInputView.closing();
+    }
 
-	@Override  
-	public void swipeDown() {  
-	}  
+    private String getWordSeparators() {
+        return _mWordSeparators;
+    }
+    
+    public boolean isWordSeparator(int code) {
+        String separators = getWordSeparators();
+        return separators.contains(String.valueOf((char)code));
+    }
 
-	@Override  
-	public void onText(CharSequence text) {  
-	}  
+    public void pickDefaultCandidate() {
+        pickSuggestionManually(0);
+    }
+    
+    public void pickSuggestionManually(int index) {
+        if (_mCompletionOn && _mCompletions != null && index >= 0
+                && index < _mCompletions.length) {
+            CompletionInfo ci = _mCompletions[index];
+            //getCurrentInputConnection().commitCompletion(ci);
+            if (_mCandidateView != null) {
+                _mCandidateView.clear();
+            }
+            //updateShiftKeyState(getCurrentInputEditorInfo());
+        } else if (_mComposing.length() > 0) {
+            // If we were generating candidate suggestions for the current
+            // text, we would commit one of them here.  But for this sample,
+            // we will just commit the current text.
+            //?commitTyped(getCurrentInputConnection());
+        }
+    }
+    
+    public void swipeRight() {
+        if (_mCompletionOn) {
+            pickDefaultCandidate();
+        }
+    }
+    
+    public void swipeLeft() {
+        handleBackspace();
+    }
 
-	@Override  
-	public void onRelease(int primaryCode) {  
-	}  
+    public void swipeDown() {
+        handleClose();
+    }
 
-	@Override  
-	public void onPress(int primaryCode) {  
-	}  
+    public void swipeUp() {
+    }
+    
+    public void onPress(int primaryCode) {
+    }
+    
+    public void onRelease(int primaryCode) {
+    }
+    
+	@Override
+	public void onText(CharSequence arg0) {
+		// TODO Auto-generated method stub
+	}
 
 	@Override
 	public boolean onKey(View v, int keyCode, KeyEvent event) {    
@@ -540,5 +737,9 @@ public class Addi extends Activity implements OnKeyListener,OnKeyboardActionList
 		lp.gravity = Gravity.BOTTOM;
 		_myKeyboardView.setLayoutParams(lp);
 	}
+
+
+	
+	
 
 }
