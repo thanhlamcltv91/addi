@@ -256,16 +256,16 @@ public class Addi extends Activity implements OnKeyListener,OnKeyboardActionList
 			}
 		});
 
-		_mCmdEditText.setOnTouchListener(new OnTouchListener() {
-			@Override
-			public boolean onTouch(View view, MotionEvent event) {
-				enableKeyboardVisibility();
-				_mCmdEditText.onTouchEvent(event);
-				InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
-				imm.hideSoftInputFromWindow(_mCmdEditText.getWindowToken(), 0);
-				return true;
-			}
-		});
+		//_mCmdEditText.setOnTouchListener(new OnTouchListener() {
+		//	@Override
+		//	public boolean onTouch(View view, MotionEvent event) {
+		//		enableKeyboardVisibility();
+		//		_mCmdEditText.onTouchEvent(event);
+		//		InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+		//		imm.hideSoftInputFromWindow(_mCmdEditText.getWindowToken(), 0);
+		//		return true;
+		//	}
+		//});
 		
 		_mCmdEditText.setOnKeyListener(new OnKeyListener() {	   
 
