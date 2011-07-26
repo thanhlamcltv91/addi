@@ -74,6 +74,8 @@ import android.view.Window;
 import android.view.View.OnClickListener;
 import android.view.View.OnKeyListener;
 import android.view.View.OnTouchListener;
+import android.view.View.OnFocusChangeListener;
+import android.view.WindowManager;
 import android.view.inputmethod.CompletionInfo;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputConnection;
@@ -89,7 +91,7 @@ import android.content.*;
 
 public class Addi extends Activity implements OnKeyListener,OnKeyboardActionListener {	
 	private ArrayAdapter<String> _mOutArrayAdapter;
-	private ListView _mOutView;
+	private ListViewExtend _mOutView;
 	public  EditText _mCmdEditText;
 	private Interpreter _interpreter;
 	private String _mResults = "";
@@ -185,7 +187,8 @@ public class Addi extends Activity implements OnKeyListener,OnKeyboardActionList
 		_interpreter = new Interpreter(true);
 		Interpreter.setCacheDir(getCacheDir());
 
-		_mOutView = (ListView)findViewById(R.id.out);
+		_mOutView = (ListViewExtend)findViewById(R.id.out);
+		_mOutView.setParent(this);
 		_mCmdEditText = (EditText)findViewById(R.id.edit_command);
 
 		_mainView = (LinearLayout)findViewById(R.id.wrapView);
@@ -256,14 +259,22 @@ public class Addi extends Activity implements OnKeyListener,OnKeyboardActionList
 			}
 		});
 
+		//_mCmdEditText.addTextChangedListener(watcher)
 		//_mCmdEditText.setOnTouchListener(new OnTouchListener() {
 		//	@Override
 		//	public boolean onTouch(View view, MotionEvent event) {
 		//		enableKeyboardVisibility();
 		//		_mCmdEditText.onTouchEvent(event);
-		//		InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
-		//		imm.hideSoftInputFromWindow(_mCmdEditText.getWindowToken(), 0);
-		//		return true;
+		//		getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+		//		return false;
+		//	}
+		//});
+		
+		
+		//_mCmdEditText.setOnFocusChangeListener (new OnFocusChangeListener() {
+		//	@Override
+		//	public void onFocusChange(View view, boolean hasFocus) {
+		//		getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 		//	}
 		//});
 		
@@ -736,20 +747,33 @@ public class Addi extends Activity implements OnKeyListener,OnKeyboardActionList
             }
             _myKeyboardView.setKeyboard(current);
         } else {
-            handleCharacter(primaryCode, keyCodes);
+            //handleCharacter(primaryCode, keyCodes);
+            sendKey(0,0,primaryCode);
         }
     }
 
     public void onText(CharSequence text) {
-        InputConnection ic = _imsExtend.getCurrentInputConnection();
-        if (ic == null) return;
-        ic.beginBatchEdit();
-        if (_mComposing.length() > 0) {
-            commitTyped(ic);
-        }
-        ic.commitText(text, 0);
-        ic.endBatchEdit();
+        //InputConnection ic = _imsExtend.getCurrentInputConnection();
+        //if (ic == null) return;
+        //ic.beginBatchEdit();
+        //if (_mComposing.length() > 0) {
+        //    commitTyped(ic);
+        //}
+        //ic.commitText(text, 0);
+        //ic.endBatchEdit();
         //updateShiftKeyState(_imsExtend.getCurrentInputEditorInfo());
+    	for (int i=0; i<text.length();i++) {
+    		sendKey(0,0,text.charAt(i));
+    	}
+    }
+    
+    void sendKey(int x, int y, int primaryCode) {
+    	char charKeyCode = (char)primaryCode;
+		String textToInsert = "" + charKeyCode;
+		int start = _mCmdEditText.getSelectionStart();
+		int end = _mCmdEditText.getSelectionEnd();
+		_mCmdEditText.getText().replace(Math.min(start, end), Math.max(start, end),
+				textToInsert, 0, textToInsert.length());
     }
 
 	private void enableKeyboardVisibility() {    
@@ -791,5 +815,7 @@ public class Addi extends Activity implements OnKeyListener,OnKeyboardActionList
 		lp.gravity = Gravity.BOTTOM;
 		_myKeyboardView.setLayoutParams(lp);
 	}
+	
+	native void keyEvent(int x, int y, int k);
 
 }
