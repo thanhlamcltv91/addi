@@ -91,8 +91,8 @@ import android.content.*;
 
 public class Addi extends Activity implements OnKeyListener,OnKeyboardActionListener {	
 	private ArrayAdapter<String> _mOutArrayAdapter;
-	private ListViewExtend _mOutView;
-	public  EditText _mCmdEditText;
+	private ListView _mOutView;
+	public  EditTextExtend _mCmdEditText;
 	private Interpreter _interpreter;
 	private String _mResults = "";
 	private String _prevCmd = "";	
@@ -106,7 +106,7 @@ public class Addi extends Activity implements OnKeyListener,OnKeyboardActionList
 	private ArrayList<String> _listLabels;
 	String _version = new String();
 	private  LinearLayout _mainView;
-	private KeyboardView _myKeyboardView;
+	public KeyboardView _myKeyboardView;
 	private Keyboard _myKeyboard;
 	private Keyboard _myKeyboardShifted;
 	private String _mWordSeparators;
@@ -116,6 +116,11 @@ public class Addi extends Activity implements OnKeyListener,OnKeyboardActionList
     private CompletionInfo[] _mCompletions;
     private StringBuilder _mComposing = new StringBuilder();
     private imsExtend _imsExtend = new imsExtend();
+    public int _oldStartSelection;
+    public int _oldEndSelection;
+    public int _startSelection;
+    public int _endSelection;
+    public boolean _selectionSaved = false;
 
 	// Need handler for callbacks to the UI thread
 	public final Handler _mHandler = new Handler() {
@@ -187,9 +192,9 @@ public class Addi extends Activity implements OnKeyListener,OnKeyboardActionList
 		_interpreter = new Interpreter(true);
 		Interpreter.setCacheDir(getCacheDir());
 
-		_mOutView = (ListViewExtend)findViewById(R.id.out);
-		_mOutView.setParent(this);
-		_mCmdEditText = (EditText)findViewById(R.id.edit_command);
+		_mOutView = (ListView)findViewById(R.id.out);
+		_mCmdEditText = (EditTextExtend)findViewById(R.id.edit_command);
+		_mCmdEditText.setParent(this);
 
 		_mainView = (LinearLayout)findViewById(R.id.wrapView);
 		
@@ -258,28 +263,30 @@ public class Addi extends Activity implements OnKeyListener,OnKeyboardActionList
 				return false;
 			}
 		});
-
+		
 		//_mCmdEditText.addTextChangedListener(watcher)
-		//_mCmdEditText.setOnTouchListener(new OnTouchListener() {
-		//	@Override
-		//	public boolean onTouch(View view, MotionEvent event) {
-		//		enableKeyboardVisibility();
-		//		_mCmdEditText.onTouchEvent(event);
-		//		getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
-		//		return false;
-		//	}
-		//});
+		_mCmdEditText.setOnTouchListener(new OnTouchListener() {
+			@Override
+			public boolean onTouch(View view, MotionEvent event) {
+				_oldStartSelection = _mCmdEditText.getSelectionStart();
+				_oldEndSelection = _mCmdEditText.getSelectionEnd();
+				return false;
+			}
+		});
 		
-		
-		//_mCmdEditText.setOnFocusChangeListener (new OnFocusChangeListener() {
-		//	@Override
-		//	public void onFocusChange(View view, boolean hasFocus) {
-		//		getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
-		//	}
-		//});
+		_mCmdEditText.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				_selectionSaved = true;
+				_startSelection = _mCmdEditText.getSelectionStart();
+				_endSelection = _mCmdEditText.getSelectionEnd();
+				InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+	            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+				//enableKeyboardVisibility();
+			}
+		});
 		
 		_mCmdEditText.setOnKeyListener(new OnKeyListener() {	   
-
 			@Override
 			public boolean onKey(View view, int keyCode, KeyEvent event) {
 				// TODO Auto-generated method stub
@@ -799,7 +806,7 @@ public class Addi extends Activity implements OnKeyListener,OnKeyboardActionList
 		}  
 	}
 
-	private void makeKeyboardView () {
+	public void makeKeyboardView () {
 		_myKeyboard = new Keyboard(this,R.xml.qwerty);
 		_myKeyboardShifted = new Keyboard(this,R.xml.symbols_shift);
 		_myKeyboardView = new KeyboardView(this, null);

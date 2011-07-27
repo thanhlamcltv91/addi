@@ -5,8 +5,7 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     >
-    <com.addi.ListViewExtend
-        android:id="@+id/out"
+    <ListView android:id="@+id/out"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:stackFromBottom="true"
@@ -25,7 +24,8 @@
         	android:text=">> "
         	android:textSize="14px"
         />
-        <EditText android:id="@+id/edit_command"
+        <com.addi.EditTextExtend 
+        	android:id="@+id/edit_command"
             style="?android:attr/textViewStyle"
             android:background="@null"
             android:textColor="@null"        
