@@ -118,9 +118,11 @@ public class Addi extends Activity implements OnKeyListener,OnKeyboardActionList
     private imsExtend _imsExtend = new imsExtend();
     public int _oldStartSelection;
     public int _oldEndSelection;
+    public boolean _oldSelectionSaved = false;
     public int _startSelection;
     public int _endSelection;
     public boolean _selectionSaved = false;
+    public boolean _selectionForwarded = false;
 
 	// Need handler for callbacks to the UI thread
 	public final Handler _mHandler = new Handler() {
@@ -259,6 +261,8 @@ public class Addi extends Activity implements OnKeyListener,OnKeyboardActionList
 		_mOutView.setOnTouchListener(new OnTouchListener() {
 			@Override
 			public boolean onTouch(View view, MotionEvent event) {
+				_selectionForwarded = true;
+				_oldSelectionSaved = true;
 				_mCmdEditText.dispatchTouchEvent(event);
 				return false;
 			}
@@ -277,7 +281,10 @@ public class Addi extends Activity implements OnKeyListener,OnKeyboardActionList
 		_mCmdEditText.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View view) {
-				_selectionSaved = true;
+				if (_selectionForwarded== false) {
+					_selectionSaved = true;
+				}
+				_selectionForwarded = false;
 				_startSelection = _mCmdEditText.getSelectionStart();
 				_endSelection = _mCmdEditText.getSelectionEnd();
 				InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
