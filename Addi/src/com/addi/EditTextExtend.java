@@ -14,11 +14,8 @@ public class EditTextExtend extends EditText {
     public EditTextExtend(Context context, AttributeSet atts)
     {
         super(context,atts);
+        _parent = (Addi)context;
     }
-	
-	public void setParent(Addi myParent) {
-		_parent = myParent;
-	}
 	
 	@Override
 	public void onSelectionChanged(int selStart, int selEnd) {
@@ -26,11 +23,11 @@ public class EditTextExtend extends EditText {
 			if (_parent._selectionSaved) {
 				_parent._selectionSaved = false;
 				_parent._oldSelectionSaved = false;
-				int visibility = _parent._myKeyboardView.getVisibility();
-				if (View.GONE == visibility) {
+				if (View.GONE == _parent._oldVisibility) {
 					//just show keyboard, don't change cursor position 
 					_parent._mCmdEditText.setSelection(_parent._oldStartSelection, _parent._oldEndSelection);
 					_parent._myKeyboardView.setVisibility(View.VISIBLE);
+					_parent._oldVisibility = _parent._myKeyboardView.getVisibility();
 				} else {
 					_parent._mCmdEditText.setSelection(_parent._startSelection, _parent._endSelection);
 				}
@@ -50,6 +47,8 @@ public class EditTextExtend extends EditText {
 	
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		_parent._selectionSaved = false;
+		_parent._oldSelectionSaved = false;
 	    if (keyCode == KeyEvent.KEYCODE_BACK  && event.getRepeatCount() == 0) {
 	    	int visibility = _parent._myKeyboardView.getVisibility();
 	    	if (View.VISIBLE == visibility) {

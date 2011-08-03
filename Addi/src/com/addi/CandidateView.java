@@ -22,6 +22,7 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
+import android.util.AttributeSet;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
@@ -69,8 +70,9 @@ public class CandidateView extends View {
      * @param context
      * @param attrs
      */
-    public CandidateView(Context context) {
-        super(context);
+    public CandidateView(Context context, AttributeSet atts)
+    {
+        super(context,atts);
         mSelectionHighlight = context.getResources().getDrawable(
                 android.R.drawable.list_selector_background);
         mSelectionHighlight.setState(new int[] {
@@ -120,7 +122,11 @@ public class CandidateView extends View {
         setVerticalScrollBarEnabled(false);
     }
     
-    /**
+    public CandidateView(Context context) {
+    	this(context, null);
+    }
+
+	/**
      * A connection back to the service to communicate with the text field
      * @param listener
      */
