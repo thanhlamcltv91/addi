@@ -707,5 +707,12 @@ public class Addi extends Activity {
 			break;  
 		}  
 	}
+	
+	@Override
+	public void onConfigurationChanged(Configuration newConfig)
+	{ 
+		super.onConfigurationChanged(newConfig);
+		_myKeyboardView.myOnConfigurationChanged(newConfig);
+	}
 
 }
