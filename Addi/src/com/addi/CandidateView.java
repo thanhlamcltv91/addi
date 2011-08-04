@@ -263,7 +263,7 @@ public class CandidateView extends View {
     }
 
     public void clear() {
-        mSuggestions = EMPTY_LIST;
+        mSuggestions = new ArrayList<String>();
         mTouchX = OUT_OF_BOUNDS;
         mSelectedIndex = -1;
         setVisibility(View.GONE);

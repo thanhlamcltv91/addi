@@ -65,10 +65,8 @@ public class KeyboardViewExtend extends KeyboardView implements KeyboardView.OnK
 		setKeyboard(_myKeyboard);  
 	}
 	
-	@Override
-	public void onConfigurationChanged(Configuration newConfig)
+	public void myOnConfigurationChanged(Configuration newConfig)
 	{ 
-		super.onConfigurationChanged(newConfig);
 		makeKeyboardView();
 	}
 	
