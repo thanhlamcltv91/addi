@@ -38,8 +38,6 @@ import java.util.Vector;
 import java.lang.*;
 
 import com.addi.R;
-import com.addi.R.id;
-import com.addi.R.layout;
 import com.addi.core.interpreter.*;
 
 import android.app.Activity;
@@ -48,46 +46,23 @@ import android.content.Context;
 import android.content.Intent; 
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.content.res.AssetManager;
 import android.content.res.Configuration;
 import android.content.res.Resources;
-import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.inputmethodservice.InputMethodService;
-import android.inputmethodservice.Keyboard;
-import android.inputmethodservice.KeyboardView;
-import android.inputmethodservice.KeyboardView.OnKeyboardActionListener;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.text.InputType;
 import android.util.DisplayMetrics;
-import android.util.Log;
-import android.view.Gravity;
-import android.view.KeyEvent;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.Window;
 import android.view.View.OnClickListener;
 import android.view.View.OnKeyListener;
 import android.view.View.OnTouchListener;
-import android.view.View.OnFocusChangeListener;
-import android.view.WindowManager;
 import android.view.inputmethod.CompletionInfo;
-import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputConnection;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.TextView;
-import android.widget.Toast;
-import android.content.*;
 
 public class Addi extends Activity {	
 	private ArrayAdapter<String> _mOutArrayAdapter;
@@ -105,7 +80,6 @@ public class Addi extends Activity {
 	private String _addiEditString;
 	private ArrayList<String> _listLabels;
 	String _version = new String();
-	private  LinearLayout _mainView;
 	public KeyboardViewExtend _myKeyboardView;
 	private String _mWordSeparators;
 	private boolean _mCompletionOn;
@@ -194,10 +168,8 @@ public class Addi extends Activity {
 
 		_mOutView = (ListView)findViewById(R.id.out);
 		_mCmdEditText = (EditTextExtend)findViewById(R.id.edit_command);
-
-		_mainView = (LinearLayout)findViewById(R.id.wrapView);
-		
 		_myKeyboardView = (KeyboardViewExtend)findViewById(R.id.keyboard);
+		_mCandidateView = (CandidateView)findViewById(R.id.candidate);
 
 		super.onCreate(savedInstanceState);
 
@@ -452,7 +424,6 @@ public class Addi extends Activity {
 	public void executeCmd(final String command, boolean displayCommand) {
 
 		if (_blockExecute == false) {
-			final Activity act = this;
 			if (displayCommand) {
 				_mOutArrayAdapter.add(">>  " + command);
 				_oldCommands.add(0, command);
@@ -657,9 +628,6 @@ public class Addi extends Activity {
         handleClose();
     }
 
-    public void swipeUp() {
-    }
-
 /*	@Override  
 	public void onKey(int primaryCode, int[] keyCodes) {
 		char charKeyCode = (char)primaryCode;
@@ -727,6 +695,7 @@ public class Addi extends Activity {
 		int end = _mCmdEditText.getSelectionEnd();
 		_mCmdEditText.getText().replace(Math.min(start, end), Math.max(start, end),
 				textToInsert, 0, textToInsert.length());
+		_mCandidateView.updateSuggestions(_mCmdEditText.getText().toString(),true,true);
     }
 
 	private void enableKeyboardVisibility() {    
@@ -738,20 +707,5 @@ public class Addi extends Activity {
 			break;  
 		}  
 	}
-
-	private void toggleKeyboardVisibility() {   
-		int visibility = _myKeyboardView.getVisibility();  
-		switch (visibility) {  
-		case View.VISIBLE:  
-			_myKeyboardView.setVisibility(View.INVISIBLE);  
-			break;  
-		case View.GONE:  
-		case View.INVISIBLE:  
-			_myKeyboardView.setVisibility(View.VISIBLE);  
-			break;  
-		}  
-	}
-
-
 
 }
