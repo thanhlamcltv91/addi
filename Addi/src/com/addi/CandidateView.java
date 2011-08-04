@@ -28,7 +28,9 @@ import android.view.MotionEvent;
 import android.view.View;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Vector;
 
 public class CandidateView extends View {
 
@@ -64,6 +66,9 @@ public class CandidateView extends View {
     private int mTotalWidth;
     
     private GestureDetector mGestureDetector;
+    
+
+    private Vector<String> mPossibleCompletions = new Vector<String>();
 
     /**
      * Construct a CandidateView for showing suggested words for completion.
@@ -73,6 +78,7 @@ public class CandidateView extends View {
     public CandidateView(Context context, AttributeSet atts)
     {
         super(context,atts);
+        mService = (Addi)context;
         mSelectionHighlight = context.getResources().getDrawable(
                 android.R.drawable.list_selector_background);
         mSelectionHighlight.setState(new int[] {
@@ -120,18 +126,9 @@ public class CandidateView extends View {
         setWillNotDraw(false);
         setHorizontalScrollBarEnabled(false);
         setVerticalScrollBarEnabled(false);
-    }
-    
-    public CandidateView(Context context) {
-    	this(context, null);
-    }
-
-	/**
-     * A connection back to the service to communicate with the text field
-     * @param listener
-     */
-    public void setService(Addi listener) {
-        mService = listener;
+        
+        mPossibleCompletions.add("sin()");
+        mPossibleCompletions.add("sinh()");
     }
     
     @Override
@@ -242,11 +239,19 @@ public class CandidateView extends View {
         invalidate();
     }
     
-    public void setSuggestions(List<String> suggestions, boolean completions,
-            boolean typedWordValid) {
+    public void updateSuggestions(String partialText, boolean completions, boolean typedWordValid) {
+    	Iterator completionIterator;
+    	String tempString;
         clear();
-        if (suggestions != null) {
-            mSuggestions = new ArrayList<String>(suggestions);
+        if (partialText.length() > 0) {
+        	completionIterator = mPossibleCompletions.iterator();
+        	while (completionIterator.hasNext()) {
+        		tempString = (String)completionIterator.next();
+        		if (tempString.startsWith(partialText)) {
+        			mSuggestions.add(tempString);
+        			setVisibility(View.VISIBLE);
+        		}
+        	}
         }
         mTypedWordValid = typedWordValid;
         scrollTo(0, 0);
@@ -261,6 +266,7 @@ public class CandidateView extends View {
         mSuggestions = EMPTY_LIST;
         mTouchX = OUT_OF_BOUNDS;
         mSelectedIndex = -1;
+        setVisibility(View.GONE);
         invalidate();
     }
     
