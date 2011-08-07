@@ -708,6 +708,10 @@ public class Addi extends Activity {
 		}  
 	}
 	
+	public void selectionChosen(String selection) {
+		
+	}
+	
 	@Override
 	public void onConfigurationChanged(Configuration newConfig)
 	{ 
