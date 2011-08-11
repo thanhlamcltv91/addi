@@ -89,6 +89,9 @@ public class IfThenOperatorToken extends CommandToken implements Collection
      */
     public OperandToken evaluate(Token[] operands, GlobalValues globals)
     {
+    	if (breakHit || continueHit)
+    		return null;
+    	
     	ErrorLogger.debugLine("Parser: IfThen: evaluate "+conditions.size());
 
     	OperandToken result = null;

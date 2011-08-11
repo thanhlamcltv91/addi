@@ -645,7 +645,12 @@ public class LexicalAnalyser implements TokenConstants, ErrorCodes
             }
             else if(reservedWords.indexOf(" "+name+" ") != -1)
             {
-                nextToken = new FunctionToken(name);
+            	if (name.equals("break")) 
+            		nextToken = new FunctionToken("_break");
+            	else if (name.equals("continue"))
+            		nextToken = new FunctionToken("_continue");
+            	else
+            		nextToken = new FunctionToken(name);
                 //ErrorLogger.debugLine("LexAna: found reserved func. word "+name);
             }
             else if(inspectNextChar() == '(')

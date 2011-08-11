@@ -154,6 +154,9 @@ public class CellArrayToken extends DataToken
      */
     public OperandToken evaluate(Token[] operands, GlobalValues globals)
     {
+    	if (breakHit || continueHit)
+    		return null;
+    	
 		ErrorLogger.debugLine("CellArray evaluate size: "+sizeY+" "+sizeX);
 		
         // if cell array is empty return itself

@@ -36,6 +36,8 @@ public class ColonOperatorToken extends BinaryOperatorToken
     /**evaluates the operator*/
     public OperandToken evaluate(Token[] operands, GlobalValues globals)
     {
+    	if (breakHit || continueHit)
+    		return null;
 
 		double x1;      // minimum
 		double x2;      // maximum

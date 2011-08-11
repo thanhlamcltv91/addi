@@ -51,6 +51,9 @@ public class CaseToken extends CommandToken
     @return the result of the test as an OperandToken*/
     public OperandToken evaluate(Token[] operands, GlobalValues globals)
     {
+    	if (breakHit || continueHit)
+    		return null;
+    	
     	if(value != null)
     	{
 	    	Expression exp = new Expression(new RelationOperatorToken('e'), 

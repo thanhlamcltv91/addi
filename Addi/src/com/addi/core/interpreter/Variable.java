@@ -67,7 +67,7 @@ public class Variable extends RootObject
     public OperandToken assign(OperandToken _data)
     {
         if (_data!=null)
-            ErrorLogger.debugLine("Variable assign "+_data.toString());
+            ErrorLogger.debugLine("Variable assign "); //+_data.toString());
         else
             ErrorLogger.debugLine("Variable assign NULL");
 	   

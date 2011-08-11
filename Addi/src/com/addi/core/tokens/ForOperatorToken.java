@@ -97,7 +97,12 @@ public class ForOperatorToken extends CommandToken
      */
     public OperandToken evaluate(Token[] operands, GlobalValues globals)
     {
+    	if (breakHit || continueHit)
+    		return null;
+    	
 		ErrorLogger.debugLine("Parser: For: evaluate");
+		
+		loopDepth++;
 
 		if(forRelation == null)
 		{
@@ -110,6 +115,11 @@ public class ForOperatorToken extends CommandToken
 			
 			while(true)
 			{
+				continueHit = false;
+				if (breakHit) {
+					breakHit = false;
+					return null;
+				}
 	
 				// Check condition of For(...)
 				OperandToken relationLine = ((OperandToken)forRelation.clone());
@@ -180,6 +190,10 @@ public class ForOperatorToken extends CommandToken
 
 			} // end while
 		}
+		
+		loopDepth--;
+		breakHit = false;
+		continueHit = false;
 
 		return null;
     }
@@ -244,6 +258,12 @@ public class ForOperatorToken extends CommandToken
 					{
 						for(int xx = 0; xx < sizeX; xx++)
 						{
+							continueHit = false;
+							if (breakHit) {
+								breakHit = false;
+								return;
+							}
+							
 							DoubleNumberToken value = new DoubleNumberToken(values[yy][xx]);
 							
 							variable.assign(value);

@@ -48,10 +48,20 @@ public class WhileOperatorToken extends CommandToken
      * */
     public OperandToken evaluate(Token[] operands, GlobalValues globals)
     {
+    	if (breakHit || continueHit)
+    		return null;
+    	
 		ErrorLogger.debugLine("Parser: While: evaluate");
+		
+		loopDepth++;
 	
 		while(true)
 		{
+			continueHit = false;
+			if (breakHit) {
+				breakHit = false;
+				return null;
+			}
 
 			// Check condition of while(...)
 			OperandToken relationLine = ((OperandToken)whileRelation.clone());
@@ -115,6 +125,10 @@ ErrorLogger.debugLine("line = " + relationLine.toString());
                 Errors.throwMathLibException("While: unknown token");
 
         } // end while
+		
+		loopDepth--;
+		breakHit = false;
+		continueHit = false;
 
 		return null;
     }

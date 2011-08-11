@@ -42,6 +42,9 @@ public class AssignmentOperatorToken extends BinaryOperatorToken
      */
     public OperandToken evaluate(Token[] operands, GlobalValues globals)
     {
+    	if (breakHit || continueHit)
+    		return null;
+    	
         OperandToken result = null;
 
         if (operands.length != 2)

@@ -49,7 +49,10 @@ public class DelimiterToken extends OperandToken implements TokenConstants
 	@param operands = the delimiters operands
 	@return the delimter token as an OperandToken*/
     public OperandToken evaluate(Token[] operands, GlobalValues globals)
-    {   		
+    {   
+    	if (breakHit || continueHit)
+    		return null;
+    	
     	return this;
     }
 

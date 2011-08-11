@@ -69,6 +69,9 @@ public class SwitchToken extends CommandToken
      */
     public OperandToken evaluate(Token[] operands, GlobalValues globals)
     {
+    	if (breakHit || continueHit)
+    		return null;
+    	
     	OperandToken result = null;
     	
     	int pos = 0;

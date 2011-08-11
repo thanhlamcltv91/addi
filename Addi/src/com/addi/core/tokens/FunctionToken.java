@@ -127,6 +127,9 @@ public class FunctionToken extends OperandToken
      */
     public OperandToken evaluate(Token[] _operands, GlobalValues globals)
     {
+    	if (breakHit || continueHit)
+    		return null;
+    	
         Function     function = null;
         OperandToken result   = null;
         ErrorLogger.debugLine("FunctionToken: eval "+name);

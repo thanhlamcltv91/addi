@@ -31,6 +31,9 @@ public class DotOperatorToken extends OperatorToken
     /**evaluates the operator*/
     public OperandToken evaluate(Token[] operands, GlobalValues globals)
     {
+    	if (breakHit || continueHit)
+    		return null;
+    	
     	ErrorLogger.debugLine("DotOperatorToken: evaluate");
         
         //  syntax is <left><dot><right>  (e.g. a.b)

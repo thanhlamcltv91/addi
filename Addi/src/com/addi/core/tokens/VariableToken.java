@@ -152,6 +152,9 @@ public class VariableToken extends DataToken implements ErrorCodes
     if the variable has not been inisitalised then it returns the variable*/
     public OperandToken evaluate(Token[] operands, GlobalValues globals)
     {
+    	if (breakHit || continueHit)
+    		return null;
+    	
 		ErrorLogger.debugLine("VariableToken: eval: " + name);
         //ErrorLogger.debugLine("VariableToken: evalG: " + globals);
         

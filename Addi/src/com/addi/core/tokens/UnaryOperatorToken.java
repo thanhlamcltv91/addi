@@ -40,6 +40,9 @@ public class UnaryOperatorToken extends OperatorToken
     @return the result as an OperandToken*/
     public OperandToken evaluate(Token[] operands, GlobalValues globals)
     {
+    	if (breakHit || continueHit)
+    		return null;
+    	
         OperandToken result = null;
 
 		OperandToken operand = ((OperandToken)operands[0]);
