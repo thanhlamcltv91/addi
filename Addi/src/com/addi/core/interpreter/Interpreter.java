@@ -152,6 +152,10 @@ public class Interpreter
     	_act = act;
     	_assetManager = _act.getResources().getAssets();
     	
+    	Token.breakHit = false;
+    	Token.continueHit = false;
+    	Token.loopDepth = 0;
+    	
     	expression = expression.replace("\\n", "\n");
     	
         String answer = "";

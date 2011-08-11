@@ -821,6 +821,9 @@ public class Int8NumberToken extends NumberToken
     /**Evaluate the token. This causes it to return itself*/
     public OperandToken evaluate(Token[] operands)
     {
+    	if (breakHit || continueHit)
+    		return null;
+    	
         return this;    
     }
 

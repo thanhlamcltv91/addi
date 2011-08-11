@@ -221,6 +221,9 @@ public class Expression extends OperandToken
     @return the result of the expression as an OperandToken*/
     public OperandToken evaluate(Token[] ops, GlobalValues globals)
     {
+    	if (breakHit || continueHit)
+    		return null;
+    	
         OperandToken result = null;
         ErrorLogger.debugLine("Expression: evaluate " + toString());
         

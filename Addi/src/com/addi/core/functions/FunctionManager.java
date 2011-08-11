@@ -647,7 +647,9 @@ public class FunctionManager {
         functions.put("euler","com.addi.toolbox.funfun");
         functions.put("eulerm","toolbox/funfun/eulerm.m");
         functions.put("feval","com.addi.toolbox.funfun");
+        functions.put("_break","com.addi.toolbox.general");
         functions.put("_class","com.addi.toolbox.general");
+        functions.put("_continue","com.addi.toolbox.general");
         functions.put("angle","com.addi.toolbox.general");
         functions.put("beep","com.addi.toolbox.general");
         functions.put("bench","toolbox/general/bench.m");

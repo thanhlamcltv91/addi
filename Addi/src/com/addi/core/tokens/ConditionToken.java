@@ -64,6 +64,9 @@ public class ConditionToken extends OperandToken
      * @return the result of the test as an OperandToken*/
     public OperandToken evaluate(Token[] operands, GlobalValues globals)
     {
+    	if (breakHit || continueHit)
+    		return null;
+    	
     	if(condition != null)
     	{
 	    	ErrorLogger.debugLine("ConditionToken: testing " + condition.toString());

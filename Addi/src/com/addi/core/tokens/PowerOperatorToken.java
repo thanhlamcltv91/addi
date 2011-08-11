@@ -36,6 +36,9 @@ public class PowerOperatorToken extends BinaryOperatorToken
     @return the result as an OperandToken*/
     public OperandToken evaluate(Token[] operands, GlobalValues globals)
     {
+    	if (breakHit || continueHit)
+    		return null;
+    	
         OperandToken result = null;
 
         OperandToken left = ((OperandToken)operands[0]); 

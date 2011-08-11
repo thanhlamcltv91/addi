@@ -65,6 +65,9 @@ public class MatrixToken extends DataToken
     @return the matrix token itself*/
     public OperandToken evaluate(Token[] operands, GlobalValues globals)
     {
+    	if (breakHit || continueHit)
+    		return null;
+    	
 		ErrorLogger.debugLine("Matrix evaluate size: "+sizeY+" "+sizeX);
 		
         int sizeOfRowY  = 0;    // number or rows of each element in a row must be equal

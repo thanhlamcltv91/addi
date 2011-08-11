@@ -71,6 +71,8 @@ public class RelationOperatorToken extends BinaryOperatorToken
      */
     public OperandToken evaluate(Token[] operands, GlobalValues globals)
     {
+    	if (breakHit || continueHit)
+    		return null;
 
 		ErrorLogger.debugLine("RelationToken: evaluate");
 

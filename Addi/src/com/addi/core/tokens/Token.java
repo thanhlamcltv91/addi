@@ -32,6 +32,10 @@ abstract public class Token extends RootObject implements TokenConstants
        (e.g. a=2+3, then a=5 is shown at the prompt. a=2+3; then nothing is
        displayed at the prompt */
     private boolean displayResultSwitch = false;
+    
+    public static int loopDepth = 0;
+    public static boolean breakHit = false;
+    public static boolean continueHit = false;
 
     /**Default Constructor - create a token with the type not set
      */

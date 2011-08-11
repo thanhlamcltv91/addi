@@ -41,6 +41,9 @@ public class AddSubOperatorToken extends BinaryOperatorToken
      */
     public OperandToken evaluate(Token[] operands, GlobalValues globals)
     {
+    	if (breakHit || continueHit)
+    		return null;
+    	
         OperandToken result = null;
 
         OperandToken left = ((OperandToken)operands[0]);       
