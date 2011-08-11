@@ -1500,7 +1500,8 @@ public class Parser extends RootObject implements TokenConstants, ErrorCodes
             // e.g. for i=2:5,
             // e.g. for i=2:5;
             // e.g. for i=2:5\n
-            if (!isExpectedDelimiter(peekNextToken(), ';' ) &&
+            if ((peekNextToken() != null) &&
+            	!isExpectedDelimiter(peekNextToken(), ';' ) &&
                 !isExpectedDelimiter(peekNextToken(), ',' ) &&
                 !isExpectedDelimiter(peekNextToken(), '\n')    ) 
                 Errors.throwParserException("For: missing ; , \\n");
