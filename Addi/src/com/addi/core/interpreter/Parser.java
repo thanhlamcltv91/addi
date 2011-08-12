@@ -805,24 +805,24 @@ public class Parser extends RootObject implements TokenConstants, ErrorCodes
             return tree;
         
         Expression    leftExpr   = (Expression)leftSide;
-        OperatorToken leftBinary = (OperatorToken)leftExpr.getData();
+        OperatorToken leftOperator = (OperatorToken)leftExpr.getData();
         
-        if (leftBinary == null)
+        if (leftOperator == null)
             return tree;
             
-        if (!(leftBinary instanceof BinaryOperatorToken))
+        if (!((leftOperator instanceof BinaryOperatorToken) || (leftOperator instanceof UnaryOperatorToken)))
             return tree;
             
         /* only priority swapping for binary operators + - * / ^ < > ... */
         // 1+2*3+4*5 should be parsed into ((1+(2*3))+(4*5))
         // 1/2-1+9   should be parsed into (((1 / 2) - 1) + 9)
-        ErrorLogger.debugLine("priority ("+ leftBinary.getPriority()   +
+        ErrorLogger.debugLine("priority ("+ leftOperator.getPriority()   +
                               ","         + operator.getPriority() +
                               ") <"       + leftSide.toString()  +
                               "> "        + operator.toString() +
                               " <"        + rightSide.toString() + ">");
 
-        if (leftBinary.getPriority() < operator.getPriority())
+        if (leftOperator.getPriority() < operator.getPriority())
         {
             // something like 2+3*4 : <2+3> * <4>    
             // change to              <2>   + <3*4>
@@ -844,12 +844,12 @@ public class Parser extends RootObject implements TokenConstants, ErrorCodes
             // Check next token if it is a binary operator and call a parse() method 
             // until priority of next operator is lower/equals as the calling operator
             // (e.g. 1+2 * 3 <+> .... priority of <+> is lower than "*")
-        	if (peekNextToken() instanceof BinaryOperatorToken)
+        	if (peekNextToken() instanceof OperatorToken)
             {
                 
-                BinaryOperatorToken nextBinary = (BinaryOperatorToken)peekNextToken();
+                OperatorToken nextOperator = (OperatorToken)peekNextToken();
                 
-                if (operator.getPriority() <= nextBinary.getPriority())
+                if (operator.getPriority() <= nextOperator.getPriority())
                 {
                 
                     // the current arithmetic expression is not terminated yet
@@ -862,7 +862,7 @@ public class Parser extends RootObject implements TokenConstants, ErrorCodes
             }
                     
             // create tree  again 
-            tree  = new Expression((OperatorToken)leftBinary,
+            tree  = new Expression((OperatorToken)leftOperator,
                                     leftExpr.getLeft(),
                                     newRight);
         }
@@ -902,38 +902,68 @@ public class Parser extends RootObject implements TokenConstants, ErrorCodes
 			FunctionToken func = new FunctionToken("not");
 			func.setOperand(operand);
     		return func;	
-    	}
+    	} else {
     	
-    	// e.g. 3! 
-        //get left parameter from operandStack                    
-        OperandToken leftSide = (OperandToken)operandStack.pop(); 
-    
-        Expression tree = null;
-        
-       /* if ((leftSide instanceof DoubleNumberToken)   ||
-            (leftSide instanceof MatrixToken)   ||
-            (leftSide instanceof VariableToken) ||
-            (leftSide instanceof FunctionToken)    )
-        {*/
-            // (e.g. 3! a! a++ a--)
-            tree = new Expression((UnaryOperatorToken)nextToken, leftSide);
-        /*}
-        else if (leftSide instanceof Expression)
-        {
-            Expression leftExpr = (Expression)leftSide;
-            
-            Expression newRightOperand = new Expression((UnaryOperatorToken)nextToken, 
-                                                        leftExpr.getRight());
-            tree = new Expression(leftExpr.getData(),
-                                  leftExpr.getLeft(),
-                                  newRightOperand);
-                                             
-        }
-        else
-            Errors.throwParserException(" Unary operator");
-         */           
-        return tree;
-    } // end parseBinaryOperator
+	    	// operator for this operation 
+	        OperatorToken operator = (OperatorToken)nextToken;
+	        
+	        //get left parameter from operandStack 
+	        OperandToken leftSide = (OperandToken)operandStack.pop();          
+	
+	        // create new expression 
+	        Expression tree = new Expression(operator, leftSide);
+	           
+	        // Check if priority is correct. e.g.: 2*3+4 => (2*3)+4
+	        // (left side and right side might be changed 
+	        //   if the operators (+-*^!') have different priorities)
+	        if (!(leftSide instanceof Expression))
+	            return tree;
+	        
+	        Expression    leftExpr   = (Expression)leftSide;
+	        OperatorToken leftOperator = (OperatorToken)leftExpr.getData();
+	        
+	        if (leftOperator == null)
+	            return tree;
+	            
+	        if (!((leftOperator instanceof BinaryOperatorToken) || (leftOperator instanceof UnaryOperatorToken)))
+	            return tree;
+	            
+	        /* only priority swapping for binary operators + - * / ^ < > ... */
+	        // 1+2*3+4*5 should be parsed into ((1+(2*3))+(4*5))
+	        // 1/2-1+9   should be parsed into (((1 / 2) - 1) + 9)
+//	        ErrorLogger.debugLine("priority ("+ leftOperator.getPriority()   +
+//	                              ","         + operator.getPriority() +
+//	                              ") <"       + leftSide.toString()  +
+//	                              "> "        + operator.toString() +
+//	                              " <"        + rightSide.toString() + ">");
+	
+	        if (leftOperator.getPriority() < operator.getPriority())
+	        {
+	            // something like 2+3*4 : <2+3> * <4>    
+	            // change to              <2>   + <3*4>
+	            // left:       +
+	            //         <2>    <3>     
+	            ErrorLogger.debugLine("swapping priorities");
+	            OperandToken newLeft = leftExpr.getRight();
+	                        
+	            //already parsed right side is first operand of new right
+	            //operandStack.push(rightSide);
+	            
+	            //parse right
+	            
+	            //OperandToken newRight = (OperandToken)operandStack.pop();
+	            OperandToken newRight = new Expression((OperatorToken)operator,
+	                                                 leftExpr.getRight()); 
+	                    
+	            // create tree  again 
+	            tree  = new Expression((OperatorToken)leftOperator,
+	                                    leftExpr.getLeft(),
+	                                    newRight);
+	        }
+	        
+	        return tree; 
+    	}
+    } // end parseUnaryOperator
 
 
     /***********************************************************************************/
