@@ -1220,7 +1220,7 @@ public class Parser extends RootObject implements TokenConstants, ErrorCodes
         //                      if(3<5)  some_commands  endif
         ErrorLogger.debugLine("Parser: if-command");
         OperandToken ifCode = parseCommandList();       
-        ErrorLogger.debugLine("Parser: if command: "+ifCode.toString());
+        //ErrorLogger.debugLine("Parser: if command: "+ifCode.toString());
         
         // If(..) {...}
         IfThenOperatorToken ifToken = new IfThenOperatorToken(ifRelation, ifCode);
@@ -1230,7 +1230,7 @@ public class Parser extends RootObject implements TokenConstants, ErrorCodes
         {
             
             Token nextToken = peekNextToken();
-            ErrorLogger.debugLine("Parser: if "+nextToken);
+            //ErrorLogger.debugLine("Parser: if "+nextToken);
             
             if(isExpectedDelimiter(peekNextToken(), "elseif"))
             {
@@ -1258,7 +1258,7 @@ public class Parser extends RootObject implements TokenConstants, ErrorCodes
                 //                      elseif(3<5)  some_commands  endif
                 OperandToken elseIfCode = parseCommandList();       
               
-                ErrorLogger.debugLine("Parser: elseIf code: "+elseIfCode.toString());
+                //ErrorLogger.debugLine("Parser: elseIf code: "+elseIfCode.toString());
                 
                 ifToken.addCondition(elseIfRelation, elseIfCode);
             }
@@ -1272,7 +1272,7 @@ public class Parser extends RootObject implements TokenConstants, ErrorCodes
                 // get commands inside {...}
                 OperandToken elseCode = parseCommandList();       
                 
-                ErrorLogger.debugLine("Parser: else code: "+elseCode.toString());
+                //ErrorLogger.debugLine("Parser: else code: "+elseCode.toString());
 
                 ifToken.addCondition(null, elseCode);
             }
