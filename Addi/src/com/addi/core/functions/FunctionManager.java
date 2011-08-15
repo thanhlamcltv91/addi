@@ -659,12 +659,14 @@ public class FunctionManager {
         functions.put("bitxor","com.addi.toolbox.general");
         functions.put("cell","com.addi.toolbox.general");
         functions.put("class","toolbox/general/class.m");
+        functions.put("clc","com.addi.toolbox.general");
         functions.put("clear","com.addi.toolbox.general");
         functions.put("clock","com.addi.toolbox.general");
         functions.put("combinations","com.addi.toolbox.general");
         functions.put("complex","com.addi.toolbox.general");
         functions.put("conj","com.addi.toolbox.general");
         functions.put("diff","toolbox/general/diff.m");
+        functions.put("exit","com.addi.toolbox.general");
         functions.put("factor","com.addi.toolbox.general");
         functions.put("false","toolbox/general/false.m");
         functions.put("fft","com.addi.toolbox.general");
@@ -723,6 +725,7 @@ public class FunctionManager {
         functions.put("performfunction","com.addi.toolbox.general");
         functions.put("permutations","com.addi.toolbox.general");
         functions.put("primes","com.addi.toolbox.general");
+        functions.put("quit","com.addi.toolbox.general");
         functions.put("rand","com.addi.toolbox.general");
         functions.put("randn","com.addi.toolbox.general");
         functions.put("randperm","toolbox/general/randperm.m");
