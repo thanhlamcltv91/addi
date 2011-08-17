@@ -22,6 +22,7 @@ import com.addi.core.interpreter.Errors;
 import com.addi.core.tokens.CharToken;
 import com.addi.core.tokens.DataToken;
 import com.addi.core.tokens.NumberToken;
+import com.addi.core.tokens.LogicalToken;
 import com.addi.core.tokens.OperandToken;
 
 
@@ -741,6 +742,9 @@ public class DoubleNumberToken extends NumberToken
      */
     public boolean equals(Object arg)
     {
+    	if (arg instanceof LogicalToken)
+    		arg = ((LogicalToken)arg).getDoubleNumberToken();
+    	
         if(arg instanceof DoubleNumberToken)
         {
             DoubleNumberToken nArg = (DoubleNumberToken)arg;
@@ -785,6 +789,9 @@ public class DoubleNumberToken extends NumberToken
     public OperandToken add(OperandToken arg)
     {
 
+    	if (arg instanceof LogicalToken)
+    		arg = ((LogicalToken)arg).getDoubleNumberToken();
+    	
         if(arg instanceof DoubleNumberToken)
         {
 
@@ -875,6 +882,9 @@ public class DoubleNumberToken extends NumberToken
      */
     public OperandToken subtract(OperandToken arg)
     {
+    	if (arg instanceof LogicalToken)
+    		arg = ((LogicalToken)arg).getDoubleNumberToken();
+    	
         if(!(arg instanceof DoubleNumberToken))
             Errors.throwMathLibException("DoubleNumberToken: substract: no number");
 
@@ -941,6 +951,9 @@ public class DoubleNumberToken extends NumberToken
      */
     public OperandToken power(OperandToken arg)
     {
+    	if (arg instanceof LogicalToken)
+    		arg = ((LogicalToken)arg).getDoubleNumberToken();
+    	
         // works only on numbers
         if(!(arg instanceof DoubleNumberToken))
             Errors.throwMathLibException("DoubleNumberToken: powerOf: no number");
@@ -1077,6 +1090,9 @@ public class DoubleNumberToken extends NumberToken
      */
     public OperandToken mPower(OperandToken arg)
     {
+    	if (arg instanceof LogicalToken)
+    		arg = ((LogicalToken)arg).getDoubleNumberToken();
+    	
         // works only on numbers
         if(!(arg instanceof DoubleNumberToken))
             Errors.throwMathLibException("DoubleNumberToken: mPower: no number");
@@ -1133,6 +1149,9 @@ public class DoubleNumberToken extends NumberToken
      */
     public OperandToken multiply(OperandToken arg) 
     {
+    	if (arg instanceof LogicalToken)
+    		arg = ((LogicalToken)arg).getDoubleNumberToken();
+    	
         if(!(arg instanceof DoubleNumberToken))
             Errors.throwMathLibException("DoubleNumberToken: multiply: no number");
 
@@ -1226,6 +1245,9 @@ public class DoubleNumberToken extends NumberToken
      */
     public OperandToken divide(OperandToken arg)
     {       
+    	if (arg instanceof LogicalToken)
+    		arg = ((LogicalToken)arg).getDoubleNumberToken();
+    	
         if(!(arg instanceof DoubleNumberToken))
             Errors.throwMathLibException("DoubleNumberToken: divide: no number");
 
@@ -1345,6 +1367,9 @@ public class DoubleNumberToken extends NumberToken
     @return the result as an OperandToken*/
     public OperandToken scalarMultiply(OperandToken arg)
     {
+    	if (arg instanceof LogicalToken)
+    		arg = ((LogicalToken)arg).getDoubleNumberToken();
+    	
         if(!(arg instanceof DoubleNumberToken))
             Errors.throwMathLibException("DoubleNumberToken: scalar multiply: no number");
 
@@ -1403,6 +1428,8 @@ public class DoubleNumberToken extends NumberToken
     @return the result as an OperandToken*/
     public OperandToken scalarDivide(OperandToken arg)
     {
+    	if (arg instanceof LogicalToken)
+    		arg = ((LogicalToken)arg).getDoubleNumberToken();
             
         if(!(arg instanceof DoubleNumberToken))
             Errors.throwMathLibException("DoubleNumberToken: scalar divide: no number");
@@ -1479,7 +1506,9 @@ public class DoubleNumberToken extends NumberToken
     @return the result as an OperandToken*/
     public OperandToken leftDivide(OperandToken arg)
     {
-
+    	if (arg instanceof LogicalToken)
+    		arg = ((LogicalToken)arg).getDoubleNumberToken();
+    	
         if(!(arg instanceof DoubleNumberToken))
             Errors.throwMathLibException("DoubleNumberToken: left divide: no number");
 
@@ -1496,6 +1525,9 @@ public class DoubleNumberToken extends NumberToken
     @return the result as an OperandToken*/
     public OperandToken scalarLeftDivide(OperandToken arg)
     {
+    	if (arg instanceof LogicalToken)
+    		arg = ((LogicalToken)arg).getDoubleNumberToken();
+    	
         if(!(arg instanceof DoubleNumberToken))
             Errors.throwMathLibException("DoubleNumberToken: scalar left divide: no number");
 
