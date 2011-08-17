@@ -233,6 +233,14 @@ public class Expression extends OperandToken
             // data is an assignment (e.g. a=3 or [x,t]=func(....) or a(:,3) = [...] )
             OperandToken left  = children[0];
             OperandToken right = children[1];
+            
+            if (right instanceof Expression) {
+            	if (((Expression)right).data instanceof AssignmentOperatorToken) {
+            		((Expression)right).data.setDisplayResult(this.isDisplayResult());
+            		((AssignmentOperatorToken)((Expression)right).data).returnResult = true;
+            	}
+            }
+            
             //ErrorLogger.debugLine("Expression: evaluate assignment");
             //ErrorLogger.debugLine("Expression: evaluate assignment "+left.toString());
             //ErrorLogger.debugLine("Expression: evaluate assignment "+right.toString());
