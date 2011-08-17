@@ -548,69 +548,90 @@ public class LogicalToken extends DataToken
     /**add arg to this object for a number token
     @param = the value to add to it
     @return the result as an OperandToken*/
- /*   public OperandToken add(OperandToken arg)
+    public OperandToken add(OperandToken arg)
     {
-        if(!(arg instanceof LogicalToken))
-            Errors.throwMathLibException("LogicalToken: add: not logical");
-
-        LogicalToken nArg = ((LogicalToken)arg);
-
-        // Check dimensions of matrices 
-        if(checkEqualDimensions(sizeA, nArg.sizeA))
-        {
-            // Add (n*m) + (n*m) or
-            //  same dimensions (n,m,r)==(n,m,r)
-            ErrorLogger.debugLine("LogicalToken: add (n*m) + (n*m)");
-            LogicalToken result = new LogicalToken(sizeA, null);
-
-            for(int n = 0; n < noElem; n++)
-            {
-                boolean b = getValue(n) | nArg.getValue(n);
-                result.setValue(n, b);
-            }
-            
-            return result;      
-        } 
-        else if(isScalar())
-        {
-            // 1 + [3,4,5]       
-            ErrorLogger.debugLine("LogicalToken: add (1*1) + (n*m)");
-            DoubleNumberToken result = new DoubleNumberToken(nArg.sizeA, null, null);
-            
-            for(int n = 0; n < nArg.getNumberOfElements(); n++)
-            {
-                double realval      = getValueRe() + nArg.getValueRe(n);
-                result.setValue(n, realval, imaginaryval);
-            }
-            
-            //ErrorLogger.debugLine("end DoubleNumberToken: add (n*m) + (n*m)");
-            return result;      
-        } 
-        else if(nArg.isScalar())
-        {
-            // [3,4,5] +1
-            ErrorLogger.debugLine("LogicalToken: add (n,m) + (1,1)");
-            DoubleNumberToken result = new DoubleNumberToken(sizeA, null, null);
-            
-            for(int n = 0; n < noElem; n++)
-            {
-                double realval      = getValueRe(n) + nArg.getValueRe();
-                result.setValue(n, realval, imaginaryval);
-            }
-            
-            //ErrorLogger.debugLine("end DoubleNumberToken: add (n*m) + (n*m)");
-            return result;      
-        } 
-        else
-        {
-            // Matrices have unequal size: (n*m) != (o*p)        
-            Errors.throwMathLibException("LogicalToken: add matrices of unequal size");
-            return null;
-        }
-    } // and add
-
-*/
+    	return this.getDoubleNumberToken().add(arg);
+    } // end add
     
+    /**subtract arg from this object for a number token
+     * @param = the value to subtract
+     * @return the result as an OperandToken
+     */
+    public OperandToken subtract(OperandToken arg)
+    {
+    	return this.getDoubleNumberToken().subtract(arg);    
+    }
+
+    /**Raise this object to the power of arg
+     * @param = the value to raise it to the power of
+     * @return the result as an OperandToken
+     */
+    public OperandToken power(OperandToken arg)
+    {
+    	return this.getDoubleNumberToken().power(arg);        
+    } // end power
+
+    /** The value to raise it to the matrix power of
+     * @param arg
+     * @return
+     */
+    public OperandToken mPower(OperandToken arg)
+    {
+    	return this.getDoubleNumberToken().mPower(arg);    
+    } // end mPower
+    
+    /**multiply arg by this object for a number token
+     * @param arg = the value to multiply it by
+     * @return the result as an OperandToken
+     */
+    public OperandToken multiply(OperandToken arg) 
+    {
+    	return this.getDoubleNumberToken().multiply(arg);    
+    } // end multiply
+
+    /**divide this object by arg for a number token
+     * @param arg = the value to divide it by
+     * @return the result as an OperandToken
+     */
+    public OperandToken divide(OperandToken arg)
+    {       
+    	return this.getDoubleNumberToken().divide(arg);
+    } // end divide
+    
+    //////////////////////////////////////////SCALAR OPERATORS//////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    /**scalar multiply arg by this object for a number token
+    @arg = the value to multiply it by
+    @return the result as an OperandToken*/
+    public OperandToken scalarMultiply(OperandToken arg)
+    {
+    	return this.getDoubleNumberToken().scalarMultiply(arg);
+    } // end scalarMultiply
+
+    /**scalar divide arg by this object for a number token
+    @arg = the value to divide it by
+    @return the result as an OperandToken*/
+    public OperandToken scalarDivide(OperandToken arg)
+    {
+    	return this.getDoubleNumberToken().scalarDivide(arg);    
+    } // end scalarDivide
+
+    /**left divide 
+    @arg = 
+    @return the result as an OperandToken*/
+    public OperandToken leftDivide(OperandToken arg)
+    {
+    	return this.getDoubleNumberToken().leftDivide(arg);    
+    } // end leftDivide
+
+    /**scalar left divide 
+    @arg = 
+    @return the result as an OperandToken*/
+    public OperandToken scalarLeftDivide(OperandToken arg)
+    {
+    	return this.getDoubleNumberToken().scalarLeftDivide(arg);    
+    } // end scalarLeftDivide
+           
     /**calculate the transpose of an array
     @return the result as an OperandToken*/
     public OperandToken transpose()
