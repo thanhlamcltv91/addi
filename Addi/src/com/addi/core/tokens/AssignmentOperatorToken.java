@@ -26,6 +26,7 @@ import com.addi.toolbox.jmathlib.matrix.*;
 /**Used to implement assignment operations within an expression*/
 public class AssignmentOperatorToken extends BinaryOperatorToken
 {	
+	public boolean returnResult = false;
 
     /**
      * 
@@ -154,7 +155,12 @@ public class AssignmentOperatorToken extends BinaryOperatorToken
                     globals.getInterpreter().displayText(left.getName() +" = []");
             }
             
-            return null;
+            if (returnResult) {
+            	return result;
+            } else {
+            	return null;
+            }
+            
         }
         else if (operands[0] instanceof Expression)
         {
