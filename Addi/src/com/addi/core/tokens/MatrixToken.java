@@ -76,8 +76,9 @@ public class MatrixToken extends DataToken
         int tmpSizeY    = 0;    // no. of rows    of new overall matrix
         int tmpSizeX    = 0;    // no. or columns of new overall matrix
         
-        boolean numberB = true; // stays true if array is purely numeric
-        boolean stringB = true; // stays true if array is string  and/or numeric
+        boolean numberB = true; // stays true if array is purely numeric or logical
+        boolean stringB = true; // stays true if array is string and/or numeric or logical
+        boolean logicalB = true; // stays true if array is purely logical
         
         /*****    Evaluate every single element of the matrix              *****/
 		/* Sub-matrices are possible, so row and column size may vary at first */
@@ -117,6 +118,31 @@ public class MatrixToken extends DataToken
                         
                         // compute number of columns in THIS row
                         sizeOfRowX  += valueSizeX;
+                        
+                        logicalB = false;
+                    } 
+                    else if (value[yy][xx] instanceof LogicalToken)
+                    {
+                    	int valueSizeY = ((LogicalToken)value[yy][xx]).getSizeY();
+                        int valueSizeX = ((LogicalToken)value[yy][xx]).getSizeX();
+                        //ErrorLogger.debugLine("Matrix: eval: "+valueSizeY+" "+valueSizeX);
+                        
+                        // The number of rows of EACH element in a row must be equal
+                	    // e.g. a=[1,b,3] must be a=[1, 2, 3, 4, 5, 3] 
+                    	//      and not           a=[1, [2,3]', 3]
+                        if (xx==0)
+                    	{
+                    		sizeOfRowY   = valueSizeY; // rows of each element in THIS row
+                            tmpSizeY    += valueSizeY; // compute total no. of rows
+                    		sizeOfRowX   = 0;          // columns of THIS row
+                        }
+                        
+                        // Check if all elements in THIS row have the same number of rows
+                        if (valueSizeY != sizeOfRowY)
+                        	Errors.throwMathLibException("Matrix: number of rows of each element must be equal");
+                        
+                        // compute number of columns in THIS row
+                        sizeOfRowX  += valueSizeX;
                     }
                     else if (value[yy][xx] instanceof CharToken)
                     {
@@ -129,6 +155,7 @@ public class MatrixToken extends DataToken
 
                         // at least one element is not a number
                         numberB = false; 
+                        logicalB = false;
                     }
                     else
                     {
@@ -137,6 +164,8 @@ public class MatrixToken extends DataToken
 
                         // neither string nor number
                     	stringB = false;
+                    	
+                    	logicalB = false;
                     }
                                        
 				//}
@@ -156,12 +185,12 @@ public class MatrixToken extends DataToken
         
         // if isSymbolMode() and numberB=false
         // then return a MatrixToken with unresolved entries
-        if ((!numberB) && (!stringB))
+        if ((!numberB) && (!stringB) && (!logicalB))
        		Errors.throwMathLibException("Matrix: is not numeric or string");  
 
         // e.g. ['asdf' 'asdf'] or
         // e.g. ['asdf' 55 99]
-        if (stringB && !numberB)
+        if (stringB && !numberB && !logicalB)
         {
             ErrorLogger.debugLine("Matrix: found String");
             
@@ -189,6 +218,18 @@ public class MatrixToken extends DataToken
                         Errors.throwMathLibException("Matrix: exception");
                     }
                 }
+                else if (value[0][x] instanceof LogicalToken)
+                {
+                    // e.g. ['asdf' 65] -> 'asdfA'
+                    byte[] b = { new Double( ((LogicalToken)value[0][x]).getDoubleNumberToken().getValueRe() ).byteValue() };
+                    try{
+                        retString += new String(b, "UTF8");
+                    }
+                    catch (Exception e)
+                    {
+                        Errors.throwMathLibException("Matrix: exception");
+                    }                	
+                }
                 else
                     Errors.throwMathLibException("Matrix: converting to string");
             }
@@ -200,48 +241,107 @@ public class MatrixToken extends DataToken
         if (!numberB)
         	return new MatrixToken(value);
           
-        
-        /******************** the matrix is purely NUMERIC *******************/ 
-        
-       	// create new array to store numeric data
-        double valuesRe[][] = new double[tmpSizeY][tmpSizeX];
-        double valuesIm[][] = new double[tmpSizeY][tmpSizeX];
-	    int valSizeY = 0;
-        int valSizeX = 0;
-        ErrorLogger.debugLine("Matrix: new bigger array "+tmpSizeY+" "+tmpSizeX);
-                    
-        // fill new bigger array and expand sub matrices
-	    int yBig = 0;
-        for (int yy=0; yy<value.length; yy++)
-		{
-			// number of rows of first element in row gives height of this line
-            // e.g. a=[1,b,3]  -> b must be 1*n matrix
-            // e.g. a=[c,d]    -> c and d have the same number of rows
-                
-            int xBig=0;
-            for (int xx=0; xx<value[yy].length; xx++)
+        if (logicalB)
+        {
+	        /******************** the matrix is purely LOGICAL *******************/ 
+	        
+	       	// create new array to store numeric data
+	        boolean values[][] = new boolean[tmpSizeY][tmpSizeX];
+		    int valSizeY = 0;
+	        int valSizeX = 0;
+	        ErrorLogger.debugLine("Matrix: new bigger array "+tmpSizeY+" "+tmpSizeX);
+	                    
+	        // fill new bigger array and expand sub matrices
+		    int yBig = 0;
+	        for (int yy=0; yy<value.length; yy++)
 			{
-        	    // get matrix of each element
-                valSizeY         = ((DoubleNumberToken)value[yy][xx]).getSizeY();
-                valSizeX         = ((DoubleNumberToken)value[yy][xx]).getSizeX();
-                double[][] valRe = ((DoubleNumberToken)value[yy][xx]).getValuesRe();
-                double[][] valIm = ((DoubleNumberToken)value[yy][xx]).getValuesIm();
-                        
-                // copy small matrix of each element into global matrix
-                for (int y=0; y<valSizeY; y++)
-                {
-                   	for (int x=0; x<valSizeX; x++)
-                    {
-                   		valuesRe[yBig+y][xBig+x] = valRe[y][x];
-                        valuesIm[yBig+y][xBig+x] = valIm[y][x];
-                    }
-                }
-                xBig += valSizeX;
-            }
-            yBig += valSizeY;
+				// number of rows of first element in row gives height of this line
+	            // e.g. a=[1,b,3]  -> b must be 1*n matrix
+	            // e.g. a=[c,d]    -> c and d have the same number of rows
+	                
+	            int xBig=0;
+	            for (int xx=0; xx<value[yy].length; xx++)
+				{
+	            	valSizeY         = ((LogicalToken)value[yy][xx]).getSizeY();
+	            	valSizeX         = ((LogicalToken)value[yy][xx]).getSizeX();
+	            	boolean[][] val  = ((LogicalToken)value[yy][xx]).getValues();
+	            		
+	                // copy small matrix of each element into global matrix
+	                for (int y=0; y<valSizeY; y++)
+	                {
+	                   	for (int x=0; x<valSizeX; x++)
+	                    {
+	                   		values[yBig+y][xBig+x] = val[y][x];
+	                    }
+	                }
+	                xBig += valSizeX;
+	            }
+	            yBig += valSizeY;
+	        }
+	            
+	       return new LogicalToken(values);
         }
-            
-       return new DoubleNumberToken(valuesRe, valuesIm);
+        else
+        {
+            /******************** the matrix is purely NUMERIC or LOGICAL*******************/ 
+	        
+	       	// create new array to store numeric data
+	        double valuesRe[][] = new double[tmpSizeY][tmpSizeX];
+	        double valuesIm[][] = new double[tmpSizeY][tmpSizeX];
+		    int valSizeY = 0;
+	        int valSizeX = 0;
+	        ErrorLogger.debugLine("Matrix: new bigger array "+tmpSizeY+" "+tmpSizeX);
+	                    
+	        // fill new bigger array and expand sub matrices
+		    int yBig = 0;
+	        for (int yy=0; yy<value.length; yy++)
+			{
+				// number of rows of first element in row gives height of this line
+	            // e.g. a=[1,b,3]  -> b must be 1*n matrix
+	            // e.g. a=[c,d]    -> c and d have the same number of rows
+	                
+	            int xBig=0;
+	            for (int xx=0; xx<value[yy].length; xx++)
+				{
+	        	    // get matrix of each element
+	            	if (value[yy][xx] instanceof LogicalToken)
+	            	{
+	            		valSizeY         = ((LogicalToken)value[yy][xx]).getDoubleNumberToken().getSizeY();
+	            		valSizeX         = ((LogicalToken)value[yy][xx]).getDoubleNumberToken().getSizeX();
+	            		double[][] valRe = ((LogicalToken)value[yy][xx]).getDoubleNumberToken().getValuesRe();
+	            		double[][] valIm = ((LogicalToken)value[yy][xx]).getDoubleNumberToken().getValuesIm();            		
+	            		// copy small matrix of each element into global matrix
+		                for (int y=0; y<valSizeY; y++)
+		                {
+		                   	for (int x=0; x<valSizeX; x++)
+		                    {
+		                   		valuesRe[yBig+y][xBig+x] = valRe[y][x];
+		                        valuesIm[yBig+y][xBig+x] = valIm[y][x];
+		                    }
+		                }
+	            	}
+	            	else
+	            	{
+	            		valSizeY         = ((DoubleNumberToken)value[yy][xx]).getSizeY();
+	            		valSizeX         = ((DoubleNumberToken)value[yy][xx]).getSizeX();
+	            		double[][] valRe = ((DoubleNumberToken)value[yy][xx]).getValuesRe();
+	            		double[][] valIm = ((DoubleNumberToken)value[yy][xx]).getValuesIm();
+	            		// copy small matrix of each element into global matrix
+		                for (int y=0; y<valSizeY; y++)
+		                {
+		                   	for (int x=0; x<valSizeX; x++)
+		                    {
+		                   		valuesRe[yBig+y][xBig+x] = valRe[y][x];
+		                        valuesIm[yBig+y][xBig+x] = valIm[y][x];
+		                    }
+		                }
+	            	}
+	                xBig += valSizeX;
+	            }
+	            yBig += valSizeY;
+			}
+	        return new DoubleNumberToken(valuesRe,valuesIm);
+        }
    } 
 
     /**Convert the matrix to a string*/
