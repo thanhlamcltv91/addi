@@ -339,8 +339,51 @@ public class subassign extends ExternalFunction
         // a=[1,2,3;4,5,6] then a(1:4) should return [1,4,2,5]
         if(getNArgIn(operands)==3)
         {
-            
-            if ((dy==1) || ((dy==0) && (dx==0)) )
+            if ((dx_r == 0) && (dy_r == 0)) {
+            	if (operands[0] instanceof DoubleNumberToken) {
+            		DoubleNumberToken tempToken = new DoubleNumberToken();
+            		if ((dy==1) || ((dy==0) && (dx==0))) {
+            			// subassign([3,4,5],[],4) or subassign([],[],7:9)
+            			tempToken.setSize(1,dx-y_dx);
+            		} else if (dx==1) { 
+            			// subassign[2;3;4],[],5:6)
+            			tempToken.setSize(dy-y_dy,1);
+            		}
+            		// copy data to return array
+            		int n=0;
+            		int m=0;
+            		for (int xi=0; xi<dx; xi++)
+            		{
+            			for (int yi=0; yi<dy ; yi++)
+            			{
+            				boolean matchFound = false;
+            				for (int xi2=0; (xi2<y_dx) && (matchFound == false); xi2++)
+            				{
+            					for (int yi2=0; (yi2<y_dy) && (matchFound == false); yi2++)
+            					{
+            						int index = (int)y_indexes[yi2][xi2]-1;
+
+            						if (index == n) {
+            							matchFound = true;
+            						}
+            					}
+            				}
+            				if (matchFound == true) {
+            					n++;
+            				} else {
+            					tempToken.setElement(m,
+                                    ((DoubleNumberToken)operands[0]).getElement(n));
+            					n++;
+            					m++;
+            				}
+            			} // end yi
+            		} // end xi
+            		return tempToken;
+            	} else {
+            		return null;
+            	}
+            }
+            else if ((dy==1) || ((dy==0) && (dx==0)) )
             {
                 // subassign([3,4,5],88,4) or subassign([],[66,66,66],7:9)
                 ((DataToken)operands[0]).setSize(1,Math.max(dx,dy_max));
