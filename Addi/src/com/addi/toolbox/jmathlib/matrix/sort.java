@@ -17,12 +17,17 @@
 
 package com.addi.toolbox.jmathlib.matrix;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import com.addi.core.functions.ExternalFunction;
 import com.addi.core.interpreter.GlobalValues;
 import com.addi.core.tokens.MatrixToken;
 import com.addi.core.tokens.OperandToken;
 import com.addi.core.tokens.Token;
 import com.addi.core.tokens.numbertokens.DoubleNumberToken;
+import com.addi.core.tokens.CharToken;
 
 
 /**An external function for sorting arrays    */
@@ -35,9 +40,35 @@ public class sort extends ExternalFunction
 		// Check number of arguments
 		if (getNArgIn(operands)!=1) 
 			throwMathLibException("sort: number of arguments <> 1");
-
-		if (!(operands[0] instanceof DoubleNumberToken))
-			throwMathLibException("sort: works only on numbers");
+		
+		if ((!(operands[0] instanceof DoubleNumberToken)) && (!(operands[0] instanceof CharToken))) 
+			throwMathLibException("sort: works only on numbers and strings");
+		
+		if (operands[0] instanceof CharToken) {
+			CharToken returnToken = (CharToken)operands[0].clone();
+			if (returnToken.getSizeY() > 1) {
+				for (int x =0; x < returnToken.getSizeX(); x++) {
+					List<String> tempList = new ArrayList<String>();
+					for (int y =0; y < returnToken.getSizeY(); y++) {
+						tempList.add(((CharToken)returnToken.getElement(y, x)).getValue());
+					}
+					Collections.sort(tempList);
+					for (int y =0; y < returnToken.getSizeY(); y++) {
+						returnToken.setElement(y, x, new CharToken(tempList.get(y)));
+					}
+				}
+			} else {
+				List<String> tempList = new ArrayList<String>();
+				for (int x =0; x < returnToken.getSizeX(); x++) {
+					tempList.add(((CharToken)returnToken.getElement(0, x)).getValue());
+				}
+				Collections.sort(tempList);
+				for (int x =0; x < returnToken.getSizeX(); x++) {
+					returnToken.setElement(0, x, new CharToken(tempList.get(x)));
+				}
+			}
+			return returnToken;
+		}
 
 		// get data from arguments
 		double[][] values = ((DoubleNumberToken)operands[0]).getReValues();
