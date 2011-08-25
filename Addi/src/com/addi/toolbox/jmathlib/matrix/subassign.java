@@ -347,7 +347,11 @@ public class subassign extends ExternalFunction
             			tempToken.setSize(1,dx-y_dx);
             		} else if (dx==1) { 
             			// subassign[2;3;4],[],5:6)
-            			tempToken.setSize(dy-y_dy,1);
+            			if ((y_dy == 1) && (y_dx > 1)) {
+            				tempToken.setSize(dy-y_dx,1);
+            			} else {
+            				tempToken.setSize(dy-y_dy,1);
+            			}
             		}
             		// copy data to return array
             		int n=0;

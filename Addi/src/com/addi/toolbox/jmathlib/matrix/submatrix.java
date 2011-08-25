@@ -222,9 +222,18 @@ public class submatrix extends ExternalFunction
         // or submatrix(a,3:end) or submatrix(a,:) or submatrix(a,[1,6,2,4])
         if(getNArgIn(operands)==2)
 		{
+        	//if array is a column and selection is a row, the result is a column
+        	int dy_r = y_dy;
+        	int dx_r = y_dx;
+        	if ((dy_r == 1) && (dx_r > 1) && (dx == 1) && (dy > 1)) {
+        		int temp = dx_r;
+        		dx_r = dy_r;
+        		dy_r = temp;
+        	}
             // create return array with size of limits operator
-            DataToken retToken = ((DataToken)operands[0]).getElementSized(y_dy,y_dx);
+            DataToken retToken = ((DataToken)operands[0]).getElementSized(dy_r,dx_r);
             
+            int returnCount = 0;
             // copy data to return array
             for (int xi=0; xi<y_dx; xi++)
             {
@@ -237,7 +246,11 @@ public class submatrix extends ExternalFunction
                     // find position in array (y,x) by index
                     int x = (int)(index/dy); // column of original data
                     int y = index - x*dy;    // row of original data
-        
+                    
+                    int x_r = (int)(returnCount/dy_r); // column of original data
+                    int y_r = returnCount - x_r*dy_r;    // row of original data
+                    returnCount++;
+                    
                     // different approach if working on cell arrays
                     // if a={'asdf',[4,5]} then a{1,2} will return a number token [4,5] 
                     if ((operands[0] instanceof CellArrayToken) && leftCellB)
@@ -247,8 +260,8 @@ public class submatrix extends ExternalFunction
                     }
 
                     // copy original values to return array
-                    retToken.setElement(yi, 
-                                        xi,
+                    retToken.setElement(y_r, 
+                                        x_r,
                                         ((DataToken)operands[0]).getElement(y,x));
 
                 } // end yi
