@@ -745,6 +745,9 @@ public class DoubleNumberToken extends NumberToken
     	if (arg instanceof LogicalToken)
     		arg = ((LogicalToken)arg).getDoubleNumberToken();
     	
+    	if (arg instanceof CharToken)
+    		arg = ((CharToken)arg).getDoubleNumberToken();
+    	
         if(arg instanceof DoubleNumberToken)
         {
             DoubleNumberToken nArg = (DoubleNumberToken)arg;
@@ -791,6 +794,9 @@ public class DoubleNumberToken extends NumberToken
 
     	if (arg instanceof LogicalToken)
     		arg = ((LogicalToken)arg).getDoubleNumberToken();
+    	
+    	if (arg instanceof CharToken)
+    		arg = ((CharToken)arg).getDoubleNumberToken();
     	
         if(arg instanceof DoubleNumberToken)
         {
@@ -861,15 +867,6 @@ public class DoubleNumberToken extends NumberToken
             
             return nArg.add(this);
         }
-        else if(arg instanceof CharToken)
-        {
-            // 2+'a b'
-            double[][] d = ((CharToken)arg).getValuesRe();
-
-            DoubleNumberToken num = new DoubleNumberToken(d);
-
-            return this.add(num);
-        }
 
         Errors.throwMathLibException("DoubleNumberToken: add: no number");
         return null;
@@ -884,6 +881,9 @@ public class DoubleNumberToken extends NumberToken
     {
     	if (arg instanceof LogicalToken)
     		arg = ((LogicalToken)arg).getDoubleNumberToken();
+    	
+    	if (arg instanceof CharToken)
+    		arg = ((CharToken)arg).getDoubleNumberToken();
     	
         if(!(arg instanceof DoubleNumberToken))
             Errors.throwMathLibException("DoubleNumberToken: substract: no number");
@@ -953,6 +953,9 @@ public class DoubleNumberToken extends NumberToken
     {
     	if (arg instanceof LogicalToken)
     		arg = ((LogicalToken)arg).getDoubleNumberToken();
+    	
+    	if (arg instanceof CharToken)
+    		arg = ((CharToken)arg).getDoubleNumberToken();
     	
         // works only on numbers
         if(!(arg instanceof DoubleNumberToken))
@@ -1093,6 +1096,9 @@ public class DoubleNumberToken extends NumberToken
     	if (arg instanceof LogicalToken)
     		arg = ((LogicalToken)arg).getDoubleNumberToken();
     	
+    	if (arg instanceof CharToken)
+    		arg = ((CharToken)arg).getDoubleNumberToken();
+    	
         // works only on numbers
         if(!(arg instanceof DoubleNumberToken))
             Errors.throwMathLibException("DoubleNumberToken: mPower: no number");
@@ -1151,6 +1157,9 @@ public class DoubleNumberToken extends NumberToken
     {
     	if (arg instanceof LogicalToken)
     		arg = ((LogicalToken)arg).getDoubleNumberToken();
+    	
+    	if (arg instanceof CharToken)
+    		arg = ((CharToken)arg).getDoubleNumberToken();
     	
         if(!(arg instanceof DoubleNumberToken))
             Errors.throwMathLibException("DoubleNumberToken: multiply: no number");
@@ -1247,6 +1256,9 @@ public class DoubleNumberToken extends NumberToken
     {       
     	if (arg instanceof LogicalToken)
     		arg = ((LogicalToken)arg).getDoubleNumberToken();
+    	
+    	if (arg instanceof CharToken)
+    		arg = ((CharToken)arg).getDoubleNumberToken();
     	
         if(!(arg instanceof DoubleNumberToken))
             Errors.throwMathLibException("DoubleNumberToken: divide: no number");
@@ -1370,6 +1382,9 @@ public class DoubleNumberToken extends NumberToken
     	if (arg instanceof LogicalToken)
     		arg = ((LogicalToken)arg).getDoubleNumberToken();
     	
+    	if (arg instanceof CharToken)
+    		arg = ((CharToken)arg).getDoubleNumberToken();
+    	
         if(!(arg instanceof DoubleNumberToken))
             Errors.throwMathLibException("DoubleNumberToken: scalar multiply: no number");
 
@@ -1430,6 +1445,9 @@ public class DoubleNumberToken extends NumberToken
     {
     	if (arg instanceof LogicalToken)
     		arg = ((LogicalToken)arg).getDoubleNumberToken();
+    	
+    	if (arg instanceof CharToken)
+    		arg = ((CharToken)arg).getDoubleNumberToken();
             
         if(!(arg instanceof DoubleNumberToken))
             Errors.throwMathLibException("DoubleNumberToken: scalar divide: no number");
@@ -1509,6 +1527,9 @@ public class DoubleNumberToken extends NumberToken
     	if (arg instanceof LogicalToken)
     		arg = ((LogicalToken)arg).getDoubleNumberToken();
     	
+    	if (arg instanceof CharToken)
+    		arg = ((CharToken)arg).getDoubleNumberToken();
+    	
         if(!(arg instanceof DoubleNumberToken))
             Errors.throwMathLibException("DoubleNumberToken: left divide: no number");
 
@@ -1527,6 +1548,9 @@ public class DoubleNumberToken extends NumberToken
     {
     	if (arg instanceof LogicalToken)
     		arg = ((LogicalToken)arg).getDoubleNumberToken();
+    	
+    	if (arg instanceof CharToken)
+    		arg = ((CharToken)arg).getDoubleNumberToken();
     	
         if(!(arg instanceof DoubleNumberToken))
             Errors.throwMathLibException("DoubleNumberToken: scalar left divide: no number");
