@@ -48,7 +48,7 @@ public class struct extends ExternalFunction
 
         for(int fieldno = start; fieldno < length; fieldno +=2)
         {
-            String fieldName = operands[fieldno].toString();
+            String fieldName = ((CharToken)operands[fieldno]).getElementString(0);
             OperandToken value = null;
             if(length > fieldno + 1)
                value = ((OperandToken)operands[fieldno + 1]);

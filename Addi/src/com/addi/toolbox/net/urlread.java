@@ -40,7 +40,7 @@ public class urlread extends ExternalFunction
 		if (!(operands[0] instanceof CharToken))
 			throwMathLibException("urlread: argument must be String");
         
-        String urlString = ((CharToken)operands[0]).toString();
+        String urlString = ((CharToken)operands[0]).getElementString(0);
         
         // open URL
         URL url = null;

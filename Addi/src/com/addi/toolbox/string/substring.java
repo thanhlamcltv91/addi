@@ -43,7 +43,7 @@ public class substring extends ExternalFunction
         if (!(operands[1] instanceof DoubleNumberToken))
             throwMathLibException("subString: parameter 2 must be double");
 
-		String argString = ((CharToken)operands[0]).toString();
+		String argString = ((CharToken)operands[0]).getElementString(0);
 		String substring = "";
 		if(operands.length < 3 || operands[2] == null)
 		{

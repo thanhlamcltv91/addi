@@ -36,7 +36,7 @@ public class lastmodified extends ExternalFunction
 		if (!(operands[0] instanceof CharToken)) 
             throwMathLibException("lastmodified: argument must be a string");
 
-        String name = ((CharToken)operands[0]).toString();
+        String name = ((CharToken)operands[0]).getElementString(0);
 
 		try
 		{

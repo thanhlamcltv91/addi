@@ -45,11 +45,11 @@ public class strncmp extends ExternalFunction
 				if(operands[2] instanceof DoubleNumberToken)
 				{
 					int index = ((DoubleNumberToken)operands[2]).getIntValue(0,0);
-					String string1 = ((CharToken)operands[0]).toString();				
+					String string1 = ((CharToken)operands[0]).getElementString(0);				
 					if(string1.length() > index)
 						string1 = string1.substring(0, index);
 
-					String string2 = ((CharToken)operands[1]).toString();
+					String string2 = ((CharToken)operands[1]).getElementString(0);
 					if(string2.length() > index)
 						string2 = string2.substring(0, index);
 					

@@ -49,7 +49,7 @@ public class runfile extends ExternalFunction
 		if (!(operands[0] instanceof CharToken)) 
         	throwMathLibException("RunFile: argument must be a string");
 		
-		String fileName = ((CharToken)operands[0]).toString();
+		String fileName = ((CharToken)operands[0]).getElementString(0);
 			
 		// If the filename doesn't have an extension add the default 
 		//     extension of .m

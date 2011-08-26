@@ -47,7 +47,7 @@ public class length extends ExternalFunction
 		}
 		else if(operands[0] instanceof CharToken)
 		{
-			length = ((CharToken)operands[0]).toString().length();		
+			length = ((CharToken)operands[0]).getElementString(0).length();		
 		}
 
 		return new DoubleNumberToken(length);		

@@ -35,7 +35,7 @@ public class printstacktrace extends ExternalFunction
         String val = "";
 		if(operands[0] instanceof CharToken)
 		{
-			val = ((CharToken)operands[0]).toString() + "\n";
+			val = ((CharToken)operands[0]).getElementString(0) + "\n";
 		}	
         
         //val += getContextList().getStackTrace();

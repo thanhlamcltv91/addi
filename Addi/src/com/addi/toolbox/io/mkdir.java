@@ -35,7 +35,7 @@ public class mkdir extends ExternalFunction
 		if (!(operands[0] instanceof CharToken)) 
             throwMathLibException("mkdir: argument must be a string");
 
-        String name = ((CharToken)operands[0]).toString();
+        String name = ((CharToken)operands[0]).getElementString(0);
 
         File file=null;
 		try

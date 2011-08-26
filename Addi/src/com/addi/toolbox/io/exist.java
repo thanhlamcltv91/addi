@@ -22,6 +22,7 @@ import java.io.*;
 
 import com.addi.core.functions.ExternalFunction;
 import com.addi.core.interpreter.GlobalValues;
+import com.addi.core.tokens.CharToken;
 import com.addi.core.tokens.OperandToken;
 import com.addi.core.tokens.Token;
 import com.addi.core.tokens.numbertokens.DoubleNumberToken;
@@ -40,7 +41,7 @@ public class exist extends ExternalFunction
 			throwMathLibException("exist: number of arguments != 1");
 
     
-		String fileName = operands[0].toString();
+		String fileName = ((CharToken)operands[0]).getElementString(0);
 		File testFile = null;
 		if((fileName.indexOf(":") > -1))
 			testFile = new File(fileName);

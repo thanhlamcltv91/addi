@@ -40,7 +40,7 @@ public class strlength extends ExternalFunction
 		
 		if(operands[0] instanceof CharToken)
 		{
-			int length = ((CharToken)operands[0]).toString().length();
+			int length = ((CharToken)operands[0]).getElementString(0).length();
 			result = new DoubleNumberToken(length);
 		}
 		else
