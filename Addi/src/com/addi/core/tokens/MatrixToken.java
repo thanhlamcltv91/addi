@@ -146,12 +146,21 @@ public class MatrixToken extends DataToken
                     }
                     else if (value[yy][xx] instanceof CharToken)
                     {
-                        if (xx==0)
-                        {
-                            sizeOfRowX   = 0;
+                    	int valueSizeY = ((CharToken)value[yy][xx]).getSizeY();
+                        
+                    	if (xx==0)
+                    	{
+                    		sizeOfRowY   = valueSizeY; // rows of each element in THIS row
+                            tmpSizeY    += valueSizeY; // compute total no. of rows
+                    		sizeOfRowX   = 0;          // columns of THIS row
                         }
+                        
+                        // Check if all elements in THIS row have the same number of rows
+                        if (valueSizeY != sizeOfRowY)
+                        	Errors.throwMathLibException("Matrix: number of rows of each element must be equal");
+                        
+                        // compute number of columns in THIS row
                         sizeOfRowX  += 1;
-                        sizeOfRowY   = 1;
 
                         // at least one element is not a number
                         numberB = false; 
@@ -194,44 +203,50 @@ public class MatrixToken extends DataToken
         {
             ErrorLogger.debugLine("Matrix: found String");
             
-            if (tmpSizeY>1) 
-                Errors.throwMathLibException("Matrix: String with more than one line not implemented");
-
-            String retString = "";
+            String [] retString = new String[tmpSizeY];
             
-            // convert operands to a single string
-            for (int x=0; x<tmpSizeX; x++)
+            // convert operands to a string array
+            for (int y=0; y<tmpSizeY; y++)
             {
-                if (value[0][x] instanceof CharToken)
-                {
-                    retString += ((DataToken)value[0][x]).toString(); 
-                }
-                else if (value[0][x] instanceof DoubleNumberToken)
-                {
-                    // e.g. ['asdf' 65] -> 'asdfA'
-                    byte[] b = { new Double( ((DoubleNumberToken)value[0][x]).getValueRe() ).byteValue() };
-                    try{
-                        retString += new String(b, "UTF8");
-                    }
-                    catch (Exception e)
-                    {
-                        Errors.throwMathLibException("Matrix: exception");
-                    }
-                }
-                else if (value[0][x] instanceof LogicalToken)
-                {
-                    // e.g. ['asdf' 65] -> 'asdfA'
-                    byte[] b = { new Double( ((LogicalToken)value[0][x]).getDoubleNumberToken().getValueRe() ).byteValue() };
-                    try{
-                        retString += new String(b, "UTF8");
-                    }
-                    catch (Exception e)
-                    {
-                        Errors.throwMathLibException("Matrix: exception");
-                    }                	
-                }
-                else
-                    Errors.throwMathLibException("Matrix: converting to string");
+            	retString[y] = "";
+	            for (int x=0; x<tmpSizeX; x++)
+	            {
+	                if (value[y][x] instanceof CharToken)
+	                {
+	                	for (int y2=0; y2 < ((CharToken)value[y][x]).sizeY; y2++) {
+	                      retString[y] += ((CharToken)value[y][x]).getElementString(y2);
+	                      if (y2 != ((CharToken)value[y][x]).sizeY-1) {
+	                         y++;
+	                      }
+	                	}
+	                }
+	                else if (value[y][x] instanceof DoubleNumberToken)
+	                {
+	                    // e.g. ['asdf' 65] -> 'asdfA'
+	                    byte[] b = { new Double( ((DoubleNumberToken)value[y][x]).getValueRe() ).byteValue() };
+	                    try{
+	                        retString[y] += new String(b, "UTF8");
+	                    }
+	                    catch (Exception e)
+	                    {
+	                        Errors.throwMathLibException("Matrix: exception");
+	                    }
+	                }
+	                else if (value[y][x] instanceof LogicalToken)
+	                {
+	                    // e.g. ['asdf' 65] -> 'asdfA'
+	                    byte[] b = { new Double( ((LogicalToken)value[y][x]).getDoubleNumberToken().getValueRe() ).byteValue() };
+	                    try{
+	                        retString[y] += new String(b, "UTF8");
+	                    }
+	                    catch (Exception e)
+	                    {
+	                        Errors.throwMathLibException("Matrix: exception");
+	                    }                	
+	                }
+	                else
+	                    Errors.throwMathLibException("Matrix: converting to string");
+	            }
             }
 
             return new CharToken(retString);

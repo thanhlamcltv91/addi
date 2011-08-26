@@ -25,7 +25,7 @@ import com.addi.core.tokens.numbertokens.DoubleNumberToken;
 public class CharToken extends DataToken
 {
     /**The value of the string*/
-    private char[][] values;
+    private String[] values;
     
     /**Creates an empty char array
      */
@@ -45,10 +45,10 @@ public class CharToken extends DataToken
     public CharToken(String _value)
     {
         super(99, "char"); 
-        values    = new char[1][1];
-        values[0] = _value.toCharArray();
+        values    = new String[1];
+        values[0] = _value;
         sizeY     = 1;
-        sizeX     = values[0].length;
+        sizeX     = values[0].length();
         sizeA     = new int[]{sizeY,sizeX};
         noElem    = sizeY * sizeX;
     }
@@ -64,11 +64,14 @@ public class CharToken extends DataToken
         sizeA     = new int[]{sizeY,sizeX};
         noElem    = sizeY * sizeX;
         
-        values    = new char[sizeY][1];
+        values    = new String[sizeY];
         for (int i=0;i<sizeY;i++) {
-          if (_values[i].length() != sizeX)
-            Errors.throwMathLibException("CharToken: string sizes must be identical");
-          values[i] = _values[i].toCharArray();
+          if (_values[i].length() > sizeX) {
+        	  sizeX     = _values[i].length();
+        	  sizeA     = new int[]{sizeY,sizeX};
+        	  noElem    = sizeY * sizeX;
+          }
+          values[i] = _values[i];
         }
     }
     
@@ -79,11 +82,19 @@ public class CharToken extends DataToken
      public CharToken(char[][] _values)
      {
          super(99, "char"); 
-         values = _values;
+         values = new String[_values.length];
          sizeY  = values.length;
-         sizeX  = values[0].length;
+         sizeX  = _values[0].length;
          sizeA  = new int[]{sizeY,sizeX};
          noElem = sizeY * sizeX;
+         for (int i=0;i<sizeY;i++) {
+             if (_values[i].length > sizeX) {
+           	  sizeX     = _values[i].length;
+           	  sizeA     = new int[]{sizeY,sizeX};
+           	  noElem    = sizeY * sizeX;
+             }
+             values[i] = new String(_values[i]);
+         }
      }
 
      /**Creates a string with a value of _value
@@ -92,8 +103,8 @@ public class CharToken extends DataToken
       public CharToken(char _value)
       {
           super(99, "char"); 
-          values       = new char[1][1];
-          values[0][0] = _value;
+          values       = new String[1];
+          values[0]    = Character.toString(_value);
           sizeY        = 1;
           sizeX        = 1;
           sizeA        = new int[]{sizeY,sizeX};
@@ -116,14 +127,94 @@ public class CharToken extends DataToken
     /**
      * @return the string value
      */    
+    /**return the number as a string
+     * @return
+     */
     public String toString()
     {
-        String ret = new String();
-        for (int yi=0; yi<sizeY; yi++)
+        String result = null;
+        if((sizeY == 0) && (sizeX == 0))
         {
-            ret += new String(values[yi]);
+            result = "[]";
         }
-    	return ret;
+        else if((sizeY == 1) && (sizeX == 1) && sizeA.length==2)
+        {
+            result = values[0];
+        }
+        else if (sizeA.length ==2)
+        {
+            result = toString2d(new int[]{sizeY,sizeX});
+        }
+        else
+        {
+            int[] dim = new int[sizeA.length];
+            dim[0] = sizeY;
+            dim[1] = sizeX;
+            
+            String s = toString(dim, sizeA.length-1);
+            
+            result = new String(s);
+        }           
+        return result;
+    }
+    
+    /**
+     * @param dim
+     * @param i
+     * @return
+     */
+    private String toString(int[] dim, int i)
+    {
+        String ret="";
+        
+        if (i>=2)
+        {
+
+            for (int n=0; n<sizeA[i]; n++)
+            {
+                dim[i]=n;
+                
+                ret += toString(dim, i-1);
+                
+            }
+            
+        }
+        else
+        {
+            // e.g. 
+            ret += "(:,:";
+            for (int k=2; k<dim.length; k++)
+            {
+                ret += "," + (dim[k]+1);   //NOTE: conversion from internal to external index
+            }
+            ret += ") = \n";
+
+            ret += toString2d(dim);
+            
+            ret += "\n";
+        }
+        return ret;
+    }
+
+    /**
+     * @param nn
+     * @return
+     */
+    private String toString2d(int[] nn)
+    {
+        StringBuffer buffer = new StringBuffer(20);
+        
+        buffer.append("\n");
+        
+        for(int yy = 0; yy < sizeY; yy++)
+        {
+            buffer.append("\n   ");
+            buffer.append(values[yy]);         
+        }
+        
+        buffer.append("\n");
+        
+        return buffer.toString();
     }
 
     /**
@@ -139,7 +230,7 @@ public class CharToken extends DataToken
      */
     public char getCharValue()
     {
-        return values[0][0];
+        return values[0].charAt(0);
     }
 
     /**
@@ -159,8 +250,12 @@ public class CharToken extends DataToken
         for (int y=0; y<sizeY; y++)
         {
             for (int x=0; x<sizeX; x++)
-            {
-                d[y][x]= (double)values[y][x];
+            {   
+            	if (x >= values[y].length()) {
+            		d[y][x]= (double)' ';
+            	} else {
+                   d[y][x]= (double)values[y].charAt(x);
+            	}
             }
         } 
 
@@ -173,7 +268,20 @@ public class CharToken extends DataToken
      */
     public OperandToken getElement(int y, int x)
     {
-        return new CharToken(values[y][x]);
+    	if (x >= values[y].length()) {
+    	   return new CharToken(' ');
+    	} else {
+           return new CharToken(values[y].charAt(x));
+    	}
+    }
+    
+    /**
+     * @param
+     * @param
+     */
+    public String getElementString(int y)
+    {
+    	return values[y];
     }
 
     /**
@@ -186,7 +294,15 @@ public class CharToken extends DataToken
         char c = ((CharToken)op).getCharValue();
         
         ErrorLogger.debugLine("CharToken("+y+","+x+")"+ c);
-        values[y][x] = c;
+        String tempString = values[y];
+        values[y] = "";
+        if (x > 0) {
+           values[y] += values[y].substring(0, x-1);
+        }
+        values[y] += c;
+        if (x < (values[y].length()-1)) {
+        	values[y] += values[y].substring(x+1, values[y].length()-1);
+        }
     }
     
     /**
@@ -199,34 +315,139 @@ public class CharToken extends DataToken
         return new CharToken(new char[y][x]); 
     }
 
-    /**add arg to this object to create a new string
-     * @param arg = the value to add to the string
-     * @return
-     */
+    ///////////////////////standard operators///////////////////
+    ////////////////////////////////////////////////////////////
+    
+    /**add arg to this object for a number token
+    @param = the value to add to it
+    @return the result as an OperandToken*/
     public OperandToken add(OperandToken arg)
     {
-    	if (sizeY!=1)
-            Errors.throwMathLibException("CharToken: add not supported");
-        
-    	if (arg instanceof CharToken)
-    	{
-            String answer = new String(values[0]) + arg.toString();
-            values[0] = answer.toCharArray();
-            sizeX     = values[0].length;
-            return new CharToken(answer);
-    	    
-    	}
-    	else if (arg instanceof DoubleNumberToken)
-    	{
-    	    double[][] d = getValuesRe();
+    	return this.getDoubleNumberToken().add(arg);
+    } // end add
+    
+    /**subtract arg from this object for a number token
+     * @param = the value to subtract
+     * @return the result as an OperandToken
+     */
+    public OperandToken subtract(OperandToken arg)
+    {
+    	return this.getDoubleNumberToken().subtract(arg);    
+    }
 
-            DoubleNumberToken num = new DoubleNumberToken(d);
+    /**Raise this object to the power of arg
+     * @param = the value to raise it to the power of
+     * @return the result as an OperandToken
+     */
+    public OperandToken power(OperandToken arg)
+    {
+    	return this.getDoubleNumberToken().power(arg);        
+    } // end power
 
-            return arg.add(num);
-    	}
+    /** The value to raise it to the matrix power of
+     * @param arg
+     * @return
+     */
+    public OperandToken mPower(OperandToken arg)
+    {
+    	return this.getDoubleNumberToken().mPower(arg);    
+    } // end mPower
+    
+    /**multiply arg by this object for a number token
+     * @param arg = the value to multiply it by
+     * @return the result as an OperandToken
+     */
+    public OperandToken multiply(OperandToken arg) 
+    {
+    	return this.getDoubleNumberToken().multiply(arg);    
+    } // end multiply
+
+    /**divide this object by arg for a number token
+     * @param arg = the value to divide it by
+     * @return the result as an OperandToken
+     */
+    public OperandToken divide(OperandToken arg)
+    {       
+    	return this.getDoubleNumberToken().divide(arg);
+    } // end divide
+    
+    //////////////////////////////////////////SCALAR OPERATORS//////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    /**scalar multiply arg by this object for a number token
+    @arg = the value to multiply it by
+    @return the result as an OperandToken*/
+    public OperandToken scalarMultiply(OperandToken arg)
+    {
+    	return this.getDoubleNumberToken().scalarMultiply(arg);
+    } // end scalarMultiply
+
+    /**scalar divide arg by this object for a number token
+    @arg = the value to divide it by
+    @return the result as an OperandToken*/
+    public OperandToken scalarDivide(OperandToken arg)
+    {
+    	return this.getDoubleNumberToken().scalarDivide(arg);    
+    } // end scalarDivide
+
+    /**left divide 
+    @arg = 
+    @return the result as an OperandToken*/
+    public OperandToken leftDivide(OperandToken arg)
+    {
+    	return this.getDoubleNumberToken().leftDivide(arg);    
+    } // end leftDivide
+
+    /**scalar left divide 
+    @arg = 
+    @return the result as an OperandToken*/
+    public OperandToken scalarLeftDivide(OperandToken arg)
+    {
+    	return this.getDoubleNumberToken().scalarLeftDivide(arg);    
+    } // end scalarLeftDivide
+           
+    /**calculate the transpose of an array
+    @return the result as an OperandToken*/
+    public OperandToken transpose()
+    {
+    
+        // swap rows and columns - string arrays only have rows
+    	// if there are multiple rows, will become just 1 element
+        String returnString = values[0];
+        for (int y=1; y<sizeY; y++)
+        {
+        	returnString += values[y];
+        }
+        return new CharToken(returnString);     
+    }
+
+    
+    /**
+     * @return true if this number token is a scalar (1*1 matrix)
+     */
+    public boolean isScalar()
+    {
+
+        for (int i=0; i<sizeA.length; i++)
+        {
+            // in case one entry in the size-array is unequal 1 it 
+            //  is not a scalar any more
+            if (sizeA[i]!=1)
+                return false;
+        }
+
+        return true;
+    }
+
+    
+    /**
+     * conversion into a number token
+     * @return
+     */
+    public DoubleNumberToken getDoubleNumberToken()
+    {
+    	double[][] d = getValuesRe();
         
-        Errors.throwMathLibException("DoubleNumberToken: add: no number");
-        return null;
+        return new DoubleNumberToken(d);
     }
     
   }
