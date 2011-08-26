@@ -49,7 +49,7 @@ public class csvwrite extends ExternalFunction
 			if(operands[1] instanceof DoubleNumberToken)
 			{
 				double[][] values = ((DoubleNumberToken)operands[1]).getReValues();
-				String fileName = ((CharToken)operands[0]).toString();
+				String fileName = ((CharToken)operands[0]).getElementString(0);
 				
 				File CSVFile;
 				if (fileName.startsWith("/")) {

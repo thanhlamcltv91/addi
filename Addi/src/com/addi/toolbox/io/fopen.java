@@ -56,7 +56,7 @@ public class fopen extends ExternalFunction
 
 		if(operands[0] instanceof CharToken)
 		{
-			fileName = ((CharToken)operands[0]).toString();
+			fileName = ((CharToken)operands[0]).getElementString(0);
 			if (fileName.startsWith("/")) {
 				fileName = fileName;
 			} else {
@@ -66,7 +66,7 @@ public class fopen extends ExternalFunction
 			
 			if (getNArgIn(operands) == 2) {
 				if(operands[1] instanceof CharToken) {
-					permissions = ((CharToken)operands[1]).toString();
+					permissions = ((CharToken)operands[1]).getElementString(0);
 					if (permissions.compareTo("w") == 0) {
 						try {
 							outWriter = new BufferedWriter(new FileWriter(fileName));

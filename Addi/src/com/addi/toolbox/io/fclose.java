@@ -53,7 +53,7 @@ public class fclose extends ExternalFunction
 
 		if(operands[0] instanceof CharToken)
 		{
-			String fileName = ((CharToken)operands[0]).toString();
+			String fileName = ((CharToken)operands[0]).getElementString(0);
 			if (fileName.compareTo("all") == 0) {
 				GlobalValues.fileNames.clear();
 				GlobalValues.filePermissions.clear();

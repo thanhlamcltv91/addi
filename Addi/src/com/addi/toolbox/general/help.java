@@ -463,7 +463,7 @@ public class help extends ExternalFunction
     		// check if a directory is specified
     		if ((operands[0] instanceof CharToken)) 
     		{
-    			function = ((CharToken)operands[0]).toString();
+    			function = ((CharToken)operands[0]).getElementString(0);
     		}
     		else
     		{

@@ -45,7 +45,7 @@ public class cd extends ExternalFunction
     		// check if a directory is specified
     		if ((operands[0] instanceof CharToken)) 
     		{
-    			path = ((CharToken)operands[0]).toString();
+    			path = ((CharToken)operands[0]).getElementString(0);
     		}
     		else
             	throwMathLibException("cd: argument must be a string");

@@ -50,7 +50,7 @@ public class csvread extends ExternalFunction
 
 		if(operands[0] instanceof CharToken)
 		{
-			String fileName = ((CharToken)operands[0]).toString();
+			String fileName = ((CharToken)operands[0]).getElementString(0);
 	
 			File CSVFile;
 			if (fileName.startsWith("/")) {

@@ -22,6 +22,7 @@ import java.io.*;
 
 import com.addi.core.functions.ExternalFunction;
 import com.addi.core.interpreter.GlobalValues;
+import com.addi.core.tokens.CharToken;
 import com.addi.core.tokens.OperandToken;
 import com.addi.core.tokens.Token;
 
@@ -43,7 +44,7 @@ public class systemcommand extends ExternalFunction
         
         for(int index = 0; index < operands.length; index++)
 		{
-			cmdarray[index] = operands[index].toString();
+			cmdarray[index] = ((CharToken)operands[index]).getElementString(0);
 		}
 		
 		try

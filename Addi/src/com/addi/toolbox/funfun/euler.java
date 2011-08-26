@@ -52,7 +52,7 @@ public class euler extends ExternalFunction
 			throwMathLibException("euler: wrong typ or types of parameters");
 
 		// get name of function to integrate
-        String funcName = ((CharToken)operands[0]).toString();
+        String funcName = ((CharToken)operands[0]).getElementString(0);
         
         // get time span: initial time (t0) and final time (tf)
         double[][] t_span =  ((DoubleNumberToken)operands[1]).getReValues();

@@ -51,7 +51,7 @@ public class getenv extends ExternalFunction
 		
 		if(operands[0] instanceof CharToken)
 		{
-			String name = operands[0].toString();
+			String name = ((CharToken)operands[0]).getElementString(0);
 			String defaultVal = "";
 			
 			if(operands.length > 1)

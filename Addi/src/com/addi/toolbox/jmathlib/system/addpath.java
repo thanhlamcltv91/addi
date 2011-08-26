@@ -49,7 +49,7 @@ public class addpath extends ExternalFunction
             if (!(operands[index] instanceof CharToken))
                 throwMathLibException("addpath: parameter "+index+" is not a char array");
             
-            String path = operands[index].toString();
+            String path = ((CharToken)operands[index]).getElementString(0);
             
             if(path.equalsIgnoreCase("end") || path.equals("1"))
                 prepend = false;
@@ -59,7 +59,7 @@ public class addpath extends ExternalFunction
                
 		for(int index = 0; index < operands.length; index++)
 		{
-            String path = operands[index].toString();
+            String path = ((CharToken)operands[index]).getElementString(0);
             if(!(path.equalsIgnoreCase("end") || path.equals("1") || path.equalsIgnoreCase("begin") || path.equals("0")))
             {
                 FunctionLoader loader = new FileFunctionLoader(new File(path), true);

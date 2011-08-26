@@ -40,7 +40,7 @@ public class savevariables extends ExternalFunction
             if (!(operands[0] instanceof CharToken)) 
                 throwMathLibException("savevariables: argument must be a string");
 
-            file = ((CharToken)operands[0]).toString();
+            file = ((CharToken)operands[0]).getElementString(0);
         }
 
         globals.getLocalVariables().saveVariables(file);

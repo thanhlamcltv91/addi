@@ -55,7 +55,7 @@ public class ed extends ExternalFunction
     		// check if a file name is specified
     		if ((operands[0] instanceof CharToken)) 
     		{
-    			fileName = ((CharToken)operands[0]).toString();
+    			fileName = ((CharToken)operands[0]).getElementString(0);
     			
     			if (fileName.endsWith(".m")) {
     				if (fileName.startsWith("/")) {

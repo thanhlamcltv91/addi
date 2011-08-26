@@ -33,7 +33,7 @@ public class strcat extends ExternalFunction
 		
 		for(int index = 0; index < operands.length; index++)
 		{
-			result += operands[index].toString().trim();
+			result += ((CharToken)operands[index]).getElementString(0).trim();
 		}
 		
 		return new CharToken(result);

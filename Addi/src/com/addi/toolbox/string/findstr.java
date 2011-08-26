@@ -44,8 +44,8 @@ public class findstr extends ExternalFunction
         if ( !(operands[1] instanceof CharToken))
             throwMathLibException("findstr: works only on strings");
 
-        String string1 = ((CharToken)operands[0]).toString();
-        String string2 = ((CharToken)operands[1]).toString();
+        String string1 = ((CharToken)operands[0]).getElementString(0);
+        String string2 = ((CharToken)operands[1]).getElementString(0);
         
         int index = 0;
         int count = 0;
