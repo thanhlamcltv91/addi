@@ -1201,17 +1201,17 @@ public class Parser extends RootObject implements TokenConstants, ErrorCodes
     {
         // parse releation (e.g. if (3<5) ...)
     	// next Token must be a "(" 
-        if (!isExpectedDelimiter(getNextToken(), '('))
-            Errors.throwParserException(" if missing (");
+        //if (!isExpectedDelimiter(getNextToken(), '('))
+        //    Errors.throwParserException(" if missing (");
 
         // get argument inside (...)
         OperandToken ifRelation = parseArithExpression(SINGLE);         
 
         // check if argument is terminated by ")"
-        if (!isExpectedDelimiter(peekNextToken(), ')' )) 
-            Errors.throwParserException("If: missing )");
-        else
-            getNextToken();
+        //if (!isExpectedDelimiter(peekNextToken(), ')' )) 
+        //    Errors.throwParserException("If: missing )");
+        //else
+        //    getNextToken();
             
         ErrorLogger.debugLine("Parser: if after relation: "+ifRelation.toString());
 
@@ -1310,16 +1310,16 @@ public class Parser extends RootObject implements TokenConstants, ErrorCodes
         Token nextToken = null;
         
         // next Token must be a "(" 
-        if (!isExpectedDelimiter(getNextToken(), '(' ))
-            ErrorLogger.debugLine("Parser: switch missing (");
+        //if (!isExpectedDelimiter(getNextToken(), '(' ))
+        //    ErrorLogger.debugLine("Parser: switch missing (");
 
         // get argument inside (...)
         OperandToken switchRelation = parseArithExpression(SINGLE);         
 
-        if (!isExpectedDelimiter(peekNextToken(), ')' )) 
-            Errors.throwParserException("Switch: missing )");
-        else
-            getNextToken();
+        //if (!isExpectedDelimiter(peekNextToken(), ')' )) 
+        //    Errors.throwParserException("Switch: missing )");
+        //else
+        //    getNextToken();
         
         
         if (!isExpectedDelimiter(peekNextToken(), '\n')    ) 
@@ -1383,17 +1383,17 @@ public class Parser extends RootObject implements TokenConstants, ErrorCodes
      */
     private OperandToken parseCase()
     {
-        if (!isExpectedDelimiter(getNextToken(), '(' ))
-            ErrorLogger.debugLine("Parser: case missing (");
+        //if (!isExpectedDelimiter(getNextToken(), '(' ))
+        //    ErrorLogger.debugLine("Parser: case missing (");
 
         // get argument inside (...)
         ErrorLogger.debugLine("Parser: switch: case relation     *****");
         OperandToken caseRelation = parseArithExpression(SINGLE);         
 
-        if (!isExpectedDelimiter(peekNextToken(), ')' )) 
-            Errors.throwParserException("Switch case: missing )");
-        else
-            getNextToken();
+        //if (!isExpectedDelimiter(peekNextToken(), ')' )) 
+        //    Errors.throwParserException("Switch case: missing )");
+        //else
+        //    getNextToken();
 
         ErrorLogger.debugLine("Parser: switch: case relation end *****");
         
@@ -1429,18 +1429,18 @@ public class Parser extends RootObject implements TokenConstants, ErrorCodes
     {
 
         // check for "("   (e.g. while(.....  )
-        if(!isExpectedDelimiter(peekNextToken(), '(') )
-            Errors.throwParserException("while: ERROR missing (");
-        else
-            getNextToken();
+        //if(!isExpectedDelimiter(peekNextToken(), '(') )
+        //    Errors.throwParserException("while: ERROR missing (");
+        //else
+        //    getNextToken();
 
         // get argument inside (...)
         OperandToken whileRelation = parseArithExpression(SINGLE);         
 
-        if(!isExpectedDelimiter(peekNextToken(), ')') )
-            Errors.throwParserException("While: ERROR missing )");
-        else
-            getNextToken();
+        //if(!isExpectedDelimiter(peekNextToken(), ')') )
+        //    Errors.throwParserException("While: ERROR missing )");
+        //else
+        //    getNextToken();
 
         ErrorLogger.debugLine("Parser: while after relation");
 
