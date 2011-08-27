@@ -160,14 +160,11 @@ public class FunctionToken extends OperandToken
     
         // Function is not overloaded by a variable
         // Now try to find the function
-        try
-        {
-            function = globals.getFunctionManager().findFunction(this);
-        }
-        catch(Exception exception)
-        {
-            Errors.throwMathLibException(ERR_FUNCTION_NOT_FOUND, new Object[] {name});
-        }
+        try {
+			function = globals.getFunctionManager().findFunction(this);
+		} catch (Exception e) {
+			Errors.throwMathLibException(e.getMessage());
+		}
       
         // Check wether or not the function was found
         if(function != null)

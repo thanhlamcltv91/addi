@@ -111,7 +111,7 @@ public class MFileLoader extends RootObject
      }
      catch (Exception e)
      {
-         Errors.throwMathLibException("MFileLoader: m-file exception");
+    	 Errors.throwMathLibException(ERR_FUNCTION_NOT_FOUND, new Object[] {mFileName});
      }          
  
      ErrorLogger.debugLine("MFileLoader: code: begin \n"+code+"\ncode end");
@@ -163,7 +163,7 @@ public class MFileLoader extends RootObject
         }
         catch (Exception e)
         {
-            Errors.throwMathLibException("MFileLoader: m-file exception");
+        	Errors.throwMathLibException(ERR_FUNCTION_NOT_FOUND, new Object[] {mFileName});
         }          
     
         ErrorLogger.debugLine("MFileLoader: code: begin \n"+code+"\ncode end");
