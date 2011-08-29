@@ -308,7 +308,13 @@ public class Parser extends RootObject implements TokenConstants, ErrorCodes
                     else if ( (next instanceof VariableToken) ||
                               (next instanceof CharToken)        ) 
                     {
-                        String s = next.toString();
+                    	String s;
+                    	if (next instanceof CharToken) {
+                    		s = ((CharToken)next).getElementString(0);
+                    	} else {
+                    		s = next.toString();
+                    	}
+                        
                         ErrorLogger.debugLine("Parser: var var variable "+next.toString());
                         getNextToken();
                         func.setOperands(new OperandToken[] {(OperandToken)new CharToken(s)});

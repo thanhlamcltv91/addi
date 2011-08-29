@@ -26,7 +26,7 @@ public class error extends ExternalFunction
 	{	
 		if(operands[0] instanceof CharToken)
 		{
-			String val = ((CharToken)operands[0]).toString();
+			String val = ((CharToken)operands[0]).getElementString(0);
 			if(val.equals(""))
 				return new CharToken("");
 		}	

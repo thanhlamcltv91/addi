@@ -39,7 +39,7 @@ public class format extends ExternalFunction
 		String type = "";
 		
 		if (getNArgIn(operands)==1)
-		    type = operands[0].toString();
+		    type = ((CharToken)operands[0]).getElementString(0);
 		
         //setNumberFormat(DecimalFormat.getInstance(Locale.ENGLISH));
 		

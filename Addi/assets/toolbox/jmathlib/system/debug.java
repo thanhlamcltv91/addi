@@ -28,7 +28,7 @@ public class debug extends ExternalFunction
 		{
 			Parser p = new Parser();
 		
-			String expression = ((CharToken)operands[0]).toString();
+			String expression = ((CharToken)operands[0]).getElementString(0);
 			// separate expression into tokens and return tree of expressions
             OperandToken expressionTree = p.parseExpression(expression);
 

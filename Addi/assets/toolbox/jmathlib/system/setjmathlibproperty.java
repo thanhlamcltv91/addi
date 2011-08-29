@@ -34,8 +34,8 @@ public class setjmathlibproperty extends ExternalFunction
              (!(operands[1] instanceof CharToken))    )
             throwMathLibException("setjmathlibproperty: arguments must be strings");
 
-			String name = operands[0].toString();
-            String prop = operands[1].toString();
+			String name = ((CharToken)operands[0]).getElementString(0);
+            String prop = ((CharToken)operands[1]).getElementString(0);
 		
             globals.setProperty(name, prop);
 			
