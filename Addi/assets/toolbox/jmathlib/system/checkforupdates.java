@@ -50,7 +50,7 @@ public class checkforupdates extends ExternalFunction
         {    
         	if ((operands[0] instanceof CharToken))
         	{
-                String st = ((CharToken)operands[0]).toString();
+                String st = ((CharToken)operands[0]).getElementString(0);
                 if (st.equals("-silent"))
                 {
                     // silent check for updates is requested

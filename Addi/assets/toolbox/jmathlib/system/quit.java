@@ -21,7 +21,7 @@ public class quit extends ExternalFunction
 	    if ((getNArgIn(operands) == 1)         &&
 	        (operands[0] instanceof CharToken)    )
 	    {
-	            String value = operands[0].toString();
+	            String value = ((CharToken)operands[0]).getElementString(0);
 
 	            // if user calls quit("force") JMathLib will be terminated
 	            // immediately without saving anything

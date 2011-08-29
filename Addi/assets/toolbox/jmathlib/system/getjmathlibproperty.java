@@ -33,7 +33,7 @@ public class getjmathlibproperty extends ExternalFunction
         if (!(operands[0] instanceof CharToken))
             throwMathLibException("getjmathlibproperty: number of arguments != 1");
 
-			String name = operands[0].toString();
+			String name = ((CharToken)operands[0]).getElementString(0);
 			String defaultVal = "";
 			
 		

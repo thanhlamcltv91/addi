@@ -32,7 +32,7 @@ public class rmpath extends ExternalFunction
         if ((operands[0] instanceof CharToken))
             throwMathLibException("rmpath: works only on char arrays");
 
-        File path = new File(((CharToken)operands[0]).toString());
+        File path = new File(((CharToken)operands[0]).getElementString(0));
         
         for (int i=0;i<globals.getFunctionManager().getFunctionLoaderCount();i++) 
         {

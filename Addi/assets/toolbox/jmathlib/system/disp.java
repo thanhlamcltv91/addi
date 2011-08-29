@@ -23,7 +23,7 @@ public class disp extends ExternalFunction
 	{
 		for(int index = 0; index < operands.length; index++)
 		{
-		    globals.getInterpreter().displayText(operands[index].toString());
+		    globals.getInterpreter().displayText(((CharToken)operands[index]).getElementString(0));
 		}
 		
 		return null; 

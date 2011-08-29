@@ -190,7 +190,11 @@ public class fprintf extends ExternalFunction
                 case 's':
                 {
                     nTok++;
-                    retString= retString + tok[nTok].toString();
+                    if (tok[nTok] instanceof CharToken) {
+                    	retString= retString + ((CharToken)tok[nTok]).getElementString(0);
+                    } else {
+                    	retString= retString + tok[nTok].toString();
+                    }
                     return;
                 }
                 default:

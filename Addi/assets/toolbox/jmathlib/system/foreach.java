@@ -36,8 +36,8 @@ public class foreach extends ExternalFunction
 			if((operands[1] instanceof CharToken) && (operands[2] instanceof CharToken))
 			{
 				//create a variable with the correct name
-				Variable var = globals.createVariable(((CharToken)operands[1]).toString());
-				String expression = ((CharToken)operands[2]).toString();
+				Variable var = globals.createVariable(((CharToken)operands[1]).getElementString(0));
+				String expression = ((CharToken)operands[2]).getElementString(0);
 
 				//parse the expression
 				Parser p = new Parser();
