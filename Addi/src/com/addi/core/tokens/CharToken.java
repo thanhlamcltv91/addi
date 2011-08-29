@@ -132,6 +132,9 @@ public class CharToken extends DataToken
      */
     public String toString()
     {
+    	if (sizeY == 1) {
+    		return getElementString(0);
+    	}
         String result = null;
         if((sizeY == 0) && (sizeX == 0))
         {
