@@ -22,8 +22,16 @@
    # if it is a function: _return = nameoffilewithoutdotm(arg1, arg2, etc)_
 
  ==How do I setup to be a developer?==
-  # Follow the Android [http://developer.android.com/resources/tutorials/hello-world.html Hello World] instructions for setup
+  # Follow the Android [http://developer.android.com/resources/tutorials/hello-world.html Hello World] instructions for setup of your PC.
    # Follow each step fully.
    # We develop using eclipse.
    # You can check if you are setup correctly by trying to create and run the Hello World example.
   # Get subclipse 
+   #In Eclipse click help->install new software
+   #Click add
+   #Use this website http://subclipse.tigris.org/update_1.6.x
+   #Check all three boxes
+   #Install them (I have had this fail before and had to do it twice)
+  #Create an Addi project
+   #In Eclipse click file -> new project -> svn -> create new repository location -> https://addi.googlecode.com/svn
+   #Click on addi
