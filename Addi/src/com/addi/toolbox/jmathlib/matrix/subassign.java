@@ -111,21 +111,21 @@ public class subassign extends ExternalFunction
         // evaluate vertical selection (e.g. subassign(a,<....>,3) )
         if(operands[2] instanceof DoubleNumberToken)
         {
-            // e.g. submatrix(a,<number>) or submatrix(a,<number>,4)
-            // submatrix(a,3:5) 
+            // e.g. subassign(a,<number>) or subassign(a,<number>,4)
+            // subassign(a,3:5) 
         }
         else if(operands[2] instanceof Expression)
         {
-            // e.g.  submatrix(a,:) or submatrix(a,2:end)
+            // e.g.  subassign(a,:) or subassign(a,2:end)
             Expression    expr = (Expression)operands[2];
             OperatorToken op   = (OperatorToken)expr.getData();
 
-            debugLine("submatrix expr="+operands[2].toString());
+            debugLine("subassign expr="+operands[2].toString());
             
             // check if expression contains colon, e.g. (:) , (3:end)
             if ((op == null)                         ||
                 (!(op instanceof ColonOperatorToken))  )
-                throwMathLibException("SubMatrix: colon error");
+                throwMathLibException("SubAssign: colon error");
 
             OperandToken colonOp = null;
             
@@ -138,12 +138,12 @@ public class subassign extends ExternalFunction
                     
                 if ( (!(right instanceof DelimiterToken))                   ||
                      (!((DelimiterToken)right).getWordValue().equals("end"))  )
-                        throwMathLibException("SubMatrix: wrong delimiter");
+                        throwMathLibException("SubAssign: wrong delimiter");
                 
                 // "end" delimiter indicates total number of values or
                 //   just the number of rows
-                // if two   arguments: e.g. submatrix(a,3:end)     -> 3:dy*dx 
-                // if three arguments: e.g. submatrix(a,3:end,4:8) -> 3:dy
+                // if two   arguments: e.g. subassign(a,3:end)     -> 3:dy*dx 
+                // if three arguments: e.g. subassign(a,3:end,4:8) -> 3:dy
                 if (getNArgIn(operands)==3)
                     right = new DoubleNumberToken(dy*dx);
                 else
@@ -162,12 +162,12 @@ public class subassign extends ExternalFunction
                     
                 if ( (!(right instanceof DelimiterToken))                   ||
                      (!((DelimiterToken)right).getWordValue().equals("end"))  )
-                        throwMathLibException("SubMatrix: wrong delimiter");
+                        throwMathLibException("SubAssign: wrong delimiter");
                 
                 // "end" delimiter indicates total number of values or
                 //   just the number of rows
-                // if two   arguments: e.g. submatrix(a,3:2:end)     -> 3:2:dy*dx 
-                // if three arguments: e.g. submatrix(a,3:2:end,4:8) -> 3:2:dy
+                // if two   arguments: e.g. subassign(a,3:2:end)     -> 3:2:dy*dx 
+                // if three arguments: e.g. subassign(a,3:2:end,4:8) -> 3:2:dy
                 if (getNArgIn(operands)==3)
                     right = new DoubleNumberToken(dy*dx);
                 else
@@ -179,8 +179,8 @@ public class subassign extends ExternalFunction
             else if (expr.getNumberOfChildren() == 0)
             {
                 // ":" indicates all indexes of matrix/rows
-                // if two   arguments: e.g. submatrix(a,:)   -> ALL elements
-                // if three arguments: e.g. submatrix(a,3,:) -> all rows
+                // if two   arguments: e.g. subassign(a,:)   -> ALL elements
+                // if three arguments: e.g. subassign(a,3,:) -> all rows
                 int len = 0;
                 if (getNArgIn(operands)==3)
                     len = (dy*dx);
@@ -193,30 +193,57 @@ public class subassign extends ExternalFunction
 
             }
             else
-                throwMathLibException("SubMatrix: colon wrong number of childs");
+                throwMathLibException("SubAssign: colon wrong number of childs");
 
             // evaluate new colon expression
             colonOp = colonOp.evaluate(null, globals);
             
             if ( !(colonOp instanceof DoubleNumberToken))
-                throwMathLibException("SubMatrix: colon error wrong type");
+                throwMathLibException("SubAssign: colon error wrong type");
               
             // e.g. a(:) must return a column vector
             if (getNArgIn(operands)==2)
                 colonOp = colonOp.transpose();
 
-            // copy new array of indices to second operand of SubMatrix
+            // copy new array of indices to second operand of SubAssign
             operands[2]= colonOp;
 
+        }        
+        else if(operands[2] instanceof LogicalToken)
+        {
+            // e.g. subassign(a,[true,true,false,true])
+            LogicalToken l = (LogicalToken)operands[2];
+            
+            // find number of elements unequal zero
+            int n = 0;
+            for (int i=0; i<l.getNumberOfElements(); i++)
+            {
+                if (l.getValue(i))
+                    n++;
+            }
+            
+            // create index array from boolean values
+            // eg. a=[true,true,false,true] ->[1,2,4] (use indices with "true")
+            double[][] values = new double [1][n];
+            int ni =0;
+            for (int i=0; i<l.getNumberOfElements(); i++)
+            {
+                if (l.getValue(i))
+                {
+                  values[0][ni] = (double)i + 1;
+                  ni++;
+                }
+            }            
+            operands[2] = new DoubleNumberToken(values,null);
         }
         else
-            throwMathLibException("SubMatrix: eval: unknown operand");
+            throwMathLibException("SubAssign: eval: unknown operand");
 
         // get limits size and indices
         y_dy      = ((DoubleNumberToken)operands[2]).getSizeY();
         y_dx      = ((DoubleNumberToken)operands[2]).getSizeX();
         y_indexes = ((DoubleNumberToken)operands[2]).getReValues();
-        ErrorLogger.debugLine("SubMatrix: y_dy="+y_dy+" y_dx="+y_dx);
+        ErrorLogger.debugLine("SubAssign: y_dy="+y_dy+" y_dx="+y_dx);
 
         // find highest index
         for (int xi=0; xi<y_dx; xi++)
@@ -226,45 +253,45 @@ public class subassign extends ExternalFunction
                 if (y_indexes[yi][xi]> dy_max)
                     dy_max = (int)y_indexes[yi][xi];
                 if (y_indexes[yi][xi]<=0)
-                    throwMathLibException("SubMatrix: index y <=0");
+                    throwMathLibException("SubAssign: index y <=0");
             }
         }
-        debugLine("SubMatrix: dy_max "+dy_max);
+        debugLine("SubAssign: dy_max "+dy_max);
         
         // evaluate horizontal selection (e.g. subassign(a,b,3,<...>) )
         if(operands.length==4)
         {
-            debugLine("SubMatrix: "+operands[3].toString());
+            debugLine("SubAssign: "+operands[3].toString());
             
             if(operands[3] instanceof DoubleNumberToken)
             {
-                // e.g. submatrix(a,1,<some array>)
-                // e.g. submatrix(a,1,2) 
+                // e.g. subassign(a,1,<some array>)
+                // e.g. subassign(a,1,2) 
             }
             else if(operands[3] instanceof Expression)
             {
-                // e.g.  submatrix(a,:) or submatrix(a,2:end)
+                // e.g.  subassign(a,:) or subassign(a,2:end)
                 Expression    expr = (Expression)operands[3];
                 OperatorToken op   = (OperatorToken)expr.getData();
 
                 // check if expression contains colon, e.g. (:) , (3:end)
                 if ((op == null)                         ||
                     (!(op instanceof ColonOperatorToken))  )
-                    throwMathLibException("SubMatrix: colon error");
+                    throwMathLibException("SubAssign: colon error");
 
                 OperandToken colonOp = null;
 
                 if (expr.getNumberOfChildren() == 2)
                 {
-                    // submatrix(a,3,4:end)
+                    // subassign(a,3,4:end)
                     OperandToken left  = expr.getChild(0);
                     OperandToken right = expr.getChild(1);
                         
                     if ( (!(right instanceof DelimiterToken))                   ||
                          (!((DelimiterToken)right).getWordValue().equals("end"))  )
-                            throwMathLibException("SubMatrix: wrong delimiter");
+                            throwMathLibException("SubAssign: wrong delimiter");
                     
-                    // if three arguments: e.g. submatrix(a,3,4:end) -> 4:dx
+                    // if three arguments: e.g. subassign(a,3,4:end) -> 4:dx
                     right = new DoubleNumberToken(dx);
 
                     // create new ColonOperator and return new indexes
@@ -279,9 +306,9 @@ public class subassign extends ExternalFunction
                         
                     if ( (!(right instanceof DelimiterToken))                   ||
                          (!((DelimiterToken)right).getWordValue().equals("end"))  )
-                            throwMathLibException("SubMatrix: wrong delimiter");
+                            throwMathLibException("SubAssign: wrong delimiter");
                     
-                    // if three arguments: e.g. submatrix(a,3,4:2:end) -> 4:2:dx
+                    // if three arguments: e.g. subassign(a,3,4:2:end) -> 4:2:dx
                     right = new DoubleNumberToken(dx);
 
                     // create new ColonOperator and return new indexes
@@ -289,30 +316,30 @@ public class subassign extends ExternalFunction
                 }
                 else if (expr.getNumberOfChildren() == 0)
                 {
-                    // if three arguments: e.g. submatrix(a,3,:) -> all columns
+                    // if three arguments: e.g. subassign(a,3,:) -> all columns
                     colonOp = new Expression(new ColonOperatorToken(),
                                              new DoubleNumberToken(1),
                                              new DoubleNumberToken(dx)    );
                 }
                 else
-                    throwMathLibException("SubMatrix: colon wrong number of childs");
+                    throwMathLibException("SubAssign: colon wrong number of childs");
         
                 // evaluate new colon expression
                 colonOp = colonOp.evaluate(null, globals);
                 
                 if ( !(colonOp instanceof DoubleNumberToken))
-                    throwMathLibException("SubMatrix: colon error wrong type");
+                    throwMathLibException("SubAssign: colon error wrong type");
                   
-                // copy new array of indices to second operand of SubMatrix
+                // copy new array of indices to second operand of SubAssign
                 operands[3]= colonOp;
             }
             else
-                throwMathLibException("SubMatrix: eval: unknown operand");
+                throwMathLibException("SubAssign: eval: unknown operand");
             
             x_dy      = ((DoubleNumberToken)operands[3]).getSizeY();
             x_dx      = ((DoubleNumberToken)operands[3]).getSizeX();
             x_indexes = ((DoubleNumberToken)operands[3]).getReValues();
-            ErrorLogger.debugLine("SubMatrix: "+x_dy+" "+x_dx);
+            ErrorLogger.debugLine("SubAssign: "+x_dy+" "+x_dx);
 
             // find highest index
             for (int xi=0; xi<x_dx; xi++)
@@ -322,10 +349,10 @@ public class subassign extends ExternalFunction
                     if (x_indexes[yi][xi]> dx_max)
                         dx_max = (int)x_indexes[yi][xi];
                     if (x_indexes[yi][xi]<=0)
-                        throwMathLibException("SubMatrix: index x <=0");
+                        throwMathLibException("SubAssign: index x <=0");
                 }
             }
-            debugLine("SubMatrix: dx_max "+dx_max);
+            debugLine("SubAssign: dx_max "+dx_max);
         } // end op.length
 
         
@@ -435,13 +462,13 @@ public class subassign extends ExternalFunction
                 {
                     int index = (int)y_indexes[yi][xi]-1;
                     if ((index<0) || (index>dy*dx-1))
-                            throwMathLibException("SubMatrix: index exceeds array dimensions");
+                            throwMathLibException("SubAssign: index exceeds array dimensions");
 
                     // different approach if working on cell arrays
                     // if a={'asdf',[4,5]} then a{1,2} will return a number token [4,5] 
                    /* if ((operands[0] instanceof CellArrayToken) && leftCellB)
                     {
-                        ErrorLogger.debugLine("SubMatrix: cell1");
+                        ErrorLogger.debugLine("SubAssign: cell1");
                         return ((DataToken)operands[0]).getElement(y,x); 
                     }
                     */
@@ -498,7 +525,7 @@ public class subassign extends ExternalFunction
                 dy          = ((DataToken)operands[0]).getSizeY(); 
                 dx          = ((DataToken)operands[0]).getSizeX();
             }
-            debugLine("SubMatrix: dy="+dy+" dx="+dx);
+            debugLine("SubAssign: dy="+dy+" dx="+dx);
     
             // different approach if working on cell arrays
             if (operands[0] instanceof CellArrayToken)
@@ -533,25 +560,25 @@ public class subassign extends ExternalFunction
                     // check if row-number is valid
                     int indexX = (int)x_indexes[xyi][xxi]-1;
                     if ((indexX<0) || (indexX>dx-1))
-                            throwMathLibException("SubMatrix: index X exceeds array dimensions");
+                            throwMathLibException("SubAssign: index X exceeds array dimensions");
     
                     // work through y_indexes
                     for (int yxi=0; yxi<y_dx; yxi++)
                     {
                         for (int yyi=0; yyi<y_dy; yyi++)
                         {
-                            //ErrorLogger.debugLine("SubMatrix: y="+y+" x="+x);
+                            //ErrorLogger.debugLine("SubAssign: y="+y+" x="+x);
                             
                             // check if column-number is valid
                             int indexY = (int)y_indexes[yyi][yxi]-1;
                             if ((indexY<0) || (indexY>dy-1))
-                                    throwMathLibException("SubMatrix: index Y exceeds array dimensions");
+                                    throwMathLibException("SubAssign: index Y exceeds array dimensions");
     
                             // different approach if working on cell arrays
                             // if a={'asdf',[4,5]} then a{1,2} will return a number token [4,5] 
                             /*if ((operands[0] instanceof CellArrayToken) && leftCellB)
                             {
-                                ErrorLogger.debugLine("SubMatrix: cell1");
+                                ErrorLogger.debugLine("SubAssign: cell1");
                                 return ((DataToken)operands[0]).setElement((int)y_indexes[yyi][yxi]-1,
                                                                            (int)x_indexes[xyi][xxi]-1,
                                                                            ); 
