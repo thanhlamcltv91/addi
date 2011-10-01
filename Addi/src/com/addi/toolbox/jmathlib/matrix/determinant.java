@@ -18,6 +18,7 @@
 package com.addi.toolbox.jmathlib.matrix;
 
 import com.addi.core.functions.ExternalFunction;
+import com.addi.core.functions.Function;
 import com.addi.core.interpreter.GlobalValues;
 import com.addi.core.tokens.*;
 import com.addi.core.tokens.numbertokens.DoubleNumberToken;
@@ -42,10 +43,8 @@ public class determinant extends ExternalFunction
 			DoubleNumberToken matrix = ((DoubleNumberToken)operand);
 			
 			if(matrix.getSizeX() == matrix.getSizeY())
-			{
-				int size = matrix.getSizeX();
-				
-				result = new DoubleNumberToken(calcDeterminant(matrix.getReValues(), size));
+			{				
+				result = calcDeterminant(matrix,globals);
 			}
 	        else
 	        {
@@ -60,62 +59,85 @@ public class determinant extends ExternalFunction
 	values 	= array of values
 	size 	= the size of the matrix
 	result 	= the determinant */
-	private double calcDeterminant(double[][] values, int size)
+	private DoubleNumberToken calcDeterminant(DoubleNumberToken matrix, GlobalValues globals)
 	{
+		int size = matrix.getSizeY();
+		
 		com.addi.core.interpreter.ErrorLogger.debugLine("calculating determinant - size = " + size);
-		double result = 0;
+		DoubleNumberToken result = new DoubleNumberToken(0.0,0.0);
+		DoubleNumberToken temp = new DoubleNumberToken(0.0,0.0);
 		if(size == 1)		//special case 1, a scalar value
 		{
-			result = values[0][0];
+			result = (DoubleNumberToken)matrix.getElement(0, 0);
 		}
 		else if(size == 2)	//special case 2, a 2*2 matrix
 		{
-			result = values[0][0] * values[1][1] - values[1][0] * values[0][1];
+			result = (DoubleNumberToken)matrix.getElement(0, 0);
+			result = (DoubleNumberToken)result.multiply((DoubleNumberToken)matrix.getElement(1, 1));
+			temp = (DoubleNumberToken)matrix.getElement(1, 0);
+			temp = (DoubleNumberToken)temp.multiply((DoubleNumberToken)matrix.getElement(0, 1));
+			result = (DoubleNumberToken)result.subtract(temp);
 		}
 		else				//calculate the determinant of an larger matrix
 		{					//using recursion
 			for(int colNumber = 0; colNumber < size; colNumber++)
 			{
 				//construct the sub matrix
-				double[][] newMatrix = constructMatrix(values, size, colNumber);
-	
-				int modifier = -1;
+				FunctionToken token = null;
+				Function function   = null;
+				
+				try
+				{
+					token = new FunctionToken("submatrix");
+					function = globals.getFunctionManager().findFunction(token);
+				}
+				catch(java.lang.Exception e)
+				{}
+				
+				DoubleNumberToken [] submatrixOperands = new DoubleNumberToken[3];
+				DoubleNumberToken submatrixResult = null;
+				double[] rowsRe = new double[size-1];
+				double[] rowsIm = new double[size-1];
+				double[] columnsRe = new double[size-1];
+				double[] columnsIm = new double[size-1];
+				int rowIndex = 0;
+				int columnIndex = 0;
+				for (int rowLoop = 0; rowLoop < size; rowLoop++) {
+					if (rowLoop == 0) {
+						continue;
+					}
+					rowsRe[rowIndex] = rowLoop+1;
+					rowsIm[rowIndex] = 0;
+					rowIndex++;
+				}
+				for (int columnLoop = 0; columnLoop < size; columnLoop++) {
+					if (columnLoop == colNumber) {
+						continue;
+					}
+					columnsRe[columnIndex] = columnLoop+1;
+					columnsIm[columnIndex] = 0;
+					columnIndex++;
+				}
+				submatrixOperands[0] = matrix;
+				submatrixOperands[1] = new DoubleNumberToken(1,size-1,rowsRe,rowsIm);
+				submatrixOperands[2] = new DoubleNumberToken(1,size-1,columnsRe,columnsIm);
+				submatrixResult = (DoubleNumberToken)function.evaluate(submatrixOperands, globals);
+				
+				DoubleNumberToken modifier = new DoubleNumberToken(-1.0,0.0);
+
 				if(colNumber % 2 == 0)
-					modifier = 1;
+					modifier = new DoubleNumberToken(1.0,0.0);;
+					
+				DoubleNumberToken element = (DoubleNumberToken)matrix.getElement(0, colNumber);
 								
-				result += modifier * values[0][colNumber] * calcDeterminant(newMatrix, size - 1);
+				result = (DoubleNumberToken)result.add((modifier.multiply(element)).multiply(calcDeterminant(submatrixResult, globals)));
 			}
 		}
 		
 		return result;
 	}
-	
-	/**constructs a sub matrix
-	values = the array of values
-	size   = the size of the origional matrix
-	column = the column to remove
-	result = the [size-1][size-1] array of values after reomoving
-			  row 1 and the specified column*/
-	private double[][] constructMatrix(double[][]values, int size, int column)
-	{
-		com.addi.core.interpreter.ErrorLogger.debugLine("Creating new matrix - size = " + size);
-		double newMatrix[][] = new double[size-1][size-1];
-		
-		for(int rowNumber = 1; rowNumber < size; rowNumber++)
-		{
-			for(int colNumber = 0; colNumber < size; colNumber++)
-			{
-				if(colNumber < column)
-					newMatrix[rowNumber-1][colNumber] = values[rowNumber][colNumber];
-				else if(colNumber > column)
-					newMatrix[rowNumber-1][colNumber-1] = values[rowNumber][colNumber];
-					
-			}
-		}
-		return newMatrix;
-	}
 }
-
+	
 /*
 @GROUP
 matrix

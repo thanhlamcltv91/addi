@@ -71,22 +71,13 @@ public class inversematrix extends ExternalFunction
 				catch(java.lang.Exception e)
 				{}
 			
-				double matrixDeterminant = ((DoubleNumberToken)determinant.evaluate(operands, globals)).getValueRe();
+				DoubleNumberToken matrixDeterminant = (DoubleNumberToken)determinant.evaluate(operands, globals);
 				
-				if(matrixDeterminant != 0)
+				if (!matrixDeterminant.equals(new DoubleNumberToken(0.0,0.0)))
 				{
 					DoubleNumberToken matrixAdjoint = ((DoubleNumberToken)adjoint.evaluate(operands, globals));
 					
-					double[][] values = matrixAdjoint.getReValues();
-					
-					for(int rowNumber = 0; rowNumber < size; rowNumber++)
-					{
-						for(int colNumber = 0; colNumber < size; colNumber++)
-						{
-							values[rowNumber][colNumber] = values[rowNumber][colNumber] / matrixDeterminant;
-						}
-					}
-					result = new DoubleNumberToken(values);
+					result = matrixAdjoint.divide(matrixDeterminant);
 				}
 		        else
 		        {

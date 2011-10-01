@@ -45,9 +45,7 @@ public class adjoint extends ExternalFunction
 		
 		if(matrix.getSizeX() == matrix.getSizeY())
 		{
-			int size = matrix.getSizeX();
-			
-			result = new DoubleNumberToken(calcAdjoint(matrix.getReValues(), size, globals));
+			result = calcAdjoint(matrix, globals);
 		}
         else
         {
@@ -62,87 +60,88 @@ public class adjoint extends ExternalFunction
 	values = array of values
 	size   = the size of the matrix
 	result = the adjoint as a size * size array of double*/
-	private double[][] calcAdjoint(double[][] values, int size, GlobalValues globals)
+	private DoubleNumberToken calcAdjoint(DoubleNumberToken matrix, GlobalValues globals)
 	{
+		int size = matrix.getSizeY();
+		
 		FunctionToken token = null;
 		Function function   = null;
+		FunctionToken token1 = null;
+		Function function1   = null;
         
 		try
 		{
-			token = new FunctionToken("determinant");
+			token = new FunctionToken("submatrix");
 			function = globals.getFunctionManager().findFunction(token);
+			token1 = new FunctionToken("determinant");
+			function1 = globals.getFunctionManager().findFunction(token1);
 		}
 		catch(java.lang.Exception e)
 		{}
 
-		double[][] result = new double[size][size];
+		DoubleNumberToken tempResult;
+		double [][] resultRe = new double[size][size];
+		double [][] resultIm = new double[size][size];
+		
+		if (size==1) {
+			return(new DoubleNumberToken(1.0,0.0));
+		}
+		
 		for(int rowNumber = 0; rowNumber < size; rowNumber++)
 		{
 			for(int colNumber = 0; colNumber < size; colNumber++)
 			{
-				DoubleNumberToken subMatrix = new DoubleNumberToken(constructMatrix(values, size, rowNumber, colNumber));
+				
+				DoubleNumberToken [] submatrixOperands = new DoubleNumberToken[3];
+				DoubleNumberToken submatrixResult = null;
+				double[] rowsRe = new double[size-1];
+				double[] rowsIm = new double[size-1];
+				double[] columnsRe = new double[size-1];
+				double[] columnsIm = new double[size-1];
+				int rowIndex = 0;
+				int columnIndex = 0;
+				for (int rowLoop = 0; rowLoop < size; rowLoop++) {
+					if (rowLoop == rowNumber) {
+						continue;
+					}
+					rowsRe[rowIndex] = rowLoop+1;
+					rowsIm[rowIndex] = 0;
+					rowIndex++;
+				}
+				for (int columnLoop = 0; columnLoop < size; columnLoop++) {
+					if (columnLoop == colNumber) {
+						continue;
+					}
+					columnsRe[columnIndex] = columnLoop+1;
+					columnsIm[columnIndex] = 0;
+					columnIndex++;
+				}
+				submatrixOperands[0] = matrix;
+				submatrixOperands[1] = new DoubleNumberToken(1,size-1,rowsRe,rowsIm);
+				submatrixOperands[2] = new DoubleNumberToken(1,size-1,columnsRe,columnsIm);
+				submatrixResult = (DoubleNumberToken)function.evaluate(submatrixOperands, globals);
 				
 				OperandToken[] operands = new OperandToken[1];
-				operands[0] = subMatrix;
+				operands[0] = submatrixResult;
 
-								
-				double minor = ((DoubleNumberToken)function.evaluate(operands, globals)).getValueRe();
+				DoubleNumberToken minor = (DoubleNumberToken)function1.evaluate(operands, globals);
 				
-				int modifier = -1;
+				DoubleNumberToken modifier = new DoubleNumberToken(-1.0,0.0);
 				if((rowNumber + colNumber) % 2 == 0)
-					modifier = 1;
+					modifier = new DoubleNumberToken(1.0,0.0);
 					
-				result[rowNumber][colNumber] = modifier * minor;
+				tempResult = (DoubleNumberToken)modifier.multiply(minor);
+					
+				resultRe[colNumber][rowNumber] = tempResult.getValueRe();
+				resultIm[colNumber][rowNumber] = tempResult.getValueIm();
 			}
 		}
 		
-		//transpose the array of cofactors to produce the result
-		double[][] transResult = new double[size][size];
+		DoubleNumberToken result = new DoubleNumberToken(resultRe, resultIm);
 		
-		for(int colno = 0; colno < size; colno++)
-		{
-			for(int rowno = 0; rowno < size; rowno++)
-			{
-				transResult[colno][rowno] = result[rowno][colno];
-			}
-		}
-			
-		return transResult;
+		return result;
 	}
 
-	/**constructs a sub matrix
-	values = the array of values
-	size   = the size of the origional matrix
-	column = the column to remove
-	result = the [size-1][size-1] array of values after reomoving
-			  row 1 and the specified column*/
-	private double[][] constructMatrix(double[][]values, int size, int row, int column)
-	{
-		double newMatrix[][] = new double[size-1][size-1];
-		
-		for(int rowNumber = 0; rowNumber < size; rowNumber++)
-		{
-			for(int colNumber = 0; colNumber < size; colNumber++)
-			{
-				if(rowNumber < row)
-				{
-					if(colNumber < column)
-						newMatrix[rowNumber][colNumber] = values[rowNumber][colNumber];
-					else if(colNumber > column)
-						newMatrix[rowNumber][colNumber-1] = values[rowNumber][colNumber];
-				}
-				else if(rowNumber > row)
-				{
-					if(colNumber < column)
-						newMatrix[rowNumber-1][colNumber] = values[rowNumber][colNumber];
-					else if(colNumber > column)
-						newMatrix[rowNumber-1][colNumber-1] = values[rowNumber][colNumber];
-				}
-					
-			}
-		}
-		return newMatrix;
-	}
 }
 
 /*
