@@ -953,7 +953,7 @@ public class FunctionManager {
         functions.put("sort","com.addi.toolbox.jmathlib.matrix");
         functions.put("sqrt","com.addi.toolbox.jmathlib.matrix");
         functions.put("subassign","com.addi.toolbox.jmathlib.matrix");
-        functions.put("submatix","com.addi.toolbox.jmathlib.matrix");
+        functions.put("submatrix","com.addi.toolbox.jmathlib.matrix");
         functions.put("sum","com.addi.toolbox.jmathlib.matrix");
         functions.put("sumsq","toolbox/jmathlib/matrix/sumsq.m");
         functions.put("svd","com.addi.toolbox.jmathlib.matrix");
