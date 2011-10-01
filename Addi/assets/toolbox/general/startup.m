@@ -11,6 +11,7 @@ disp("Goal is to make it like Matlab/Octave.");
 disp("But java based and open source.");
 disp("Learn about this project at http://addi.googlecode.com");
 disp("You can file bugs, make feature requests, even help out");
+disp("Please donate to support Addi http://code.google.com/p/addi/wiki/Donate");
 disp("Type help if you need more help");
 setdebug(1); 
 
