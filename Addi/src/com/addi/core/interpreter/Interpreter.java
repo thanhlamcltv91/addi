@@ -25,12 +25,14 @@ import com.addi.core.tokens.*;
 import com.addi.core.tokens.numbertokens.DoubleNumberToken;
 
 import android.app.Activity;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.AssetManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.content.Context;
 
 /**This is the main interface for the program. Any interface to the MathLib program would access
 it through the functions exposed by this class.*/
@@ -111,7 +113,7 @@ public class Interpreter
      * displays a string to the outputPanel
      *  @param text = the text to display
      */
-    public void displayText(String text)
+    public static void displayText(String text)
     {
     	Message msg = new Message();
     	Bundle bndl = new Bundle();
@@ -186,6 +188,10 @@ public class Interpreter
         if (expression.trim().startsWith("ed ")) {
         	String tempExp = expression.trim().substring(3).trim();
         	expression = "ed(\"" + tempExp + "\");";
+        }
+        if (expression.trim().startsWith("edit ")) {
+        	String tempExp = expression.trim().substring(5).trim();
+        	expression = "edit(\"" + tempExp + "\");";
         }
 
         // if required rehash m-files
@@ -460,6 +466,45 @@ public class Interpreter
         // need to convert it to UTF-16.
         try {
             InputStream is = _assetManager.open(asset);
+
+            // We guarantee that the available method returns the total
+            // size of the asset...  of course, this does mean that a single
+            // asset can't be more than 2 gigs.
+            int size = is.available();
+
+            // Read the entire asset into a local byte buffer.
+            byte[] buffer = new byte[size];
+            is.read(buffer);
+            is.close();
+
+            // Convert the buffer into a string.
+            String text = new String(buffer);
+            
+            return text;
+
+        } catch (IOException e) {
+            // Should never happen!
+            throw new RuntimeException(e);
+        }
+	}
+	
+	public static String readPackageAsset(String pack, String asset) {
+
+		Context ctx = null;
+		try {
+			ctx = _act.createPackageContext("com." + pack, 4);
+		} catch (NameNotFoundException e1) {
+			displayText("You need to install the Addi package named " + pack);
+			displayText("PROMPTTOINSTALL=" + pack);
+			return null;
+		}  //CONTEXT_RESTRICTED
+		AssetManager assetManager = ctx.getAssets();
+		
+        // Programmatically load text from an asset and place it into the
+        // text view.  Note that the text we are loading is ASCII, so we
+        // need to convert it to UTF-16.
+        try {
+            InputStream is = assetManager.open(asset);
 
             // We guarantee that the available method returns the total
             // size of the asset...  of course, this does mean that a single

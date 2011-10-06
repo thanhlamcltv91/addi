@@ -135,6 +135,56 @@ public class MFileLoader extends RootObject
 
      return function;
  }
+ 
+ /**reads in an .m-file
+ @param directory = the directory containing the file
+ @param mFileName = the name of the m file
+ @return the result of the file as a FunktionToken*/
+public UserFunction loadPackageMFile(String mFileName, String mFilePath)
+{
+  String       code         = "";
+  UserFunction function     = null;
+  String [] splitStr =  mFilePath.split("\\.");
+  String fullFileName = splitStr[0] + ".m";
+  String pack = splitStr[1];
+  
+  ErrorLogger.debugLine("MFileLoader: loading >"+mFilePath);
+
+  // open file and read m-file line by line
+  try 
+  {                 
+ 	code = com.addi.core.interpreter.Interpreter.readPackageAsset(pack, fullFileName);
+  }
+  catch (Exception e)
+  {
+ 	 Errors.throwMathLibException(ERR_FUNCTION_NOT_FOUND, new Object[] {mFileName});
+  }
+  if (code == null) {
+	  Errors.throwMathLibException(ERR_FUNCTION_NOT_FOUND, new Object[] {mFileName});
+  }
+
+  ErrorLogger.debugLine("MFileLoader: code: begin \n"+code+"\ncode end");
+      
+  // send code to function parser and return function
+  FunctionParser funcParser = new FunctionParser();
+  function = funcParser.parseFunction(code);
+
+  // set name of user function
+  // remember: the name of the called function could be different compared
+  // to the function's name inside the m-file
+  function.setName(mFileName);
+  
+  // set date of file as it has been found on the disc
+  function.setLastModified(0);
+  
+  // set filename and full path to the function
+  function.setPathAndFileName(fullFileName);
+
+  ErrorLogger.debugLine("MFileLoader: finished loading >" + mFileName + ".m<");
+
+  return function;
+}
+
 
     /**reads in an .m-file
        @param directory = the directory containing the file
