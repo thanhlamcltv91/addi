@@ -521,7 +521,7 @@ public class FunctionManager {
         //functions.put("dir","toolbox/miscellaneous/dir.m");
         functions.put("dos","toolbox/miscellaneous/dos.m");
         functions.put("dump_perfs","toolbox/miscellaneous/dump_perfs.m");
-        functions.put("edit","toolbox/miscellaneous/edit.m");
+        //functions.put("edit","toolbox/miscellaneous/edit.m");
         functions.put("fileattrib","toolbox/miscellaneous/fileattrib.m");
         functions.put("fileparts","toolbox/miscellaneous/fileparts.m");
         functions.put("flops","toolbox/miscellaneous/flops.m");
@@ -679,6 +679,7 @@ public class FunctionManager {
         functions.put("harmonic","com.addi.toolbox.general");
         functions.put("help","com.addi.toolbox.general");
         functions.put("ed","com.addi.toolbox.general");
+        functions.put("edit","com.addi.toolbox.general");
         functions.put("imag","com.addi.toolbox.general");
         functions.put("int16","com.addi.toolbox.general");
         functions.put("int32","com.addi.toolbox.general");
@@ -1047,6 +1048,12 @@ public class FunctionManager {
         functions.put("speed","toolbox/testfun/speed.m");
         functions.put("test","toolbox/testfun/test.m");
         functions.put("plot","com.addi.toolbox.plot");
+        functions.put("deg2rad", "deg2rad.addiMappingPackage.mpackage");
+        functions.put("rad2deg", "rad2deg.addiMappingPackage.mpackage");
+        functions.put("azimuth", "azimuth.addiMappingPackage.mpackage");
+        functions.put("distance", "distance.addiMappingPackage.mpackage");
+        functions.put("km2deg", "km2deg.addiMappingPackage.mpackage");
+        functions.put("reckon", "reckon.addiMappingPackage.mpackage");
     }
 
     /**
@@ -1152,6 +1159,8 @@ public class FunctionManager {
 	              func = null;
 	           } else if (functions.get(funcName).endsWith(".m")) {
 	              func = mLoader.loadBuiltInMFile(funcName,functions.get(funcName)); 	
+	           } else if (functions.get(funcName).endsWith(".mpackage")) {
+	        	   func = mLoader.loadPackageMFile(funcName,functions.get(funcName));
 	           } else {
 	              try { 
 	                  func = (Function)( Class.forName( functions.get(funcName)+ "." + funcName ).newInstance() );
