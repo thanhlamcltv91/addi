@@ -17,7 +17,7 @@ public class EditTextExtend extends EditText {
         _parent = (Addi)context;
     }
 	
-	@Override
+/*	@Override
 	public void onSelectionChanged(int selStart, int selEnd) {
 		if (_parent != null) {
 			if (_parent._selectionSaved) {
@@ -59,6 +59,10 @@ public class EditTextExtend extends EditText {
 	    }
 	    return super.onKeyDown(keyCode, event);
 	}
-
+*/
+	@Override      
+	public boolean onCheckIsTextEditor() {   
+		return false;     
+	} 
 	
 }
