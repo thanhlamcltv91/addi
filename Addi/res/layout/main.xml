@@ -25,10 +25,10 @@
         android:layout_height="wrap_content"
         >
         <TextView  
-        	android:layout_width="32sp" 
+        	android:layout_width="40sp" 
         	android:layout_height="wrap_content" 
         	android:text=">> "
-        	android:textSize="14px"
+        	android:textSize="20px"
         />
         <com.addi.EditTextExtend 
         	android:id="@+id/edit_command"
@@ -39,7 +39,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:layout_gravity="bottom"
-            android:textSize="14px"
+            android:textSize="20px"
         />  
     </LinearLayout>
 	<com.addi.KeyboardViewExtend

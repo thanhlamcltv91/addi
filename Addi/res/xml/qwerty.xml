@@ -26,6 +26,19 @@
     >
 
     <Row>
+        <Key android:codes="49" android:keyLabel="1" android:popupKeyboard="@xml/keyboard_ops" android:keyEdgeFlags="left"/>
+        <Key android:codes="50" android:keyLabel="\@\\n2"/>
+        <Key android:codes="51" android:keyLabel="\#\\n3"/>
+        <Key android:codes="52" android:keyLabel="$\\n4"/>
+        <Key android:codes="53" android:keyLabel="%\\n5"/>
+        <Key android:codes="54" android:keyLabel="^\\n6"/>
+        <Key android:codes="55" android:keyLabel="&amp;\\n7"/>
+        <Key android:codes="56" android:keyLabel="*\\n8"/>
+        <Key android:codes="57" android:keyLabel="(\\n9"/>
+        <Key android:codes="48" android:keyLabel=")\\n0" android:keyEdgeFlags="right"/>
+    </Row>
+    
+    <Row>
         <Key android:codes="113" android:keyLabel="q" android:keyEdgeFlags="left"/>
         <Key android:codes="119" android:keyLabel="w"/>
         <Key android:codes="101" android:keyLabel="e"/>
