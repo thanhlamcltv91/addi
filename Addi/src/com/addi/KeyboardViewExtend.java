@@ -16,6 +16,8 @@ public class KeyboardViewExtend extends KeyboardView implements KeyboardView.OnK
 	private Addi _parent = null;
 	private Keyboard _myKeyboard = null;
 	private Keyboard _myKeyboardShifted = null;
+	private Keyboard _myKeyboardSymbols = null;
+	private Keyboard _myKeyboardOps = null;
 
 	public KeyboardViewExtend(Context c, AttributeSet a)
 	{
@@ -55,13 +57,29 @@ public class KeyboardViewExtend extends KeyboardView implements KeyboardView.OnK
 		}
 	}
 	
-	public void onKey(int k,int[] ignore) { 
-		_parent.sendKey(0,0,k); 
+	public void onKey(int k,int[] ignore) {
+		if (k == -1) {
+			if (getKeyboard() == _myKeyboard) {
+				setKeyboard(_myKeyboardShifted);
+			} else if (getKeyboard() == _myKeyboardShifted) {
+				setKeyboard(_myKeyboard);
+			} else if (getKeyboard() == _myKeyboardOps) {
+				setKeyboard(_myKeyboardSymbols);
+			} else if (getKeyboard() == _myKeyboardSymbols) {
+				setKeyboard(_myKeyboardOps);
+			}
+		} else if (k == -100) {
+			setKeyboard(_myKeyboardOps);
+		} else if (k == -102) {
+			setKeyboard(_myKeyboard);
+		}
 	}
 	
 	public void makeKeyboardView () {
 		_myKeyboard = new Keyboard(_parent, R.xml.qwerty);
-		_myKeyboardShifted = new Keyboard(_parent,R.xml.symbols_shift);
+		_myKeyboardShifted = new Keyboard(_parent,R.xml.qwerty_shifted);
+		_myKeyboardSymbols = new Keyboard(_parent,R.xml.symbols);
+		_myKeyboardOps = new Keyboard(_parent,R.xml.ops);
 		setKeyboard(_myKeyboard);  
 	}
 	
