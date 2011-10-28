@@ -70,6 +70,8 @@ public class KeyboardViewExtend extends KeyboardView implements KeyboardView.OnK
 			setKeyboard(_myKeyboardOps);
 		} else if (k == -102) {
 			setKeyboard(_myKeyboard);
+		} else if (k == -5) {
+			_parent.handleBackspace();
 		}
 	}
 	
