@@ -80,11 +80,10 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class AddiTemp extends Activity {
+public class AddiTemp extends AddiBase {
 
 	private ArrayAdapter<String> _mOutArrayAdapter;
 	private ListView _mOutView;
-	public  EditTextExtend _mCmdEditText;
 	private Interpreter _interpreter;
 	private String _mResults = "";
 	private String _prevCmd = "";	
@@ -97,13 +96,6 @@ public class AddiTemp extends Activity {
 	private String _addiEditString;
 	private ArrayList<String> _listLabels;
 	String _version = new String();
-	public KeyboardViewExtend _myKeyboardView;
-	private String _mWordSeparators;
-	private boolean _mCompletionOn;
-	private boolean _mPredictionOn;
-	private CandidateView _mCandidateView;
-	private CompletionInfo[] _mCompletions;
-	private StringBuilder _mComposing = new StringBuilder();
 	public int _oldStartSelection;
 	public int _oldEndSelection;
 	public boolean _oldSelectionSaved = false;
@@ -176,28 +168,15 @@ public class AddiTemp extends Activity {
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
-		/*support multi language pack (Auto select) */
-		Resources res = getResources();
-		Configuration conf =res.getConfiguration();
-		DisplayMetrics dm=res.getDisplayMetrics();
-		res.updateConfiguration(conf, dm);
-
-		super.onCreate(savedInstanceState);
-
-		_mWordSeparators = getResources().getString(R.string.word_separators);
 
 		setContentView(R.layout.main);
+		
+		super.onCreate(savedInstanceState);
 
 		_interpreter = new Interpreter(true);
 		Interpreter.setCacheDir(getCacheDir());
 
 		_mOutView = (ListView)findViewById(R.id.out);
-		_mCmdEditText = (EditTextExtend)findViewById(R.id.edit_command);
-		_myKeyboardView = (KeyboardViewExtend)findViewById(R.id.keyboard);
-		_mCandidateView = (CandidateView)findViewById(R.id.candidate);
-
-		super.onCreate(savedInstanceState);
-
 
 		try {
 			PackageInfo pi = getPackageManager().getPackageInfo("com.addi", 0);
@@ -259,15 +238,7 @@ public class AddiTemp extends Activity {
 			}
 		});
 
-		_mCmdEditText.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View view) {
-				enableKeyboardVisibility();
-			}
-		});
-
 		_mCmdEditText.setOnKeyListener(new OnKeyListener() {
-
 			@Override
 			public boolean onKey(View view, int keyCode, KeyEvent event) {
 				// TODO Auto-generated method stub
@@ -428,7 +399,6 @@ public class AddiTemp extends Activity {
 	public void executeCmd(final String command, boolean displayCommand) {
 
 		if (_blockExecute == false) {
-			final Activity act = this;
 			if (displayCommand) {
 				_mOutArrayAdapter.add(">>  " + command);
 				_oldCommands.add(0, command);
@@ -461,289 +431,5 @@ public class AddiTemp extends Activity {
 			_mHandler.post(mUpdateResults);
 		}
 	};
-
-	/**
-	 * Helper function to commit any text being composed in to the editor.
-	 */
-	private void commitTyped(InputConnection inputConnection) {
-		if (_mComposing.length() > 0) {
-			inputConnection.commitText(_mComposing, _mComposing.length());
-			_mComposing.setLength(0);
-			updateCandidates();
-		}
-	}
-
-	/**
-	 * Helper to update the shift state of our keyboard based on the initial
-	 * editor state.
-	 */
-	/*    private void updateShiftKeyState(EditorInfo attr) {
-        if (attr != null 
-                && mInputView != null && mQwertyKeyboard == mInputView.getKeyboard()) {
-            int caps = 0;
-            EditorInfo ei = _imsExtend.getCurrentInputEditorInfo();
-            if (ei != null && ei.inputType != EditorInfo.TYPE_NULL) {
-                caps = _imsExtend.getCurrentInputConnection().getCursorCapsMode(attr.inputType);
-            }
-            mInputView.setShifted(mCapsLock || caps != 0);
-        }
-    }*/
-
-	/**
-	 * Helper to determine if a given character code is alphabetic.
-	 */
-	private boolean isAlphabet(int code) {
-		if (Character.isLetter(code)) {
-			return true;
-		} else {
-			return false;
-		}
-	}
-
-	/**
-	 * Update the list of available candidates from the current composing
-	 * text.  This will need to be filled in by however you are determining
-	 * candidates.
-	 */
-	private void updateCandidates() {
-		if (!_mCompletionOn) {
-			if (_mComposing.length() > 0) {
-				ArrayList<String> list = new ArrayList<String>();
-				list.add(_mComposing.toString());
-				setSuggestions(list, true, true);
-			} else {
-				setSuggestions(null, false, false);
-			}
-		}
-	}
-
-	public void setSuggestions(List<String> suggestions, boolean completions,
-			boolean typedWordValid) {
-		//       if (suggestions != null && suggestions.size() > 0) {
-		//           _imsExtend.setCandidatesViewShown(true);
-		//       } else if (_imsExtend.isExtractViewShown()) {
-		//           _imsExtend.setCandidatesViewShown(true);
-		//       }
-		//       if (_mCandidateView != null) {
-		//           _mCandidateView.setSuggestions(suggestions, completions, typedWordValid);
-		//       }
-	}
-
-	private void handleBackspace() {
-	//	keyDownUp(KeyEvent.KEYCODE_DEL);
-	}
-
-	/*    private void handleShift() {
-        if (mInputView == null) {
-            return;
-        }
-
-        Keyboard currentKeyboard = mInputView.getKeyboard();
-        if (mQwertyKeyboard == currentKeyboard) {
-            // Alphabet keyboard
-            checkToggleCapsLock();
-            mInputView.setShifted(mCapsLock || !mInputView.isShifted());
-        } else if (currentKeyboard == mSymbolsKeyboard) {
-            mSymbolsKeyboard.setShifted(true);
-            mInputView.setKeyboard(mSymbolsShiftedKeyboard);
-            mSymbolsShiftedKeyboard.setShifted(true);
-        } else if (currentKeyboard == mSymbolsShiftedKeyboard) {
-            mSymbolsShiftedKeyboard.setShifted(false);
-            mInputView.setKeyboard(mSymbolsKeyboard);
-            mSymbolsKeyboard.setShifted(false);
-        }
-    }*/
-
-
-	private void handleCharacter(int primaryCode, int[] keyCodes) {
-		//if (isInputViewShown()) {
-		//    if (mInputView.isShifted()) {
-		//        primaryCode = Character.toUpperCase(primaryCode);
-		//    }
-		//}
-		//       if (isAlphabet(primaryCode) && _mPredictionOn) {
-		//           _mComposing.append((char) primaryCode);
-		//           _imsExtend.getCurrentInputConnection().setComposingText(_mComposing, 1);
-		//           //updateShiftKeyState(_imsExtend.getCurrentInputEditorInfo());
-		//           updateCandidates();
-		//       } else {
-		//       	_imsExtend.getCurrentInputConnection().commitText(
-		//                   String.valueOf((char) primaryCode), 1);
-		//       }
-	}
-
-	private void handleClose() {
-		//       commitTyped(_imsExtend.getCurrentInputConnection());
-		//       _myKeyboardView.setVisibility(View.VISIBLE);
-	}
-
-	private String getWordSeparators() {
-		return _mWordSeparators;
-	}
-
-	public boolean isWordSeparator(int code) {
-		String separators = getWordSeparators();
-		return separators.contains(String.valueOf((char)code));
-	}
-
-	public void pickDefaultCandidate() {
-		pickSuggestionManually(0);
-	}
-
-	public void pickSuggestionManually(int index) {
-		//       if (_mCompletionOn && _mCompletions != null && index >= 0
-		//               && index < _mCompletions.length) {
-		//           CompletionInfo ci = _mCompletions[index];
-		//           _imsExtend.getCurrentInputConnection().commitCompletion(ci);
-		//           if (_mCandidateView != null) {
-		//               _mCandidateView.clear();
-		//           }
-		//updateShiftKeyState(_imsExtend.getCurrentInputEditorInfo());
-		//       } else if (_mComposing.length() > 0) {
-		// If we were generating candidate suggestions for the current
-		// text, we would commit one of them here.  But for this sample,
-		// we will just commit the current text.
-		//           commitTyped(_imsExtend.getCurrentInputConnection());
-		//       }
-	}
-
-	public void swipeRight() {
-		if (_mCompletionOn) {
-			pickDefaultCandidate();
-		}
-	}
-
-	public void swipeLeft() {
-		handleBackspace();
-	}
-
-	public void swipeDown() {
-		handleClose();
-	}
-
-	/*	@Override  
-	public void onKey(int primaryCode, int[] keyCodes) {
-		char charKeyCode = (char)primaryCode;
-		String textToInsert = "" + charKeyCode;
-		int start = _mCmdEditText.getSelectionStart();
-		int end = _mCmdEditText.getSelectionEnd();
-		_mCmdEditText.getText().replace(Math.min(start, end), Math.max(start, end),
-				textToInsert, 0, textToInsert.length());
-		//for (int keyCode : keyCodes) {    
-		//}  
-	} */
-
-	// Implementation of KeyboardViewListener
-
-	//public void onKey(int primaryCode, int[] keyCodes) {
-	//    if (isWordSeparator(primaryCode)) {
-	//        // Handle separator
-	//        if (_mComposing.length() > 0) {
-	//            commitTyped(_imsExtend.getCurrentInputConnection());
-	//        }
-	//        sendKey(0,0,primaryCode);
-	//        //updateShiftKeyState(_imsExtend.getCurrentInputEditorInfo());
-	//    } else if (primaryCode == Keyboard.KEYCODE_DELETE) {
-	//        handleBackspace();
-	//    //} else if (primaryCode == Keyboard.KEYCODE_SHIFT) {
-	//    //    handleShift();
-	//    } else if (primaryCode == Keyboard.KEYCODE_CANCEL) {
-	//        handleClose();
-	//        return;
-	//    //} else if (primaryCode == LatinKeyboardView.KEYCODE_OPTIONS) {
-	//    //    // Show a menu or somethin'
-	//    } else if ((primaryCode == Keyboard.KEYCODE_MODE_CHANGE) || (primaryCode == Keyboard.KEYCODE_SHIFT)) {
-	//        Keyboard current = _myKeyboardView.getKeyboard();
-	//        if (current == _myKeyboard) {
-	//            current = _myKeyboardShifted;
-	//        } else {
-	//            current = _myKeyboard;
-	//        }
-	//        _myKeyboardView.setKeyboard(current);
-	//    } else {
-	//        //handleCharacter(primaryCode, keyCodes);
-	//        sendKey(0,0,primaryCode);
-	//    }
-	//}
-
-	//public void onText(CharSequence text) {
-	//InputConnection ic = _imsExtend.getCurrentInputConnection();
-	//if (ic == null) return;
-	//ic.beginBatchEdit();
-	//if (_mComposing.length() > 0) {
-	//    commitTyped(ic);
-	//}
-	//ic.commitText(text, 0);
-	//ic.endBatchEdit();
-	//updateShiftKeyState(_imsExtend.getCurrentInputEditorInfo());
-	//for (int i=0; i<text.length();i++) {
-	//	sendKey(0,0,text.charAt(i));
-	//}
-	//}
-
-	void sendKey(int x, int y, int primaryCode) {
-		int start = _mCmdEditText.getSelectionStart();
-		int end = _mCmdEditText.getSelectionEnd();
-		String textToInsert = "";
-		if ((primaryCode == Keyboard.KEYCODE_DELETE) || (primaryCode == -5)) {
-			if (start != end) {
-				_mCmdEditText.getText().replace(Math.min(start, end), Math.max(start, end), textToInsert, 0, textToInsert.length());
-			} else if (start != 0) {
-				_mCmdEditText.getText().replace(start-1, start, textToInsert, 0, textToInsert.length());
-			}
-		} else {
-			char charKeyCode = (char)primaryCode;
-			textToInsert = "" + charKeyCode;
-			_mCmdEditText.getText().replace(Math.min(start, end), Math.max(start, end),
-					textToInsert, 0, textToInsert.length());
-			_mCandidateView.updateSuggestions(_mCmdEditText.getText().toString(),true,true);
-		}
-	}
-
-	private void enableKeyboardVisibility() {    
-		int visibility = _myKeyboardView.getVisibility();  
-		switch (visibility) {    
-		case View.GONE:  
-		case View.INVISIBLE:  
-			_myKeyboardView.setVisibility(View.VISIBLE);  
-			break;  
-		}  
-	}
-
-	public void selectionChosen(String selection) {
-
-	}
-
-	@Override
-	public void onConfigurationChanged(Configuration newConfig)
-	{ 
-		super.onConfigurationChanged(newConfig);
-		_myKeyboardView.myOnConfigurationChanged(newConfig);
-	}
-	
-	@Override
-	public boolean onKeyDown(int keyCode, KeyEvent event)  {
-	    if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0) {
-	    	int visibility = _myKeyboardView.getVisibility();
-			if (visibility == View.VISIBLE) {
-				_myKeyboardView.setVisibility(View.GONE);
-				return true;
-			}
-			return super.onKeyDown(keyCode, event);
-	    }
-	    return super.onKeyDown(keyCode, event);
-	}
-
-	@Override
-	public void onBackPressed() {
-		int visibility = _myKeyboardView.getVisibility();
-		if (visibility == View.VISIBLE) {
-			_myKeyboardView.setVisibility(View.GONE); 
-		} else {
-            finish();
-            System.exit(0);
-		}
-	    return;
-	}
 
 }
