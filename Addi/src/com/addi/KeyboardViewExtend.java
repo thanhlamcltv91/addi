@@ -13,7 +13,7 @@ import android.widget.LinearLayout;
 public class KeyboardViewExtend extends KeyboardView implements KeyboardView.OnKeyboardActionListener
 {
 
-	private Addi _parent = null;
+	private AddiBase _parent = null;
 	private Keyboard _myKeyboard = null;
 	private Keyboard _myKeyboardShifted = null;
 	private Keyboard _myKeyboardSymbols = null;
@@ -42,7 +42,7 @@ public class KeyboardViewExtend extends KeyboardView implements KeyboardView.OnK
 	public void swipeDown() {}
 	
 	public void swipeLeft() {
-		_parent.sendKey(0,0,Keyboard.KEYCODE_DELETE);
+		_parent.handleBackspace();
 	}
 	
 	public void swipeRight() {}
@@ -52,9 +52,7 @@ public class KeyboardViewExtend extends KeyboardView implements KeyboardView.OnK
 	public void onRelease(int k) {}
 	
 	public void onText(CharSequence s) {
-		for (int i=0; i<s.length(); i++) {
-			_parent.sendKey(0,0,s.charAt(i));
-		}
+		_parent.sendText(s.toString());
 	}
 	
 	public void onKey(int k,int[] ignore) {

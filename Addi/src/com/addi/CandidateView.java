@@ -36,7 +36,7 @@ public class CandidateView extends View {
 
     private static final int OUT_OF_BOUNDS = -1;
 
-    private Addi mService;
+    private AddiBase mService;
     private List<String> mSuggestions;
     private int mSelectedIndex;
     private int mTouchX = OUT_OF_BOUNDS;
@@ -291,7 +291,7 @@ public class CandidateView extends View {
             if (y <= 0) {
                 // Fling up!?
                 if (mSelectedIndex >= 0) {
-                	mService.selectionChosen(mSuggestions.get(mSelectedIndex));
+                	mService.sendText(mSuggestions.get(mSelectedIndex));
                     mSelectedIndex = -1;
                 }
             }
@@ -300,7 +300,7 @@ public class CandidateView extends View {
         case MotionEvent.ACTION_UP:
             if (!mScrolled) {
                 if (mSelectedIndex >= 0) {
-                	mService.selectionChosen(mSuggestions.get(mSelectedIndex));
+                	mService.sendText(mSuggestions.get(mSelectedIndex));
                 }
             }
             mSelectedIndex = -1;
@@ -321,7 +321,7 @@ public class CandidateView extends View {
         // To detect candidate
         onDraw(null);
         if (mSelectedIndex >= 0) {
-        	mService.selectionChosen(mSuggestions.get(mSelectedIndex));
+        	mService.sendText(mSuggestions.get(mSelectedIndex));
         }
         invalidate();
     }
