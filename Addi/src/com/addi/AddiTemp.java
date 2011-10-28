@@ -20,65 +20,36 @@ package com.addi;
 import java.io.BufferedReader;
 
 import android.view.KeyEvent;
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.lang.ThreadGroup;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Vector;
 import java.lang.*;
 
 import com.addi.R;
-import com.addi.R.id;
-import com.addi.R.layout;
 import com.addi.core.interpreter.*;
 
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
-import android.content.Context;
 import android.content.Intent; 
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.content.res.AssetManager;
-import android.content.res.Configuration;
-import android.content.res.Resources;
 import android.graphics.drawable.ColorDrawable;
-import android.inputmethodservice.Keyboard;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.util.DisplayMetrics;
-import android.util.Log;
-import android.view.KeyEvent;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.Window;
-import android.view.View.OnClickListener;
 import android.view.View.OnKeyListener;
 import android.view.View.OnTouchListener;
-import android.view.inputmethod.EditorInfo;
-import android.view.inputmethod.CompletionInfo;
-import android.view.inputmethod.InputConnection;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.TextView;
-import android.widget.Toast;
 
 public class AddiTemp extends AddiBase {
 
@@ -431,5 +402,11 @@ public class AddiTemp extends AddiBase {
 			_mHandler.post(mUpdateResults);
 		}
 	};
+	
+	@Override
+	public void handleEnter() {
+		String command = _mCmdEditText.getText().toString();
+		executeCmd(command,true);
+	}
 
 }
