@@ -69,6 +69,9 @@ public class AddiBase extends Activity {
 			_mCmdEditText.getText().replace(start-1, start, textToInsert, 0, textToInsert.length());
 		}
 	}
+	
+	public void handleEnter() {
+	}
 
 	public void sendText(String textToInsert) {
 		int start = _mCmdEditText.getSelectionStart();

@@ -72,6 +72,8 @@ public class KeyboardViewExtend extends KeyboardView implements KeyboardView.OnK
 			setKeyboard(_myKeyboard);
 		} else if (k == -5) {
 			_parent.handleBackspace();
+		} else if (k == 10) {
+			_parent.handleEnter();
 		}
 	}
 	
