@@ -53,6 +53,9 @@ public class KeyboardViewExtend extends KeyboardView implements KeyboardView.OnK
 	
 	public void onText(CharSequence s) {
 		_parent.sendText(s.toString());
+		if (getKeyboard() != _myKeyboard) {
+			setKeyboard(_myKeyboard);
+		}
 	}
 	
 	public void onKey(int k,int[] ignore) {
@@ -72,9 +75,16 @@ public class KeyboardViewExtend extends KeyboardView implements KeyboardView.OnK
 			setKeyboard(_myKeyboard);
 		} else if (k == -5) {
 			_parent.handleBackspace();
+			if (getKeyboard() != _myKeyboard) {
+				setKeyboard(_myKeyboard);
+			}
 		} else if (k == 10) {
 			_parent.handleEnter();
+			if (getKeyboard() != _myKeyboard) {
+				setKeyboard(_myKeyboard);
+			}
 		}
+		
 	}
 	
 	public void makeKeyboardView () {
