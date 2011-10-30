@@ -24,6 +24,8 @@ import android.app.Activity;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -33,7 +35,10 @@ public class AddiBase extends Activity {
 	public  EditTextExtend _mCmdEditText;
 	public KeyboardViewExtend _myKeyboardView;
 	private CandidateView _mCandidateView;
-
+	
+	boolean _backUpOne = false;
+	boolean _suggestionTaken = false;
+	
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -56,6 +61,31 @@ public class AddiBase extends Activity {
 				enableKeyboardVisibility();
 			}
 		});
+		
+		_mCmdEditText.addTextChangedListener(new TextWatcher() {
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                // TODO Auto-generated method stub              
+            }
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count,int after) {
+                // TODO Auto-generated method stub              
+            }
+
+            @Override
+			public void afterTextChanged(Editable arg0) {
+            	if (_suggestionTaken == false) {
+            		updateSuggestions();
+            	}
+            	_suggestionTaken = false;
+            	if (_backUpOne == true) {
+            		_mCmdEditText.setSelection(_mCmdEditText.getSelectionStart()-1, _mCmdEditText.getSelectionStart()-1);
+            	}
+            	_backUpOne = false;
+			}
+        });
 
 	}
 
@@ -72,13 +102,96 @@ public class AddiBase extends Activity {
 	
 	public void handleEnter() {
 	}
+	
+	public void sendSuggestionText(String textToInsert) {
+		int start = _mCmdEditText.getSelectionStart();
+		_mCandidateView.clear();
+		
+		Character tempChar;
+		int reverse;
+		int forward;
+		//scan forwards and backwards and find the full word, then update suggestions
+		for (reverse = start-1; reverse >= 0; reverse--) {
+			tempChar = _mCmdEditText.getText().toString().charAt(reverse);
+			if (Character.isLetter(tempChar) || Character.isDigit(tempChar) || (tempChar == '_')) {
+				continue;
+			} else {
+				reverse++;
+				break;
+			}
+		}
+		if (reverse < 0) {
+			reverse = 0;
+		}
+		for (forward = start; forward < _mCmdEditText.getText().toString().length(); forward++) {
+			tempChar = _mCmdEditText.getText().toString().charAt(forward);
+			if (Character.isLetter(tempChar) || Character.isDigit(tempChar) || (tempChar == '_')) {
+				continue;
+			} else {
+				break;
+			}
+		}
+		if (forward > _mCmdEditText.getText().toString().length()) {
+			forward = _mCmdEditText.getText().toString().length() - 1;
+		} 
+		if (forward < 0) {
+			forward = 0;
+		}
+		if (textToInsert.endsWith("()") || textToInsert.endsWith("[]")) {
+			_backUpOne = true;
+		}
+		_suggestionTaken = true;
+		_mCmdEditText.getText().replace(reverse, forward, textToInsert, 0, textToInsert.length());
+		
+	}
 
 	public void sendText(String textToInsert) {
 		int start = _mCmdEditText.getSelectionStart();
 		int end = _mCmdEditText.getSelectionEnd();
 		_mCmdEditText.getText().replace(Math.min(start, end), Math.max(start, end),
 				textToInsert, 0, textToInsert.length());
-		_mCandidateView.updateSuggestions(_mCmdEditText.getText().toString(),true,true);
+	}
+	
+	public void updateSuggestions() {
+		int start = _mCmdEditText.getSelectionStart();
+		int end = _mCmdEditText.getSelectionEnd();
+		
+		if (start != end) {
+			_mCandidateView.clear();
+			return;
+		}
+		
+		Character tempChar;
+		int reverse;
+		int forward;
+		//scan forwards and backwards and find the full word, then update suggestions
+		for (reverse = start-1; reverse >= 0; reverse--) {
+			tempChar = _mCmdEditText.getText().toString().charAt(reverse);
+			if (Character.isLetter(tempChar) || Character.isDigit(tempChar) || (tempChar == '_')) {
+				continue;
+			} else {
+				reverse++;
+				break;
+			}
+		}
+		if (reverse < 0) {
+			reverse = 0;
+		}
+		for (forward = start; forward < _mCmdEditText.getText().toString().length(); forward++) {
+			tempChar = _mCmdEditText.getText().toString().charAt(forward);
+			if (Character.isLetter(tempChar) || Character.isDigit(tempChar) || (tempChar == '_')) {
+				continue;
+			} else {
+				break;
+			}
+		}
+		if (forward > _mCmdEditText.getText().toString().length()) {
+			forward = _mCmdEditText.getText().toString().length() - 1;
+		} 
+		if (forward < 0) {
+			forward = 0;
+		}
+		_mCandidateView.updateSuggestions(_mCmdEditText.getText().toString().substring(reverse, forward),true,true);
 	}
 
 	public void enableKeyboardVisibility() {    
