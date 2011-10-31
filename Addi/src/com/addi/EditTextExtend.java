@@ -17,12 +17,12 @@ public class EditTextExtend extends EditText {
         _parent = (AddiBase)context;
     }
 	
-	@Override 
-	protected void onSelectionChanged(int selStart, int selEnd) {
-		if (_parent != null) {
-			_parent.updateSuggestions();
-		}
-	}
+	//@Override 
+	//protected void onSelectionChanged(int selStart, int selEnd) {
+		//if (_parent != null) {
+		//	_parent.updateSuggestions();
+		//}
+	//}
 	 
 	@Override      
 	public boolean onCheckIsTextEditor() {   

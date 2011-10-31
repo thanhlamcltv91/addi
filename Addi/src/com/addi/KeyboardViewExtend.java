@@ -37,15 +37,21 @@ public class KeyboardViewExtend extends KeyboardView implements KeyboardView.OnK
 		makeKeyboardView();
 	}
 
-	public void swipeUp() {}
-	
-	public void swipeDown() {}
-	
-	public void swipeLeft() {
-		_parent.handleBackspace();
+	public void swipeUp() {
+		_parent.swipeUp();
 	}
 	
-	public void swipeRight() {}
+	public void swipeDown() {
+		_parent.swipeDown();
+	}
+	
+	public void swipeLeft() {
+		_parent.swipeLeft();
+	}
+	
+	public void swipeRight() {
+		_parent.swipeRight();
+	}
 	
 	public void onPress(int k) {}
 	
@@ -83,6 +89,8 @@ public class KeyboardViewExtend extends KeyboardView implements KeyboardView.OnK
 			if (getKeyboard() != _myKeyboard) {
 				setKeyboard(_myKeyboard);
 			}
+		} else if (k == 32) {
+			_parent.sendText(" ");
 		}
 		
 	}

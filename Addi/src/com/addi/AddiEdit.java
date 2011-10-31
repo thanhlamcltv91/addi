@@ -62,9 +62,8 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class AddiEdit extends Activity {
+public class AddiEdit extends AddiBase {
 	
-	private EditText _mFileEditText;
 	private Button _mQuitButton;
 	private Button _mSaveButton;
 	private Button _mSaveRunButton;
@@ -73,9 +72,8 @@ public class AddiEdit extends Activity {
    /** Called when the activity is first created. */
    @Override
    public void onCreate(Bundle savedInstanceState) {	   
-       super.onCreate(savedInstanceState);
        setContentView(R.layout.edit);
-       _mFileEditText = (EditText)findViewById(R.id.edit_file);
+       super.onCreate(savedInstanceState);
        _mSaveButton = (Button)findViewById(R.id.buttonSave);
        _mSaveRunButton = (Button)findViewById(R.id.buttonSaveRun);
        _mQuitButton = (Button)findViewById(R.id.buttonQuit);
@@ -90,7 +88,7 @@ public class AddiEdit extends Activity {
     	   @Override
    	    	public void onClick(View v) {
     		   	try {
-    		   		setContents(_mFile,_mFileEditText.getText().toString());
+    		   		setContents(_mFile,_mCmdEditText.getText().toString());
     		   		setResult(1);
 			    	finish();
 				} catch (IOException e) {
@@ -103,7 +101,7 @@ public class AddiEdit extends Activity {
     	   @Override
    	    	public void onClick(View v) {
     		   	try {
-    		   		setContents(_mFile,_mFileEditText.getText().toString());
+    		   		setContents(_mFile,_mCmdEditText.getText().toString());
     		   		setResult(2);
 			    	finish();
 				} catch (IOException e) {
@@ -133,7 +131,7 @@ public class AddiEdit extends Activity {
 	    } else {
 	    	if (_mFile.exists()) {
 	    		try {
-	    			_mFileEditText.setText(getContents(_mFile));
+	    			_mCmdEditText.setText(getContents(_mFile));
 	    		} catch (IOException e) {
 	    			setResult(0);
 	    			finish();

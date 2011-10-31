@@ -17,223 +17,408 @@
 
 package com.addi;
 
-import com.addi.R;
+import java.io.BufferedReader;
 
 import android.view.KeyEvent;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.lang.ThreadGroup;
+import java.util.ArrayList;
+import java.util.Vector;
+import java.lang.*;
+
+import com.addi.R;
+import com.addi.core.interpreter.*;
+
 import android.app.Activity;
-import android.content.res.Configuration;
-import android.content.res.Resources;
+import android.content.ActivityNotFoundException;
+import android.content.Intent; 
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.graphics.drawable.ColorDrawable;
+import android.net.Uri;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
-import android.util.DisplayMetrics;
+import android.os.Handler;
+import android.os.Message;
+import android.view.MotionEvent;
 import android.view.View;
-import android.view.View.OnClickListener;
+import android.view.View.OnKeyListener;
+import android.view.View.OnTouchListener;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 
-public class AddiBase extends Activity {
+public class Addi extends AddiBase {
 
-	public  EditTextExtend _mCmdEditText;
-	public KeyboardViewExtend _myKeyboardView;
-	private CandidateView _mCandidateView;
-	
-	boolean _backUpOne = false;
-	boolean _suggestionTaken = false;
-	
+	private ArrayAdapter<String> _mOutArrayAdapter;
+	private ListView _mOutView;
+	private Interpreter _interpreter;
+	private String _mResults = "";
+	private String _prevCmd = "";	
+	private boolean _blockExecute = false;
+	private String _command;
+	private Activity _act;
+	private Vector<String> _oldCommands = new Vector<String>();  
+	private int _oldCommandIndex = -1;
+	private String _partialCommand;
+	private String _addiEditString;
+	private ArrayList<String> _listLabels;
+	String _version = new String();
+	public int _oldStartSelection;
+	public int _oldEndSelection;
+	public boolean _oldSelectionSaved = false;
+	public int _startSelection;
+	public int _endSelection;
+	public boolean _selectionSaved = false;
+	public boolean _selectionForwarded = false;
+	public int _oldVisibility;
+
+	// Need handler for callbacks to the UI thread
+	public final Handler _mHandler = new Handler() {
+		public void handleMessage(Message msg) { 
+			if (msg.getData().getString("text").startsWith("STARTUPADDIEDITWITH=")) {
+				_addiEditString = msg.getData().getString("text").substring(20);
+				Intent addiEditIntent = new Intent(Addi.this, AddiEdit.class);
+				addiEditIntent.putExtra("fileName", msg.getData().getString("text").substring(20)); // key/value pair, where key needs current package prefix.
+				startActivityForResult(addiEditIntent,1); 
+			} else if (msg.getData().getString("text").startsWith("STARTUPADDIPLOTWITH=")) {
+				Intent addiPlotIntent = new Intent();
+				addiPlotIntent.setClassName("com.addiPlot", "com.addiPlot.addiPlot");
+				addiPlotIntent.putExtra("plotData", msg.getData().getString("text").substring(20)); // key/value pair, where key needs current package prefix.
+				try {
+					startActivity(addiPlotIntent);
+				} catch (ActivityNotFoundException e) {
+					_mOutArrayAdapter.add("You should download AddiPlot for this to work.");
+				}
+			} else if (msg.getData().getString("text").startsWith("PROMPTTOINSTALL=")) {
+				String packageName = "com." + msg.getData().getString("text").substring(16);
+				Intent goToMarket = new Intent(Intent.ACTION_VIEW).setData(Uri.parse("market://details?id="+packageName));
+				startActivity(goToMarket);
+			} else if (msg.getData().getString("text").startsWith("QUITADDI")) {
+				finish();
+			} else if (msg.getData().getString("text").startsWith("CLEARADDITERMINAL")) {
+				_mOutArrayAdapter.clear();
+			} else if (msg.getData().getString("text").startsWith("PRINTADDIVERSION")) {
+				_mOutArrayAdapter.add("Addi version: " + _version);
+			} else {
+				_mOutArrayAdapter.add(msg.getData().getString("text"));
+			}
+		};
+	};
+
+	protected void onActivityResult(int requestCode, int resultCode,
+			Intent data) {
+		if (requestCode == 1) {
+			if (resultCode == 0) {  // error
+				_mOutArrayAdapter.add("Directory not found or permissions incorrect.");
+			} else if (resultCode == 1) {  //save
+				_mOutArrayAdapter.add("File saved.");
+			} else if (resultCode == 2) {  //save and run
+				_mOutArrayAdapter.add("File save, now attempting to run.");
+				int lastIndx = _addiEditString.lastIndexOf("/");
+				String dir = _addiEditString.substring(0, lastIndx);
+				String script = _addiEditString.substring(lastIndx+1);
+				script = script.substring(0, script.length()-2);
+				executeCmd("cd(\"" + dir + "\"); " + script,true);
+			} else if (resultCode == 3) {  //quit
+				_mOutArrayAdapter.add("Exited without saving file.");
+			}
+		}
+	}
+
+	// Create runnable for posting
+	final Runnable mUpdateResults = new Runnable() {
+		public void run() {
+			updateResultsInUi();
+		}
+	};
+
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 
-		/*support multi language pack (Auto select) */
-		Resources res = getResources();
-		Configuration conf =res.getConfiguration();
-		DisplayMetrics dm=res.getDisplayMetrics();
-		res.updateConfiguration(conf, dm);
-
+		setContentView(R.layout.main);
+		
 		super.onCreate(savedInstanceState);
 
-		_mCmdEditText = (EditTextExtend)findViewById(R.id.edit_command);
-		_myKeyboardView = (KeyboardViewExtend)findViewById(R.id.keyboard);
-		_mCandidateView = (CandidateView)findViewById(R.id.candidate);
+		_interpreter = new Interpreter(true);
+		Interpreter.setCacheDir(getCacheDir());
 
-		_mCmdEditText.setOnClickListener(new OnClickListener() {
+		_mOutView = (ListView)findViewById(R.id.out);
+
+		try {
+			PackageInfo pi = getPackageManager().getPackageInfo("com.addi", 0);
+			_version = pi.versionName;     // this is the line Eclipse complains
+		}
+		catch (PackageManager.NameNotFoundException e) {
+			// eat error, for testing
+			_version = "?";
+		}
+
+		_listLabels = new ArrayList<String>();
+		try {
+			String fileName4 = "addiListView";	
+			FileInputStream input4 = openFileInput(fileName4);
+			InputStreamReader input4reader = new InputStreamReader(input4);
+			BufferedReader buffreader4 = new BufferedReader(input4reader);
+			String line4;
+			_listLabels.clear();
+			while (( line4 = buffreader4.readLine()) != null) {
+				_listLabels.add(line4);
+			}
+			input4.close();
+			input4 = openFileInput(fileName4);
+
+			String fileName5 = "addiVersion";	
+			FileInputStream input5 = openFileInput(fileName5);
+			InputStreamReader input5reader = new InputStreamReader(input5);
+			BufferedReader buffreader5 = new BufferedReader(input5reader);
+
+			String savedVersion = buffreader5.readLine();
+			if (!savedVersion.startsWith(_version)) {
+				_listLabels.add("********* Welcome to Addi " + _version + " *********");
+				executeCmd("startup;",false);
+			}
+			input5.close();
+
+		} catch (IOException e) {
+			_listLabels.add("********* Welcome to Addi " + _version + " *********");
+			executeCmd("startup;",false);
+		}
+
+		_mOutArrayAdapter = new ArrayAdapter<String>(this, R.layout.message, _listLabels);
+		_mOutView.setAdapter(_mOutArrayAdapter);
+		_mOutView.setDividerHeight(0);
+		_mOutView.setDivider(new ColorDrawable(0x00FFFFFF));
+		_mOutView.setFocusable(false);   
+		_mOutView.setFocusableInTouchMode(false);
+		_mOutView.setClickable(false);
+		_mOutView.setDescendantFocusability(393216);
+		_mOutView.setFooterDividersEnabled(false);
+		_mOutView.setHeaderDividersEnabled(false);
+		_mOutView.setChoiceMode(0);
+
+		_mOutView.setOnTouchListener(new OnTouchListener() {
 			@Override
-			public void onClick(View view) {
+			public boolean onTouch(View view, MotionEvent event) {
 				enableKeyboardVisibility();
+				return false;
 			}
 		});
-		
-		_mCmdEditText.addTextChangedListener(new TextWatcher() {
 
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                // TODO Auto-generated method stub              
-            }
-
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count,int after) {
-                // TODO Auto-generated method stub              
-            }
-
-            @Override
-			public void afterTextChanged(Editable arg0) {
-            	if (_suggestionTaken == false) {
-            		updateSuggestions();
-            	}
-            	_suggestionTaken = false;
-            	if (_backUpOne == true) {
-            		_mCmdEditText.setSelection(_mCmdEditText.getSelectionStart()-1, _mCmdEditText.getSelectionStart()-1);
-            	}
-            	_backUpOne = false;
+		_mCmdEditText.setOnKeyListener(new OnKeyListener() {
+			@Override
+			public boolean onKey(View view, int keyCode, KeyEvent event) {
+				// TODO Auto-generated method stub
+				if (event.getAction() == KeyEvent.ACTION_DOWN) {
+					if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN) {
+						swipeDown();
+					} else if (keyCode == KeyEvent.KEYCODE_DPAD_UP) {
+						swipeUp();
+					} else if (keyCode == KeyEvent.KEYCODE_ENTER) {
+						String command = _mCmdEditText.getText().toString();
+						executeCmd(command,true);
+						return true;
+					}
+				}
+				return false;
 			}
-        });
 
-	}
+		});
 
-	public void handleBackspace() {
-		int start = _mCmdEditText.getSelectionStart();
-		int end = _mCmdEditText.getSelectionEnd();
-		String textToInsert = "";
-		if (start != end) {
-			_mCmdEditText.getText().replace(Math.min(start, end), Math.max(start, end), textToInsert, 0, textToInsert.length());
-		} else if (start != 0) {
-			_mCmdEditText.getText().replace(start-1, start, textToInsert, 0, textToInsert.length());
+		try
+		{    	
+			String fileName = "addiVariables";
+
+			//create streams
+			FileInputStream input = openFileInput(fileName);
+
+			_interpreter.globals.getLocalVariables().loadVariablesOnCreate(input);
+
+			String fileName2 = "addiPaths";	
+
+			FileInputStream input2 = openFileInput(fileName2);
+
+			int length = input2.available();
+
+			byte buffer[] = new byte[(int)length];
+
+			input2.read(buffer);
+
+			String dirStr = new String(buffer);
+
+			File dir = new File(dirStr);
+
+			if (dir.isDirectory()) {
+				_interpreter.globals.setWorkingDirectory(dir);
+			}
+
+			input2.close();
+
+			String fileName3 = "addiCommands";	
+
+			FileInputStream input3 = openFileInput(fileName3);
+
+			InputStreamReader input3reader = new InputStreamReader(input3);
+			BufferedReader buffreader = new BufferedReader(input3reader);
+
+			String line;
+
+			_oldCommands.clear();
+			while (( line = buffreader.readLine()) != null) {
+				_oldCommands.add(line);
+			}
+
+			input3.close();
+
 		}
+		catch(java.io.IOException except)
+		{
+		}
+
 	}
 	
-	public void handleEnter() {
-	}
 	
-	public void sendSuggestionText(String textToInsert) {
-		int start = _mCmdEditText.getSelectionStart();
-		_mCandidateView.clear();
-		
-		Character tempChar;
-		int reverse;
-		int forward;
-		//scan forwards and backwards and find the full word, then update suggestions
-		for (reverse = start-1; reverse >= 0; reverse--) {
-			tempChar = _mCmdEditText.getText().toString().charAt(reverse);
-			if (Character.isLetter(tempChar) || Character.isDigit(tempChar) || (tempChar == '_')) {
-				continue;
-			} else {
-				reverse++;
-				break;
-			}
-		}
-		if (reverse < 0) {
-			reverse = 0;
-		}
-		for (forward = start; forward < _mCmdEditText.getText().toString().length(); forward++) {
-			tempChar = _mCmdEditText.getText().toString().charAt(forward);
-			if (Character.isLetter(tempChar) || Character.isDigit(tempChar) || (tempChar == '_')) {
-				continue;
-			} else {
-				break;
-			}
-		}
-		if (forward > _mCmdEditText.getText().toString().length()) {
-			forward = _mCmdEditText.getText().toString().length() - 1;
-		} 
-		if (forward < 0) {
-			forward = 0;
-		}
-		if (textToInsert.endsWith("()") || textToInsert.endsWith("[]")) {
-			_backUpOne = true;
-		}
-		_suggestionTaken = true;
-		_mCmdEditText.getText().replace(reverse, forward, textToInsert, 0, textToInsert.length());
-		
-	}
-
-	public void sendText(String textToInsert) {
-		int start = _mCmdEditText.getSelectionStart();
-		int end = _mCmdEditText.getSelectionEnd();
-		_mCmdEditText.getText().replace(Math.min(start, end), Math.max(start, end),
-				textToInsert, 0, textToInsert.length());
-	}
-	
-	public void updateSuggestions() {
-		int start = _mCmdEditText.getSelectionStart();
-		int end = _mCmdEditText.getSelectionEnd();
-		
-		if (start != end) {
-			_mCandidateView.clear();
-			return;
-		}
-		
-		Character tempChar;
-		int reverse;
-		int forward;
-		//scan forwards and backwards and find the full word, then update suggestions
-		for (reverse = start-1; reverse >= 0; reverse--) {
-			tempChar = _mCmdEditText.getText().toString().charAt(reverse);
-			if (Character.isLetter(tempChar) || Character.isDigit(tempChar) || (tempChar == '_')) {
-				continue;
-			} else {
-				reverse++;
-				break;
-			}
-		}
-		if (reverse < 0) {
-			reverse = 0;
-		}
-		for (forward = start; forward < _mCmdEditText.getText().toString().length(); forward++) {
-			tempChar = _mCmdEditText.getText().toString().charAt(forward);
-			if (Character.isLetter(tempChar) || Character.isDigit(tempChar) || (tempChar == '_')) {
-				continue;
-			} else {
-				break;
-			}
-		}
-		if (forward > _mCmdEditText.getText().toString().length()) {
-			forward = _mCmdEditText.getText().toString().length() - 1;
-		} 
-		if (forward < 0) {
-			forward = 0;
-		}
-		_mCandidateView.updateSuggestions(_mCmdEditText.getText().toString().substring(reverse, forward),true,true);
-	}
-
-	public void enableKeyboardVisibility() {    
-		int visibility = _myKeyboardView.getVisibility();  
-		switch (visibility) {    
-		case View.GONE:  
-		case View.INVISIBLE:  
-			_myKeyboardView.setVisibility(View.VISIBLE);  
-			break;  
-		}  
-	}
-
 	@Override
-	public void onConfigurationChanged(Configuration newConfig)
-	{ 
-		super.onConfigurationChanged(newConfig);
-		_myKeyboardView.myOnConfigurationChanged(newConfig);
-	}
-
-	@Override
-	public boolean onKeyDown(int keyCode, KeyEvent event)  {
-		if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0) {
-			int visibility = _myKeyboardView.getVisibility();
-			if (visibility == View.VISIBLE) {
-				_myKeyboardView.setVisibility(View.GONE);
-				return true;
-			}
-			return super.onKeyDown(keyCode, event);
-		}
-		return super.onKeyDown(keyCode, event);
-	}
-
-	@Override
-	public void onBackPressed() {
-		int visibility = _myKeyboardView.getVisibility();
-		if (visibility == View.VISIBLE) {
-			_myKeyboardView.setVisibility(View.GONE); 
+	public void swipeDown() {
+		if (_oldCommandIndex == -1) {
+			//do nothing
+		} else if (_oldCommandIndex == 0) {
+			_oldCommandIndex=_oldCommandIndex-1;
+			_mCmdEditText.setText(_partialCommand);
+			_mCmdEditText.setSelection(_partialCommand.length());
 		} else {
-			finish();
-			System.exit(0);
+			_oldCommandIndex=_oldCommandIndex-1;
+			_mCmdEditText.setText(_oldCommands.get(_oldCommandIndex));
+			_mCmdEditText.setSelection(_oldCommands.get(_oldCommandIndex).length());
 		}
-		return;
+	}
+	
+	@Override
+	public void swipeUp() {
+		if ((_oldCommandIndex+1) < _oldCommands.size()) {
+			if (_oldCommandIndex == -1) {
+				_partialCommand = _mCmdEditText.getText().toString();
+				_oldCommandIndex = 0;
+				_mCmdEditText.setText(_oldCommands.get(_oldCommandIndex));
+				_mCmdEditText.setSelection(_oldCommands.get(_oldCommandIndex).length());
+			} else {
+				_oldCommandIndex = _oldCommandIndex+1;
+				_mCmdEditText.setText(_oldCommands.get(_oldCommandIndex));
+				_mCmdEditText.setSelection(_oldCommands.get(_oldCommandIndex).length());
+			}
+		}		
+	}
+	
+
+	/** Called when the activity is put into background. */
+	@Override
+	public void onPause() {
+		try
+		{    
+			super.onPause();
+
+			String fileName4 = "addiListView";	
+			OutputStreamWriter out4 = new OutputStreamWriter(openFileOutput(fileName4, MODE_PRIVATE));
+			int startIndex = 0;
+			if (_listLabels.size() > 100) {
+				startIndex = _listLabels.size() - 100;
+			}
+			for (int lineLoop = startIndex; lineLoop < _listLabels.size(); lineLoop++) {
+				out4.write(_listLabels.get(lineLoop));
+				out4.write("\n");
+			}
+			out4.close();
+
+			String fileName5 = "addiVersion";	
+			OutputStreamWriter out5 = new OutputStreamWriter(openFileOutput(fileName5, MODE_PRIVATE));
+			out5.write(_version);
+			out5.close();
+
+			String fileName3 = "addiCommands";	
+
+			OutputStreamWriter out3 = new OutputStreamWriter(openFileOutput(fileName3, MODE_PRIVATE));
+
+			for (int lineLoop = 0; lineLoop < _oldCommands.size(); lineLoop++) {
+				out3.write(_oldCommands.get(lineLoop));
+				out3.write("\n");
+			}
+
+			out3.close();
+
+			String fileName = "addiVariables";
+
+			//create streams
+			FileOutputStream output = openFileOutput(fileName, MODE_PRIVATE);
+
+			_interpreter.globals.getLocalVariables().saveVariablesOnPause(output);
+
+			String fileName2 = "addiPaths";	
+
+			FileOutputStream output2 = openFileOutput(fileName2, MODE_PRIVATE);
+
+			output2.write(_interpreter.globals.getWorkingDirectory().getAbsolutePath().getBytes());
+
+			output2.close();
+
+		}
+		catch(java.io.IOException except)
+		{
+		}
+	}
+
+	private void updateResultsInUi() {
+		// Back in the UI thread -- update our UI elements based on the data in mResults
+		if (_mResults.equals("PARSER: CCX: continue") == false) {
+			_mOutArrayAdapter.add(_mResults);
+			_prevCmd = "";
+		} 
+		_blockExecute = false;
+	}
+
+	public void executeCmd(final String command, boolean displayCommand) {
+
+		if (_blockExecute == false) {
+			if (displayCommand) {
+				_mOutArrayAdapter.add(">>  " + command);
+				_oldCommands.add(0, command);
+				if (_oldCommands.size() == 100) {
+					_oldCommands.remove(99);
+				}
+			}
+			_oldCommandIndex = -1;
+
+			_blockExecute = true;
+
+			_command = command;
+			_act = this;
+
+			// Fire off a thread to do some work that we shouldn't do directly in the UI thread
+			ThreadGroup threadGroup = new ThreadGroup("executeCmdGroup");
+			Thread t = new Thread(threadGroup, mRunThread, "executeCmd", 16*1024*1024) {};
+			t.start();
+
+			_mCmdEditText.setText("");
+		}
+
+	}
+
+	// Create runnable for thread run
+	final Runnable mRunThread = new Runnable() {
+		public void run() {
+			_mResults = _interpreter.executeExpression(_prevCmd + _command + "\n",_act,_mHandler);
+			_prevCmd = _prevCmd + _command  + "\n";
+			_mHandler.post(mUpdateResults);
+		}
+	};
+	
+	@Override
+	public void handleEnter() {
+		String command = _mCmdEditText.getText().toString();
+		executeCmd(command,true);
 	}
 
 }
