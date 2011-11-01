@@ -48,7 +48,7 @@ public class AddiBase extends Activity {
 		Configuration conf =res.getConfiguration();
 		DisplayMetrics dm=res.getDisplayMetrics();
 		res.updateConfiguration(conf, dm);
-
+		
 		super.onCreate(savedInstanceState);
 
 		_mCmdEditText = (EditTextExtend)findViewById(R.id.edit_command);
@@ -57,7 +57,7 @@ public class AddiBase extends Activity {
 
 		_mCmdEditText.setOnClickListener(new OnClickListener() {
 			@Override
-			public void onClick(View view) {
+			public void onClick(View view) { 
 				enableKeyboardVisibility();
 			}
 		});
@@ -75,7 +75,7 @@ public class AddiBase extends Activity {
             }
 
             @Override
-			public void afterTextChanged(Editable arg0) {
+			public void afterTextChanged(Editable arg0) { 
             	if (_suggestionTaken == false) {
             		updateSuggestions();
             	}
@@ -139,7 +139,7 @@ public class AddiBase extends Activity {
 		if (textToInsert.endsWith("()") || textToInsert.endsWith("[]")) {
 			_suggestionCursorPos = reverse + textToInsert.length() - 1;
 		} else {
-			_suggestionCursorPos = reverse + textToInsert.length() - 1;
+			_suggestionCursorPos = reverse + textToInsert.length();
 		}
 		_suggestionTaken = true;
 		_mCmdEditText.getText().replace(reverse, forward, textToInsert, 0, textToInsert.length());
@@ -246,11 +246,17 @@ public class AddiBase extends Activity {
 	}
 	
 	void swipeLeft() {
-		
+		int start = _mCmdEditText.getSelectionStart();
+		if (start > 0) {
+			_mCmdEditText.setSelection(start-1, start-1);
+		}
 	}
 	
 	void swipeRight() {
-		
+		int start = _mCmdEditText.getSelectionStart();
+		if (start < _mCmdEditText.getText().toString().length()) {
+			_mCmdEditText.setSelection(start+1, start+1);
+		}
 	}
 
 }

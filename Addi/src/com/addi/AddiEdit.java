@@ -199,5 +199,12 @@ public class AddiEdit extends AddiBase {
 	      output.close();
 	    }
 	  }
+	  
+	  public void handleEnter() {
+			int start = _mCmdEditText.getSelectionStart();
+			int end = _mCmdEditText.getSelectionEnd();
+			String textToInsert = "\n";
+			_mCmdEditText.getText().replace(Math.min(start, end), Math.max(start, end), textToInsert, 0, textToInsert.length());
+	  }
    
 }

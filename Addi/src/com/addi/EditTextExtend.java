@@ -16,6 +16,12 @@ public class EditTextExtend extends EditText {
         super(context,atts);
         _parent = (AddiBase)context;
     }
+    
+    public EditTextExtend(Context context)
+    {
+        super(context);
+        _parent = (AddiBase)context;
+    }
 	
 	//@Override 
 	//protected void onSelectionChanged(int selStart, int selEnd) {

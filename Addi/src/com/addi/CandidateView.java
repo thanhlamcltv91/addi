@@ -69,16 +69,10 @@ public class CandidateView extends View {
     
 
     private Vector<String> mPossibleCompletions = new Vector<String>();
-
-    /**
-     * Construct a CandidateView for showing suggested words for completion.
-     * @param context
-     * @param attrs
-     */
-    public CandidateView(Context context, AttributeSet atts)
+    
+    public void init(Context context)
     {
-        super(context,atts);
-        mService = (Addi)context;
+    	mService = (AddiBase)context;
         mSelectionHighlight = context.getResources().getDrawable(
                 android.R.drawable.list_selector_background);
         mSelectionHighlight.setState(new int[] {
@@ -1429,7 +1423,22 @@ public class CandidateView extends View {
         mPossibleCompletions.add("zeros");
         mPossibleCompletions.add("zip");
         mPossibleCompletions.add("zlabel");
-        
+    }
+
+    public CandidateView(Context context)
+    {
+    	super(context);
+    	init(context);
+    }
+    /**
+     * Construct a CandidateView for showing suggested words for completion.
+     * @param context
+     * @param attrs
+     */
+    public CandidateView(Context context, AttributeSet atts)
+    {
+        super(context,atts);
+        init(context);
     }
     
     @Override
