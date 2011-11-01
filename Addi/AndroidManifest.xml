@@ -21,7 +21,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="AddiEdit" />
+        <activity android:name=".AddiEdit" />
     </application>
     <uses-sdk android:minSdkVersion="2" />
 
