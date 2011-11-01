@@ -19,11 +19,20 @@ public class KeyboardViewExtend extends KeyboardView implements KeyboardView.OnK
 	private Keyboard _myKeyboardSymbols = null;
 	private Keyboard _myKeyboardOps = null;
 
+	public KeyboardViewExtend(Context c)
+	{
+		super(c,null);
+		init(c);
+	}
 	public KeyboardViewExtend(Context c, AttributeSet a)
 	{
 		super(c,a);
-		_parent = (Addi)c;
+		init(c);
 		
+	}
+
+	private void init(Context c) {
+		_parent = (AddiBase)c;	
 		setOnKeyboardActionListener(this);
 		setEnabled(true);  
 		setPreviewEnabled(true);   
@@ -36,7 +45,7 @@ public class KeyboardViewExtend extends KeyboardView implements KeyboardView.OnK
 		setLayoutParams(lp);
 		makeKeyboardView();
 	}
-
+	
 	public void swipeUp() {
 		_parent.swipeUp();
 	}
