@@ -38,6 +38,7 @@ public class AddiBase extends Activity {
 	
 	int _suggestionCursorPos = 0;
 	boolean _suggestionTaken = false;
+	boolean _backUpOne = false;
 	
 	/** Called when the activity is first created. */
 	@Override
@@ -83,6 +84,13 @@ public class AddiBase extends Activity {
             		_mCmdEditText.setSelection(_suggestionCursorPos, _suggestionCursorPos);
             	}
             	_suggestionTaken = false;
+            	if (_backUpOne == true) {
+            		int start = _mCmdEditText.getSelectionStart();
+            		if (start > 0) {
+            			_mCmdEditText.setSelection(start-1, start-1);
+            		}
+            	}
+            	_backUpOne = false;
 			}
         });
 

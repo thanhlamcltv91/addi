@@ -67,6 +67,9 @@ public class KeyboardViewExtend extends KeyboardView implements KeyboardView.OnK
 	public void onRelease(int k) {}
 	
 	public void onText(CharSequence s) {
+		if ((s.toString() == "()") || (s.toString() == "[]")) {
+			_parent._backUpOne = true;
+		}
 		_parent.sendText(s.toString());
 		if (getKeyboard() != _myKeyboard) {
 			setKeyboard(_myKeyboard);
