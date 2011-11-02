@@ -28,6 +28,10 @@ import android.view.MotionEvent;
 import android.view.View;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
@@ -67,9 +71,8 @@ public class CandidateView extends View {
     
     private GestureDetector mGestureDetector;
     
+    public List<String> mPossibleCompletions = new ArrayList<String>();
 
-    private Vector<String> mPossibleCompletions = new Vector<String>();
-    
     public void init(Context context)
     {
     	mService = (AddiBase)context;
@@ -1423,6 +1426,9 @@ public class CandidateView extends View {
         mPossibleCompletions.add("zeros");
         mPossibleCompletions.add("zip");
         mPossibleCompletions.add("zlabel");
+        
+        Collections.sort(mPossibleCompletions, new MyComparator());
+
     }
 
     public CandidateView(Context context)
@@ -1641,4 +1647,18 @@ public class CandidateView extends View {
         mTouchX = OUT_OF_BOUNDS;
         invalidate();
     }
+    
+    public class MyComparator implements Comparator<String>{
+        @Override
+        public int compare(String o1, String o2) {  
+          if (o1.length() > o2.length()) {
+             return 1;
+          } else if (o1.length() < o2.length()) {
+             return -1;
+          } else { 
+             return o1.compareTo(o2);
+          }
+        }
+    }
+
 }
