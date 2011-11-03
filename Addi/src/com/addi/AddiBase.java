@@ -23,6 +23,7 @@ import android.view.KeyEvent;
 import android.app.Activity;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.inputmethodservice.Keyboard;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -217,6 +218,14 @@ public class AddiBase extends Activity {
 	public void onConfigurationChanged(Configuration newConfig)
 	{ 
 		super.onConfigurationChanged(newConfig);
+		Keyboard tempKeyboard;
+		//CCX do something here like in the small keyboard class
+		int visibility = _myKeyboardView.getVisibility();
+		tempKeyboard = _myKeyboardView.getKeyboard();
+		_myKeyboardView = null;
+		_myKeyboardView = (KeyboardViewExtend)findViewById(R.id.keyboard);
+		_myKeyboardView.setKeyboard(tempKeyboard);
+		_myKeyboardView.setVisibility(visibility);
 		_myKeyboardView.myOnConfigurationChanged(newConfig);
 	}
 
@@ -246,25 +255,19 @@ public class AddiBase extends Activity {
 	}
 	
 	void swipeUp() {
-		
+		_mCmdEditText.dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_DPAD_UP));
 	}
 	
 	void swipeDown() {
-		
+		_mCmdEditText.dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_DPAD_DOWN));
 	}
 	
 	void swipeLeft() {
-		int start = _mCmdEditText.getSelectionStart();
-		if (start > 0) {
-			_mCmdEditText.setSelection(start-1, start-1);
-		}
+		_mCmdEditText.dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_DPAD_LEFT));
 	}
 	
 	void swipeRight() {
-		int start = _mCmdEditText.getSelectionStart();
-		if (start < _mCmdEditText.getText().toString().length()) {
-			_mCmdEditText.setSelection(start+1, start+1);
-		}
+		_mCmdEditText.dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_DPAD_RIGHT));
 	}
 
 }
