@@ -212,12 +212,11 @@ public class Addi extends AddiBase {
 		_mCmdEditText.setOnKeyListener(new OnKeyListener() {
 			@Override
 			public boolean onKey(View view, int keyCode, KeyEvent event) {
-				// TODO Auto-generated method stub
 				if (event.getAction() == KeyEvent.ACTION_DOWN) {
 					if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN) {
-						swipeDown();
+						dpadDown();
 					} else if (keyCode == KeyEvent.KEYCODE_DPAD_UP) {
-						swipeUp();
+						dpadUp();
 					} else if (keyCode == KeyEvent.KEYCODE_ENTER) {
 						String command = _mCmdEditText.getText().toString();
 						executeCmd(command,true);
@@ -281,9 +280,7 @@ public class Addi extends AddiBase {
 
 	}
 	
-	
-	@Override
-	public void swipeDown() {
+	public void dpadDown() {
 		if (_oldCommandIndex == -1) {
 			//do nothing
 		} else if (_oldCommandIndex == 0) {
@@ -296,9 +293,8 @@ public class Addi extends AddiBase {
 			_mCmdEditText.setSelection(_oldCommands.get(_oldCommandIndex).length());
 		}
 	}
-	
-	@Override
-	public void swipeUp() {
+
+	public void dpadUp() {
 		if ((_oldCommandIndex+1) < _oldCommands.size()) {
 			if (_oldCommandIndex == -1) {
 				_partialCommand = _mCmdEditText.getText().toString();
