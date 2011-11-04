@@ -10,6 +10,7 @@ import android.widget.EditText;
 public class EditTextExtend extends EditText {
 	
 	private AddiBase _parent = null;
+	public int _prevPos = 0;
 
     public EditTextExtend(Context context, AttributeSet atts)
     {
@@ -23,12 +24,15 @@ public class EditTextExtend extends EditText {
         _parent = (AddiBase)context;
     }
 	
-	//@Override 
-	//protected void onSelectionChanged(int selStart, int selEnd) {
-		//if (_parent != null) {
-		//	_parent.updateSuggestions();
-		//}
-	//}
+	@Override 
+	protected void onSelectionChanged(int selStart, int selEnd) {
+		if (_parent != null) {
+			if (_prevPos != getSelectionStart()) { 
+				_parent.updateSuggestions();
+				_prevPos = getSelectionStart();
+			}
+		}
+	}
 	 
 	@Override      
 	public boolean onCheckIsTextEditor() {   
