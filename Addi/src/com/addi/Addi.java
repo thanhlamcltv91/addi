@@ -179,13 +179,13 @@ public class Addi extends AddiBase {
 
 			String savedVersion = buffreader5.readLine();
 			if (!savedVersion.startsWith(_version)) {
-				_listLabels.add("********* Welcome to Addi " + _version + " *********");
+				_listLabels.add("** Welcome to Addi " + _version + " **");
 				executeCmd("startup;",false);
 			}
 			input5.close();
 
 		} catch (IOException e) {
-			_listLabels.add("********* Welcome to Addi " + _version + " *********");
+			_listLabels.add("** Welcome to Addi " + _version + " **");
 			executeCmd("startup;",false);
 		}
 

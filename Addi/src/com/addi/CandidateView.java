@@ -72,6 +72,7 @@ public class CandidateView extends View {
     private GestureDetector mGestureDetector;
     
     public List<String> mPossibleCompletions = new ArrayList<String>();
+    public List<String> mPossibleCompletionsRsrvd = new ArrayList<String>();
 
     public void init(Context context)
     {
@@ -1426,8 +1427,38 @@ public class CandidateView extends View {
         mPossibleCompletions.add("zeros");
         mPossibleCompletions.add("zip");
         mPossibleCompletions.add("zlabel");
+        mPossibleCompletions.add("deg2rad");
+        mPossibleCompletions.add("rad2deg");
+        mPossibleCompletions.add("azimuth");
+        mPossibleCompletions.add("distance");
+        mPossibleCompletions.add("km2deg");
+        mPossibleCompletions.add("reckon");
+        
+        mPossibleCompletionsRsrvd.add("if");
+        mPossibleCompletionsRsrvd.add("while");
+        mPossibleCompletionsRsrvd.add("for");
+        mPossibleCompletionsRsrvd.add("switch");
+        mPossibleCompletionsRsrvd.add("global");
+        mPossibleCompletionsRsrvd.add("break");
+        mPossibleCompletionsRsrvd.add("continue");
+        mPossibleCompletionsRsrvd.add("catch");
+        mPossibleCompletionsRsrvd.add("persistent");
+        mPossibleCompletionsRsrvd.add("return");
+        mPossibleCompletionsRsrvd.add("try"); 
+        mPossibleCompletionsRsrvd.add("elseif");
+        mPossibleCompletionsRsrvd.add("else");
+        mPossibleCompletionsRsrvd.add("endif");
+        mPossibleCompletionsRsrvd.add("end");
+        mPossibleCompletionsRsrvd.add("endfunction");
+        mPossibleCompletionsRsrvd.add("case");
+        mPossibleCompletionsRsrvd.add("default");
+        mPossibleCompletionsRsrvd.add("otherwise");
+        mPossibleCompletionsRsrvd.add("endswitch");
+        mPossibleCompletionsRsrvd.add("endwhile");
+        mPossibleCompletionsRsrvd.add("endfor");
         
         Collections.sort(mPossibleCompletions, new MyComparator());
+        Collections.sort(mPossibleCompletionsRsrvd, new MyComparator());
 
     }
 
@@ -1560,11 +1591,18 @@ public class CandidateView extends View {
     	String tempString;
         clear();
         if (partialText.length() > 0) {
-        	completionIterator = mPossibleCompletions.iterator();
+        	completionIterator = mPossibleCompletionsRsrvd.iterator();
         	while (completionIterator.hasNext()) {
         		tempString = (String)completionIterator.next();
         		if (tempString.startsWith(partialText)) {
         			mSuggestions.add(tempString);
+        			setVisibility(View.VISIBLE);
+        		}
+        	}
+        	completionIterator = mPossibleCompletions.iterator();
+        	while (completionIterator.hasNext()) {
+        		tempString = (String)completionIterator.next();
+        		if (tempString.startsWith(partialText)) {
         			mSuggestions.add(tempString+"()");
         			setVisibility(View.VISIBLE);
         		}
