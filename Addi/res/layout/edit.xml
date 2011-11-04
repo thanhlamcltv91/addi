@@ -4,40 +4,19 @@
     android:orientation="vertical"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    >
-    <LinearLayout
-        android:orientation="horizontal"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        >
-        <Button android:id="@+id/buttonSave"
-            android:layout_width="wrap_content"
-            android:layout_height="35dip"
-            android:text="Save" 
-        />
-        <Button android:id="@+id/buttonSaveRun"
-            android:layout_width="wrap_content"
-            android:layout_height="35dip"
-            android:text="Save And Run" 
-        />
-        <Button android:id="@+id/buttonQuit"
-            android:layout_width="wrap_content"
-            android:layout_height="35dip"
-            android:text="Quit" 
-        />
-    </LinearLayout>
-    <com.addi.CandidateView
-    	android:id="@+id/candidate"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:visibility="gone"
-    /> 
+    > 
     <com.addi.EditTextExtend 
         android:id="@+id/edit_command"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:textSize="16sp"
         android:layout_weight="1"
+    />
+    <com.addi.CandidateView
+    	android:id="@+id/candidate"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
     /> 
 	<com.addi.KeyboardViewExtend
 		android:id="@+id/keyboard"
