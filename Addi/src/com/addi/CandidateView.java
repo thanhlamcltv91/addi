@@ -1603,6 +1603,7 @@ public class CandidateView extends View {
         	while (completionIterator.hasNext()) {
         		tempString = (String)completionIterator.next();
         		if (tempString.startsWith(partialText)) {
+        			mSuggestions.add(tempString);
         			mSuggestions.add(tempString+"()");
         			setVisibility(View.VISIBLE);
         		}
