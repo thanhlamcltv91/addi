@@ -30,12 +30,15 @@ import android.text.TextWatcher;
 import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 
 public class AddiBase extends Activity {
 
 	public  EditTextExtend _mCmdEditText;
 	public KeyboardViewExtend _myKeyboardView;
 	private CandidateView _mCandidateView;
+	private LinearLayout _mainLayout;
 	
 	int _suggestionCursorPos = 0;
 	boolean _suggestionTaken = false;
@@ -56,6 +59,7 @@ public class AddiBase extends Activity {
 		_mCmdEditText = (EditTextExtend)findViewById(R.id.edit_command);
 		_myKeyboardView = (KeyboardViewExtend)findViewById(R.id.keyboard);
 		_mCandidateView = (CandidateView)findViewById(R.id.candidate);
+		_mainLayout = (LinearLayout)findViewById(R.id.wrapView);
 
 		_mCmdEditText.setOnClickListener(new OnClickListener() {
 			@Override
@@ -219,11 +223,17 @@ public class AddiBase extends Activity {
 	{ 
 		super.onConfigurationChanged(newConfig);
 		Keyboard tempKeyboard;
-		//CCX do something here like in the small keyboard class
+		
 		int visibility = _myKeyboardView.getVisibility();
 		tempKeyboard = _myKeyboardView.getKeyboard();
-		_myKeyboardView = null;
-		_myKeyboardView = (KeyboardViewExtend)findViewById(R.id.keyboard);
+		
+		if (_myKeyboardView != null) _mainLayout.removeView(_myKeyboardView);
+		_myKeyboardView = new KeyboardViewExtend(this);
+		_myKeyboardView.setId(R.id.keyboard);
+		RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(
+				RelativeLayout.LayoutParams.FILL_PARENT,
+				RelativeLayout.LayoutParams.WRAP_CONTENT);
+		_mainLayout.addView(_myKeyboardView, lp);
 		_myKeyboardView.setKeyboard(tempKeyboard);
 		_myKeyboardView.setVisibility(visibility);
 		_myKeyboardView.myOnConfigurationChanged(newConfig);
