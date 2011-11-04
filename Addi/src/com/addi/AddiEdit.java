@@ -63,10 +63,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 public class AddiEdit extends AddiBase {
-	
-	private Button _mQuitButton;
-	private Button _mSaveButton;
-	private Button _mSaveRunButton;
+
 	private File _mFile;
 	
    /** Called when the activity is first created. */
@@ -74,43 +71,6 @@ public class AddiEdit extends AddiBase {
    public void onCreate(Bundle savedInstanceState) {	   
        setContentView(R.layout.edit);
        super.onCreate(savedInstanceState);
-       _mSaveButton = (Button)findViewById(R.id.buttonSave);
-       _mSaveRunButton = (Button)findViewById(R.id.buttonSaveRun);
-       _mQuitButton = (Button)findViewById(R.id.buttonQuit);
-       _mQuitButton.setOnClickListener(new OnClickListener() {
-    	    @Override
-    	    public void onClick(View v) {
-    	    	setResult(3);
-    	    	finish();
-    	    }
-    	  });
-       _mSaveButton.setOnClickListener(new OnClickListener() {
-    	   @Override
-   	    	public void onClick(View v) {
-    		   	try {
-    		   		setContents(_mFile,_mCmdEditText.getText().toString());
-    		   		setResult(1);
-			    	finish();
-				} catch (IOException e) {
-					setResult(0);
-			    	finish();
-				}
-   	    	}
-   	  	  });
-       _mSaveRunButton.setOnClickListener(new OnClickListener() {
-    	   @Override
-   	    	public void onClick(View v) {
-    		   	try {
-    		   		setContents(_mFile,_mCmdEditText.getText().toString());
-    		   		setResult(2);
-			    	finish();
-				} catch (IOException e) {
-					setResult(0);
-			    	finish();
-				}
-   	    	}
-   	  	  });
-
        onNewIntent(getIntent());
    }
    
@@ -207,4 +167,26 @@ public class AddiEdit extends AddiBase {
 			_mCmdEditText.getText().replace(Math.min(start, end), Math.max(start, end), textToInsert, 0, textToInsert.length());
 	  }
    
+	  @Override
+	  public boolean onCreateOptionsMenu(Menu menu) {
+	      MenuInflater inflater = getMenuInflater();
+	      inflater.inflate(R.menu.edit_menu, menu);
+	      return true;
+	  }
+	  
+	  @Override
+	  public boolean onOptionsItemSelected(MenuItem item) {
+	      switch (item.getItemId()) {
+	          case R.id.editMenuSave: setResult(1);
+										finish();
+										break;
+	          case R.id.editMenuSaveRun: setResult(2);
+										finish();
+										break;
+	          case R.id.editMenuQuit: setResult(3);
+  	    								finish();
+  	    								break;
+	      }
+	      return true;
+	  }
 }
