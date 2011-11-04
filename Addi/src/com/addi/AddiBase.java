@@ -72,12 +72,12 @@ public class AddiBase extends Activity {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                // TODO Auto-generated method stub              
+                
             }
 
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count,int after) {
-                // TODO Auto-generated method stub              
+                            
             }
 
             @Override
@@ -96,6 +96,7 @@ public class AddiBase extends Activity {
             		}
             	}
             	_backUpOne = false;
+            	_mCmdEditText._prevPos = _mCmdEditText.getSelectionStart();
 			}
         });
 
