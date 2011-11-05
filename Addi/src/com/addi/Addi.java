@@ -44,12 +44,16 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnKeyListener;
 import android.view.View.OnTouchListener;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
 public class Addi extends AddiBase {
 
@@ -215,8 +219,10 @@ public class Addi extends AddiBase {
 				if (event.getAction() == KeyEvent.ACTION_DOWN) {
 					if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN) {
 						dpadDown();
+						return true;
 					} else if (keyCode == KeyEvent.KEYCODE_DPAD_UP) {
 						dpadUp();
+						return true;
 					} else if (keyCode == KeyEvent.KEYCODE_ENTER) {
 						String command = _mCmdEditText.getText().toString();
 						executeCmd(command,true);
@@ -416,5 +422,21 @@ public class Addi extends AddiBase {
 		String command = _mCmdEditText.getText().toString();
 		executeCmd(command,true);
 	}
+	
+	@Override
+	  public boolean onCreateOptionsMenu(Menu menu) {
+	      MenuInflater inflater = getMenuInflater();
+	      inflater.inflate(R.menu.main_menu, menu);
+	      return true;
+	  }
+	  
+	  @Override
+	  public boolean onOptionsItemSelected(MenuItem item) {
+	      switch (item.getItemId()) {
+	          case R.id.mainMenuMFile: Toast.makeText(this, "From the command line use the edit command.  Ie\nedit /sdcard/test.m\nWill make file browser soon.", Toast.LENGTH_LONG).show();
+              							break;
+	      }
+	      return true;
+	  }
 
 }
