@@ -44,7 +44,7 @@ public class clock extends ExternalFunction
 		datetime[0][1]  = calendarInst.get(Calendar.MONTH) + 1;
 		datetime[0][2]  = calendarInst.get(Calendar.DATE);
 		
-		datetime[0][3]  = calendarInst.get(Calendar.HOUR);
+		datetime[0][3]  = calendarInst.get(Calendar.HOUR) + 12*calendarInst.get(Calendar.AM_PM);
 		datetime[0][4]  = calendarInst.get(Calendar.MINUTE);
 		datetime[0][5]  = calendarInst.get(Calendar.SECOND);
 		
