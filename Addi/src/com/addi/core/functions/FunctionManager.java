@@ -921,6 +921,7 @@ public class FunctionManager {
         functions.put("le","toolbox/jmathlib/matrix/inv.m");
         functions.put("ln","com.addi.toolbox.jmathlib.matrix");
         functions.put("log","com.addi.toolbox.jmathlib.matrix");
+        functions.put("log10","com.addi.toolbox.jmathlib.matrix");
         functions.put("lowertriangle","com.addi.toolbox.jmathlib.matrix");
         functions.put("lt","toolbox/jmathlib/matrix/lt.m");
         functions.put("lu","com.addi.toolbox.jmathlib.matrix");

@@ -3,8 +3,8 @@
       android:installLocation="preferExternal"
       package="com.addi"
       android:sharedUserId="com.addi.sharedid"
-      android:versionCode="30" 
-      android:versionName="1.81"> 
+      android:versionCode="31" 
+      android:versionName="1.82"> 
     <supports-screens android:resizeable="true"
                       android:smallScreens="true"
                       android:normalScreens="true"
