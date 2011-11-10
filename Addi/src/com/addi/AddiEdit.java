@@ -177,15 +177,30 @@ public class AddiEdit extends AddiBase {
 	  @Override
 	  public boolean onOptionsItemSelected(MenuItem item) {
 	      switch (item.getItemId()) {
-	          case R.id.editMenuSave: setResult(1);
-										finish();
-										break;
-	          case R.id.editMenuSaveRun: setResult(2);
-										finish();
-										break;
-	          case R.id.editMenuQuit: setResult(3);
-  	    								finish();
-  	    								break;
+	          case R.id.editMenuSave: 
+	          		try {
+    		   			setContents(_mFile,_mCmdEditText.getText().toString());
+    		   			setResult(1);
+			    		finish();
+					} catch (IOException e) {
+						setResult(0);
+			    		finish();
+					}
+					break;
+	          case R.id.editMenuSaveRun: 
+	          		try {
+    		   			setContents(_mFile,_mCmdEditText.getText().toString());
+    		   			setResult(2);
+			    		finish();
+					} catch (IOException e) {
+						setResult(0);
+			    		finish();
+					}
+					break;
+	          case R.id.editMenuQuit: 
+	          		setResult(3);
+  	    			finish();
+  	    			break;
 	      }
 	      return true;
 	  }

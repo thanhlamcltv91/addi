@@ -1246,17 +1246,17 @@ public class Parser extends RootObject implements TokenConstants, ErrorCodes
                 // elseif(..) {...} 
                 ErrorLogger.debugLine("Parser: if: found elseif");
 
-                if (!isExpectedDelimiter(getNextToken(), '(' ))
-                    Errors.throwParserException(" if missing (");
+                //if (!isExpectedDelimiter(getNextToken(), '(' ))
+                //    Errors.throwParserException(" elseif missing (");
 
                 // get argument inside (...)
                 OperandToken elseIfRelation = parseArithExpression(SINGLE);         
    		
                 // check if argument is terminated by ")"
-                if (!isExpectedDelimiter(peekNextToken(), ')' ) ) 
-                    Errors.throwParserException("If: missing )");
-                else
-                    getNextToken();
+                //if (!isExpectedDelimiter(peekNextToken(), ')' ) ) 
+                //    Errors.throwParserException("If: missing )");
+                //else
+                //    getNextToken();
                 
                 ErrorLogger.debugLine("Parser: elseIf after relation: "+elseIfRelation.toString());
                 
