@@ -81,7 +81,15 @@ public class AddiEdit extends AddiBase {
 	    
 	    setResult(3);
 	    
-	    String fileName = intent.getStringExtra("fileName"); 
+	    String fileName = null;
+	    try {
+	    	fileName = getIntent().getData().getEncodedPath();
+	    } catch (NullPointerException e) {
+	    	try {
+		    	fileName = intent.getStringExtra("fileName");
+		    } catch (NullPointerException ex) {	
+		    }
+	    }
 	    
 	    _mFile = new File(fileName);
 	    
