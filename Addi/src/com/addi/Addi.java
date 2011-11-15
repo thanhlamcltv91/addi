@@ -438,5 +438,25 @@ public class Addi extends AddiBase {
 	      }
 	      return true;
 	  }
+	  
+	  @Override
+	  protected void onNewIntent(Intent intent) {
+		  super.onNewIntent(intent);
+		  setIntent(intent);
+		    
+		  setResult(1);
+		    
+		  String fileName = null;
+		  try {
+			  fileName = getIntent().getData().getEncodedPath();
+		  } catch (NullPointerException e) {
+			  return;
+		  }
+		  
+		  Intent addiEditIntent = new Intent(Addi.this, AddiEdit.class);
+		  addiEditIntent.putExtra("fileName", fileName); // key/value pair, where key needs current package prefix.
+		  startActivityForResult(addiEditIntent,1);
+		  
+	  }
 
 }
