@@ -254,23 +254,30 @@ public class ForOperatorToken extends CommandToken
 					
 					double[][] values = vector.getReValues();
 					
-					for(int yy = 0; yy < sizeY; yy++)
+					for(int xx = 0; xx < sizeX; xx++)
 					{
-						for(int xx = 0; xx < sizeX; xx++)
-						{
+						//for(int xx = 0; xx < sizeX; xx++)
+						//{
 							continueHit = false;
 							if (breakHit) {
 								breakHit = false;
 								return;
 							}
 							
-							DoubleNumberToken value = new DoubleNumberToken(values[yy][xx]);
+							double[][] tempVals = new double[sizeY][1];
+							
+							for(int yy = 0; yy < sizeY; yy++)
+							{
+								tempVals[yy][0] = values[yy][xx];
+							}
+							
+							DoubleNumberToken value = new DoubleNumberToken(tempVals);
 							
 							variable.assign(value);
 							
 							Expression exp = ((Expression)forCode.clone());
 							exp.evaluate(null, globals);
-						}
+						//}
 					}
 				}
 			}
