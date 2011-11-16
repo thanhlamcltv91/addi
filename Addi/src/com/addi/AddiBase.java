@@ -248,6 +248,7 @@ public class AddiBase extends Activity {
 				_myKeyboardView.setVisibility(View.GONE);
 				return true;
 			}
+			handleBackButton();
 			return super.onKeyDown(keyCode, event);
 		}
 		return super.onKeyDown(keyCode, event);
@@ -259,10 +260,14 @@ public class AddiBase extends Activity {
 		if (visibility == View.VISIBLE) {
 			_myKeyboardView.setVisibility(View.GONE); 
 		} else {
+			handleBackButton();
 			finish();
 			System.exit(0);
 		}
 		return;
+	}
+	
+	public void handleBackButton() {
 	}
 	
 	void swipeUp() {

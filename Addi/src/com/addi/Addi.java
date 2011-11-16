@@ -68,7 +68,7 @@ public class Addi extends AddiBase {
 	private Vector<String> _oldCommands = new Vector<String>();  
 	private int _oldCommandIndex = -1;
 	private String _partialCommand;
-	private String _addiEditString;
+	protected String _addiEditString;
 	private ArrayList<String> _listLabels;
 	String _version = new String();
 	public int _oldStartSelection;
@@ -315,14 +315,14 @@ public class Addi extends AddiBase {
 		}		
 	}
 	
-
-	/** Called when the activity is put into background. */
 	@Override
-	public void onPause() {
+	public void handleBackButton() {
+		saveOffEverything();
+	}
+	
+	private void saveOffEverything() {
 		try
 		{    
-			super.onPause();
-
 			String fileName4 = "addiListView";	
 			OutputStreamWriter out4 = new OutputStreamWriter(openFileOutput(fileName4, MODE_PRIVATE));
 			int startIndex = 0;
@@ -370,6 +370,14 @@ public class Addi extends AddiBase {
 		catch(java.io.IOException except)
 		{
 		}
+	}
+	
+
+	/** Called when the activity is put into background. */
+	@Override
+	public void onPause() {
+		super.onPause();
+		saveOffEverything();
 	}
 
 	private void updateResultsInUi() {
@@ -437,26 +445,6 @@ public class Addi extends AddiBase {
               							break;
 	      }
 	      return true;
-	  }
-	  
-	  @Override
-	  protected void onNewIntent(Intent intent) {
-		  super.onNewIntent(intent);
-		  setIntent(intent);
-		    
-		  setResult(1);
-		    
-		  String fileName = null;
-		  try {
-			  fileName = getIntent().getData().getEncodedPath();
-		  } catch (NullPointerException e) {
-			  return;
-		  }
-		  
-		  Intent addiEditIntent = new Intent(Addi.this, AddiEdit.class);
-		  addiEditIntent.putExtra("fileName", fileName); // key/value pair, where key needs current package prefix.
-		  startActivityForResult(addiEditIntent,1);
-		  
 	  }
 
 }
