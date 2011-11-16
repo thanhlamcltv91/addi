@@ -19,7 +19,14 @@
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
-        		<action android:name="android.intent.action.VIEW" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".AddiIntent" 
+                  android:windowSoftInputMode="adjustPan"
+                  android:configChanges="keyboard|keyboardHidden|orientation" 
+                  android:label="@string/app_name">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
         		<category android:name="android.intent.category.DEFAULT" />
         		<category android:name="android.intent.category.BROWSABLE" />
         		<data android:scheme="file" />
