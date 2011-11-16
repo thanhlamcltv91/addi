@@ -228,6 +228,11 @@ public class ForOperatorToken extends CommandToken
 
 					DoubleNumberToken   vector = null;
 					Token child = forExpression.getChild(1);
+					if (child instanceof VariableToken) 
+					{
+						child = ((VariableToken)child).evaluate(null,globals);
+					}
+					
 					if(child instanceof DoubleNumberToken)
 					{
 						ErrorLogger.debugLine("vector for evaluating 2");
