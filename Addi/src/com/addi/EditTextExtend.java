@@ -11,6 +11,7 @@ public class EditTextExtend extends EditText {
 	
 	private AddiBase _parent = null;
 	public int _prevPos = 0;
+	public boolean _isTextEditorReturn = true;
 
     public EditTextExtend(Context context, AttributeSet atts)
     {
@@ -36,7 +37,7 @@ public class EditTextExtend extends EditText {
 	 
 	@Override      
 	public boolean onCheckIsTextEditor() {   
-		return false;     
+		return _isTextEditorReturn;     
 	} 
 	
 }
