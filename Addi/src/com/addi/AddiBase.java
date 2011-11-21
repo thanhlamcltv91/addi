@@ -28,8 +28,10 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.DisplayMetrics;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnTouchListener;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
@@ -63,8 +65,18 @@ public class AddiBase extends Activity {
 
 		_mCmdEditText.setOnClickListener(new OnClickListener() {
 			@Override
-			public void onClick(View view) { 
+			public void onClick(View view) {
+				_mCmdEditText._isTextEditorReturn = true;
 				enableKeyboardVisibility();
+			}
+		});
+		
+		_mCmdEditText.setOnTouchListener(new OnTouchListener() {
+			@Override 
+			public boolean onTouch(View v, MotionEvent event) {
+				// TODO Auto-generated method stub
+				_mCmdEditText._isTextEditorReturn = false;
+				return false;
 			}
 		});
 		
