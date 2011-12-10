@@ -54,6 +54,7 @@ import android.view.View;
 import android.view.View.OnKeyListener;
 import android.view.View.OnTouchListener;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -137,11 +138,13 @@ public class Addi extends AddiBase {
 			}
 		}
 		
-		// Result from OI File Manager
+		// Results from OI File Manager
+		
+		// Opens the selected file
 		else if(requestCode == REQUEST_CODE_PICK_FILE_TO_OPEN){
 			Uri fileUri = (data!=null?(Uri)data.getData():null);
 			if(fileUri != null){ // Everything went well => edit the file
-				String filePath = ((Uri)data.getData()).getPath();
+				String filePath = fileUri.getPath();
 				Toast.makeText(this, filePath, Toast.LENGTH_SHORT).show();
 				executeCmd("edit " + filePath, false);
 			}
@@ -150,12 +153,32 @@ public class Addi extends AddiBase {
 			}
 		}
 		
+		// Ask for the filename, then create it.
 		else if(requestCode == REQUEST_CODE_BROWSER_DIRECTORY_TO_CREATE){
-			Uri directoryUri = (data!=null?(Uri)data.getData():null);
-			if(directoryUri != null){ // TODO
-				// Pop-up dialog box
-				// get filePath
-				// executeCmd("edit " + filePath/name, false);
+			final Uri directoryUri = (data!=null?(Uri)data.getData():null);
+			if(directoryUri != null){
+				
+				AlertDialog.Builder alert = new AlertDialog.Builder(this);
+				alert.setTitle("M-file name");
+				alert.setMessage("Filename must end with \".m\"");
+				final EditText input = new EditText(this);
+				alert.setView(input);
+
+				alert.setPositiveButton("Create", new DialogInterface.OnClickListener() {
+				public void onClick(DialogInterface dialog, int whichButton) {
+				  String fileName = input.getText().toString();
+				  String filePath = directoryUri.getPath();
+				  executeCmd("edit " + filePath + "/" + fileName, false);
+				  }
+				});
+
+				alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+				  public void onClick(DialogInterface dialog, int whichButton) {
+				    // TODO
+				  }
+				});
+
+				alert.show();
 			}
 			else {
 				Toast.makeText(this, "No emplacement found.", Toast.LENGTH_LONG).show();
