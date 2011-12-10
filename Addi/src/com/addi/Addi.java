@@ -35,7 +35,9 @@ import com.addi.R;
 import com.addi.core.interpreter.*;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.ActivityNotFoundException;
+import android.content.DialogInterface;
 import android.content.Intent; 
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -56,6 +58,9 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 public class Addi extends AddiBase {
+	
+	private static final int REQUEST_CODE_PICK_FILE_TO_OPEN = 4;
+	private static final int REQUEST_CODE_BROWSER_DIRECTORY_TO_CREATE = 5;
 
 	private ArrayAdapter<String> _mOutArrayAdapter;
 	private ListView _mOutView;
@@ -130,6 +135,32 @@ public class Addi extends AddiBase {
 			} else if (resultCode == 3) {  //quit
 				_mOutArrayAdapter.add("Exited without saving file.");
 			}
+		}
+		
+		// Result from OI File Manager
+		else if(requestCode == REQUEST_CODE_PICK_FILE_TO_OPEN){
+			Uri fileUri = (data!=null?(Uri)data.getData():null);
+			if(fileUri != null){ // Everything went well => edit the file
+				String filePath = ((Uri)data.getData()).getPath();
+				Toast.makeText(this, filePath, Toast.LENGTH_SHORT).show();
+				executeCmd("edit " + filePath, false);
+			}
+			else{ // Error occurred
+				Toast.makeText(this, "No file found.", Toast.LENGTH_LONG).show();
+			}
+		}
+		
+		else if(requestCode == REQUEST_CODE_BROWSER_DIRECTORY_TO_CREATE){
+			Uri directoryUri = (data!=null?(Uri)data.getData():null);
+			if(directoryUri != null){ // TODO
+				// Pop-up dialog box
+				// get filePath
+				// executeCmd("edit " + filePath/name, false);
+			}
+			else {
+				Toast.makeText(this, "No emplacement found.", Toast.LENGTH_LONG).show();
+			}
+			
 		}
 	}
 
@@ -441,10 +472,43 @@ public class Addi extends AddiBase {
 	  @Override
 	  public boolean onOptionsItemSelected(MenuItem item) {
 	      switch (item.getItemId()) {
-	          case R.id.mainMenuMFile: Toast.makeText(this, "From the command line use the edit command.  Ie\nedit /sdcard/test.m\nWill make file browser soon.", Toast.LENGTH_LONG).show();
-              							break;
+	          case R.id.mainMenuOpenMFile: 
+	        	  onOIFileManagerOptionsItemSelected(REQUEST_CODE_PICK_FILE_TO_OPEN, "Choose file to open");
+	        	  break;
+	          case R.id.mainMenuCreateMFile:
+	        	  onOIFileManagerOptionsItemSelected(REQUEST_CODE_BROWSER_DIRECTORY_TO_CREATE, "Choose directory");
+	        	  break;
 	      }
 	      return true;
+	  }
+	  
+	  private void onOIFileManagerOptionsItemSelected(int REQUEST_CODE, String titleString){
+		  
+		  Intent openOIFileManager = new Intent("org.openintents.action.PICK_FILE");
+		  openOIFileManager.putExtra("org.openintents.extra.TITLE", titleString);
+
+		  try{
+			  startActivityForResult(openOIFileManager, REQUEST_CODE);
+		  } catch (ActivityNotFoundException e){
+	            AlertDialog.Builder alertbox = new AlertDialog.Builder(this);
+	            alertbox.setMessage("You need OI File Manager to continue. Go to market?");
+	            alertbox.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+	                public void onClick(DialogInterface arg0, int arg1) {
+	                	String packageName = "org.openintents.filemanager";
+	                	Intent goToMarket = new Intent(Intent.ACTION_VIEW).setData(Uri.parse("market://details?id="+packageName));
+	                	startActivity(goToMarket);
+	                }
+	            });
+	 
+	            alertbox.setNegativeButton("No", new DialogInterface.OnClickListener() {
+	 
+	                public void onClick(DialogInterface arg0, int arg1) {
+	                	Toast.makeText(getApplicationContext(), (CharSequence)"Please use command line : \"edit yourfile.m\"", Toast.LENGTH_LONG).show();
+	                }
+	            });
+	 
+	            alertbox.show();
+		  }
 	  }
 
 }
