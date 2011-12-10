@@ -29,7 +29,7 @@ import java.io.OutputStreamWriter;
 import java.lang.ThreadGroup;
 import java.util.ArrayList;
 import java.util.Vector;
-import java.lang.*;
+//import java.lang.*;
 
 import com.addi.R;
 import com.addi.core.interpreter.*;
@@ -60,6 +60,7 @@ import android.widget.Toast;
 
 public class Addi extends AddiBase {
 	
+	private static final int REQUEST_CODE_ADDI_EDIT = 1;
 	private static final int REQUEST_CODE_PICK_FILE_TO_OPEN = 4;
 	private static final int REQUEST_CODE_BROWSER_DIRECTORY_TO_CREATE = 5;
 
@@ -101,7 +102,7 @@ public class Addi extends AddiBase {
 				try {
 					startActivity(addiPlotIntent);
 				} catch (ActivityNotFoundException e) {
-					_mOutArrayAdapter.add("You should download AddiPlot for this to work.");
+					_mOutArrayAdapter.add(getString(R.string.error_no_addiplot));
 				}
 			} else if (msg.getData().getString("text").startsWith("PROMPTTOINSTALL=")) {
 				String packageName = "com." + msg.getData().getString("text").substring(16);
@@ -112,7 +113,7 @@ public class Addi extends AddiBase {
 			} else if (msg.getData().getString("text").startsWith("CLEARADDITERMINAL")) {
 				_mOutArrayAdapter.clear();
 			} else if (msg.getData().getString("text").startsWith("PRINTADDIVERSION")) {
-				_mOutArrayAdapter.add("Addi version: " + _version);
+				_mOutArrayAdapter.add(getString(R.string.addi_version) + _version);
 			} else {
 				_mOutArrayAdapter.add(msg.getData().getString("text"));
 			}
@@ -121,20 +122,20 @@ public class Addi extends AddiBase {
 
 	protected void onActivityResult(int requestCode, int resultCode,
 			Intent data) {
-		if (requestCode == 1) {
-			if (resultCode == 0) {  // error
-				_mOutArrayAdapter.add("Directory not found or permissions incorrect.");
-			} else if (resultCode == 1) {  //save
-				_mOutArrayAdapter.add("File saved.");
-			} else if (resultCode == 2) {  //save and run
-				_mOutArrayAdapter.add("File save, now attempting to run.");
+		if (requestCode == REQUEST_CODE_ADDI_EDIT) {
+			if (resultCode == AddiEdit.RESULT_CODE_ERROR) { 
+				_mOutArrayAdapter.add(getString(R.string.error_addi_edit));
+			} else if (resultCode == AddiEdit.RESULT_CODE_SAVE) {
+				_mOutArrayAdapter.add(getString(R.string.edit_save));
+			} else if (resultCode == AddiEdit.RESULT_CODE_SAVE_RUN) {
+				_mOutArrayAdapter.add(getString(R.string.edit_save_run));
 				int lastIndx = _addiEditString.lastIndexOf("/");
 				String dir = _addiEditString.substring(0, lastIndx);
 				String script = _addiEditString.substring(lastIndx+1);
 				script = script.substring(0, script.length()-2);
 				executeCmd("cd(\"" + dir + "\"); " + script,true);
-			} else if (resultCode == 3) {  //quit
-				_mOutArrayAdapter.add("Exited without saving file.");
+			} else if (resultCode == AddiEdit.RESULT_CODE_QUIT) {
+				_mOutArrayAdapter.add(getString(R.string.edit_quit));
 			}
 		}
 		
@@ -341,13 +342,11 @@ public class Addi extends AddiBase {
 	}
 	
 	public void dpadDown() {
-		if (_oldCommandIndex == -1) {
-			//do nothing
-		} else if (_oldCommandIndex == 0) {
+		if (_oldCommandIndex == 0) {
 			_oldCommandIndex=_oldCommandIndex-1;
 			_mCmdEditText.setText(_partialCommand);
 			_mCmdEditText.setSelection(_partialCommand.length());
-		} else {
+		} else if (_oldCommandIndex != -1){
 			_oldCommandIndex=_oldCommandIndex-1;
 			_mCmdEditText.setText(_oldCommands.get(_oldCommandIndex));
 			_mCmdEditText.setSelection(_oldCommands.get(_oldCommandIndex).length());
