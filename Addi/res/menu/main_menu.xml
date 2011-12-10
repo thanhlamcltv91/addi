@@ -1,4 +1,6 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:id="@+id/mainMenuMFile"
-        android:title="Edit or Create M-file" />
+    <item android:id="@+id/mainMenuCreateMFile"
+        android:title="Create M-file" />
+    <item android:id="@+id/mainMenuOpenMFile"
+        android:title="Open M-file" />
 </menu>
