@@ -25,44 +25,50 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
-import java.lang.*;
+//import java.lang.*;
 
 import com.addi.R;
-import com.addi.R.id;
-import com.addi.R.layout;
+//import com.addi.R.id;
+//import com.addi.R.layout;
 
-import android.app.Activity;
+//import android.app.Activity;
 import android.content.Intent; 
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
-import android.content.res.AssetManager;
-import android.content.res.Configuration;
-import android.content.res.Resources;
-import android.graphics.drawable.ColorDrawable;
+//import android.content.pm.PackageInfo;
+//import android.content.pm.PackageManager;
+//import android.content.res.AssetManager;
+//import android.content.res.Configuration;
+//import android.content.res.Resources;
+//import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
-import android.util.DisplayMetrics;
-import android.util.Log;
-import android.view.KeyEvent;
+//import android.os.Handler;
+//import android.os.Message;
+//import android.util.DisplayMetrics;
+//import android.util.Log;
+//import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.MotionEvent;
-import android.view.View;
-import android.view.Window;
-import android.view.View.OnClickListener;
-import android.view.View.OnKeyListener;
-import android.view.View.OnTouchListener;
-import android.view.inputmethod.EditorInfo;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ListView;
-import android.widget.TextView;
-import android.widget.Toast;
+//import android.view.MotionEvent;
+//import android.view.View;
+//import android.view.Window;
+//import android.view.View.OnClickListener;
+//import android.view.View.OnKeyListener;
+//import android.view.View.OnTouchListener;
+//import android.view.inputmethod.EditorInfo;
+//import android.widget.ArrayAdapter;
+//import android.widget.Button;
+//import android.widget.EditText;
+//import android.widget.ListView;
+//import android.widget.TextView;
+//import android.widget.Toast;
 
 public class AddiEdit extends AddiBase {
+	
+	public static final int RESULT_CODE_ERROR = 0;
+	public static final int RESULT_CODE_SAVE = 1;
+	public static final int RESULT_CODE_SAVE_RUN = 2;
+	public static final int RESULT_CODE_QUIT = 3;
+
 
 	private File _mFile;
 	
@@ -79,7 +85,7 @@ public class AddiEdit extends AddiBase {
 		super.onNewIntent(intent);
 	    setIntent(intent);
 	    
-	    setResult(3);
+	    setResult(RESULT_CODE_QUIT);
 	    
 	    String fileName = null;
 	    try {
@@ -94,14 +100,14 @@ public class AddiEdit extends AddiBase {
 	    _mFile = new File(fileName);
 	    
 	    if (_mFile == null) {
-	    	setResult(0);
+	    	setResult(RESULT_CODE_ERROR);
 	    	finish();
 	    } else {
 	    	if (_mFile.exists()) {
 	    		try {
 	    			_mCmdEditText.setText(getContents(_mFile));
 	    		} catch (IOException e) {
-	    			setResult(0);
+	    			setResult(RESULT_CODE_ERROR);
 	    			finish();
 	    		}
 	    	}
@@ -188,25 +194,25 @@ public class AddiEdit extends AddiBase {
 	          case R.id.editMenuSave: 
 	          		try {
     		   			setContents(_mFile,_mCmdEditText.getText().toString());
-    		   			setResult(1);
+    		   			setResult(RESULT_CODE_SAVE);
 			    		finish();
 					} catch (IOException e) {
-						setResult(0);
+						setResult(RESULT_CODE_ERROR);
 			    		finish();
 					}
 					break;
 	          case R.id.editMenuSaveRun: 
 	          		try {
     		   			setContents(_mFile,_mCmdEditText.getText().toString());
-    		   			setResult(2);
+    		   			setResult(RESULT_CODE_SAVE_RUN);
 			    		finish();
 					} catch (IOException e) {
-						setResult(0);
+						setResult(RESULT_CODE_ERROR);
 			    		finish();
 					}
 					break;
 	          case R.id.editMenuQuit: 
-	          		setResult(3);
+	          		setResult(RESULT_CODE_QUIT);
   	    			finish();
   	    			break;
 	      }
