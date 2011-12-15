@@ -3,8 +3,8 @@
       android:installLocation="preferExternal"
       package="com.addi"
       android:sharedUserId="com.addi.sharedid"
-      android:versionCode="35" 
-      android:versionName="1.86"> 
+      android:versionCode="36" 
+      android:versionName="1.87"> 
     <supports-screens android:resizeable="true"
                       android:smallScreens="true"
                       android:normalScreens="true"
@@ -40,6 +40,7 @@
                   android:configChanges="keyboard|keyboardHidden|orientation" 
                   android:label="@string/app_name">
         </activity>
+        <activity android:name=".ShowSettingsActivity" />
     </application>
     <uses-sdk android:minSdkVersion="2" />
 

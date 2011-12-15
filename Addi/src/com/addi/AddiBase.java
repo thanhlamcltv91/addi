@@ -21,11 +21,15 @@ import com.addi.R;
 
 import android.view.KeyEvent;
 import android.app.Activity;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.inputmethodservice.Keyboard;
 import android.os.Bundle;
+import android.preference.PreferenceActivity;
+import android.preference.PreferenceManager;
 import android.text.Editable;
+import android.text.InputType;
 import android.text.TextWatcher;
 import android.util.DisplayMetrics;
 import android.view.MotionEvent;
@@ -41,6 +45,7 @@ public class AddiBase extends Activity {
 	public KeyboardViewExtend _myKeyboardView;
 	private CandidateView _mCandidateView;
 	private LinearLayout _mainLayout;
+	public SharedPreferences _sharedPrefs;
 	
 	int _suggestionCursorPos = 0;
 	boolean _suggestionTaken = false;
@@ -56,18 +61,22 @@ public class AddiBase extends Activity {
 		DisplayMetrics dm=res.getDisplayMetrics();
 		res.updateConfiguration(conf, dm);
 		
-		super.onCreate(savedInstanceState);
+		super.onCreate(savedInstanceState); 
 
 		_mCmdEditText = (EditTextExtend)findViewById(R.id.edit_command);
 		_myKeyboardView = (KeyboardViewExtend)findViewById(R.id.keyboard);
 		_mCandidateView = (CandidateView)findViewById(R.id.candidate);
 		_mainLayout = (LinearLayout)findViewById(R.id.wrapView);
+		_sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+		_mCmdEditText.setInputType(InputType.TYPE_NULL);
 
 		_mCmdEditText.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View view) {
-				_mCmdEditText._isTextEditorReturn = true;
-				enableKeyboardVisibility();
+				if (_sharedPrefs.getBoolean("enable_custom_keyboard", false)) {
+					_mCmdEditText._isTextEditorReturn = true;
+					enableKeyboardVisibility();
+				}
 			}
 		});
 		
@@ -75,7 +84,10 @@ public class AddiBase extends Activity {
 			@Override 
 			public boolean onTouch(View v, MotionEvent event) {
 				// TODO Auto-generated method stub
-				_mCmdEditText._isTextEditorReturn = false;
+				_mCmdEditText.setInputType(InputType.TYPE_CLASS_TEXT);
+				if (_sharedPrefs.getBoolean("enable_custom_keyboard", false)) {
+					_mCmdEditText._isTextEditorReturn = false;
+				}
 				return false;
 			}
 		});
