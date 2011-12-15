@@ -3,4 +3,6 @@
         android:title="Create M-file" />
     <item android:id="@+id/mainMenuOpenMFile"
         android:title="Open M-file" />
+    <item android:id="@+id/mainMenuPreferences"
+        android:title="Preferences" />
 </menu>

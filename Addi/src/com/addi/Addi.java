@@ -260,14 +260,6 @@ public class Addi extends AddiBase {
 		_mOutView.setHeaderDividersEnabled(false);
 		_mOutView.setChoiceMode(0);
 
-		_mOutView.setOnTouchListener(new OnTouchListener() {
-			@Override
-			public boolean onTouch(View view, MotionEvent event) {
-				enableKeyboardVisibility();
-				return false;
-			}
-		});
-
 		_mCmdEditText.setOnKeyListener(new OnKeyListener() {
 			@Override
 			public boolean onKey(View view, int keyCode, KeyEvent event) {
@@ -499,6 +491,9 @@ public class Addi extends AddiBase {
 	        	  break;
 	          case R.id.mainMenuCreateMFile:
 	        	  onOIFileManagerOptionsItemSelected(REQUEST_CODE_BROWSER_DIRECTORY_TO_CREATE, "Choose directory");
+	        	  break;
+	          case R.id.mainMenuPreferences:
+	        	  startActivity(new Intent(this, ShowSettingsActivity.class));
 	        	  break;
 	      }
 	      return true;

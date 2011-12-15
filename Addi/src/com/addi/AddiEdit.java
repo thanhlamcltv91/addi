@@ -215,6 +215,9 @@ public class AddiEdit extends AddiBase {
 	          		setResult(RESULT_CODE_QUIT);
   	    			finish();
   	    			break;
+	          case R.id.editMenuPreferences:
+	        	  startActivity(new Intent(this, ShowSettingsActivity.class));
+	        	  break;
 	      }
 	      return true;
 	  }
