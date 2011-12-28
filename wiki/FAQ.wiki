@@ -6,6 +6,8 @@
 
 [FAQ#How-do-I-setup-to-be-a-developer? How do I setup to be a developer?]
 
+[FAQ#Why-spend-time-developing-open-source,-free,-educational-SW?]
+
  ==Where are the current list of functions supported?==
   # Current functions supported can be found [http://www.jmathlib.de/docs/handbook/index.php here] (ignore plotting functions)  
 
@@ -35,3 +37,6 @@
   # Create an Addi project
    # In Eclipse click file -> new project -> svn -> create new repository location -> https://addi.googlecode.com/svn
    # Click on addi
+
+ ==Why spend time developing open source, free, educational SW?==
+  There are many ways to make the World a better place.  Each person should put their talents towards doing so.  Whether your morals are defined by religion or Earthly experiences or some combination thereof, I think most people would agree that with this sentiment.  Creating free educational software lowers the cost of education (formal or self education).  Making it open source and under the GNU license means it will be free forever.  It also gives it permanence.  If we drop the ball and stop developing this code, someone else can keep the banner going forward.  Making it open source, also serves as an educational tool to anyone wanting to create something similar (even if that is a competing idea).  I, myself, Corbin Champion (not all developers will share my religious perspective), think of it as a form of tithing (Biblical reference).  I am giving my resources, in this case mostly time, because it is fun and interesting to me, but also because I want to show love to the World.  If improves anyone's life, I have received enough payment.
