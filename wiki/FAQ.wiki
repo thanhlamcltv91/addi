@@ -6,7 +6,7 @@
 
 [FAQ#How-do-I-setup-to-be-a-developer? How do I setup to be a developer?]
 
-[FAQ#Why-spend-time-developing-open-source,-free,-educational-SW?]
+[FAQ#Why-spend-time-developing-open-source,-free,-educational-SW? Why spend time developing open source, free, educational SW?]
 
  ==Where are the current list of functions supported?==
   # Current functions supported can be found [http://www.jmathlib.de/docs/handbook/index.php here] (ignore plotting functions)  
