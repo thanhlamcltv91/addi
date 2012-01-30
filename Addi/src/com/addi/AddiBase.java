@@ -84,7 +84,7 @@ public class AddiBase extends Activity {
 			@Override 
 			public boolean onTouch(View v, MotionEvent event) {
 				// TODO Auto-generated method stub
-				_mCmdEditText.setInputType(InputType.TYPE_CLASS_TEXT);
+				_mCmdEditText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_MULTI_LINE);
 				if (_sharedPrefs.getBoolean("enable_custom_keyboard", false)) {
 					_mCmdEditText._isTextEditorReturn = false;
 				}
