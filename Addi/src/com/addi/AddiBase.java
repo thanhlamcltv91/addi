@@ -73,7 +73,7 @@ public class AddiBase extends Activity {
 		_mCmdEditText.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View view) {
-				if (_sharedPrefs.getBoolean("enable_custom_keyboard", false)) {
+				if (_sharedPrefs.getBoolean("enable_custom_keyboard", true)) {
 					_mCmdEditText._isTextEditorReturn = true;
 					enableKeyboardVisibility();
 				}
@@ -85,7 +85,7 @@ public class AddiBase extends Activity {
 			public boolean onTouch(View v, MotionEvent event) {
 				// TODO Auto-generated method stub
 				_mCmdEditText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_MULTI_LINE);
-				if (_sharedPrefs.getBoolean("enable_custom_keyboard", false)) {
+				if (_sharedPrefs.getBoolean("enable_custom_keyboard", true)) {
 					_mCmdEditText._isTextEditorReturn = false;
 				}
 				return false;
