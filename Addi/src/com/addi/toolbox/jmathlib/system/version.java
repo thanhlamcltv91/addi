@@ -28,24 +28,7 @@ public class version extends ExternalFunction
 	public OperandToken evaluate(Token[] operands, GlobalValues globals)
 	{
 
-		String s        = "";
- 		    
-		globals.getInterpreter().displayText("Version information for JMathLib");
-
-        s = globals.getProperty("jmathlib.version");
-        globals.getInterpreter().displayText("version: "+s);
-
-        s = globals.getProperty("jmathlib.release.date");
-        globals.getInterpreter().displayText("release date: "+s);
-
-        s = globals.getProperty("jmathlib.release.name");
-        globals.getInterpreter().displayText("release name: "+s);
-
-        s = globals.getProperty("jmathlib.release.description");
-        globals.getInterpreter().displayText("release description: "+s);
-
-        s = globals.getProperty("jmathlib.copyright");
-        globals.getInterpreter().displayText(s);
+		globals.getInterpreter().displayText("PRINTADDIVERSION");
 
 		return null;		
 	}
