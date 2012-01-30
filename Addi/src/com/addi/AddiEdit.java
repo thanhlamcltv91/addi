@@ -45,6 +45,7 @@ import android.os.Bundle;
 //import android.util.DisplayMetrics;
 //import android.util.Log;
 //import android.view.KeyEvent;
+import android.text.InputType;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -112,6 +113,7 @@ public class AddiEdit extends AddiBase {
 	    		}
 	    	}
 	    }
+	    _mCmdEditText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_MULTI_LINE);
 	    
 	} 
 	
