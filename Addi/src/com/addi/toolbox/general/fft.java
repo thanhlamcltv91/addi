@@ -27,6 +27,12 @@ import com.addi.core.tokens.numbertokens.DoubleNumberToken;
 /**An external function which checks if the argument is a struct*/
 public class fft extends ExternalFunction
 {
+	static {
+		System.loadLibrary("addiLib");
+	}
+	
+	public static native int fftNative ();
+	
     public OperandToken evaluate(Token[] operands, GlobalValues globals)
     {
 
@@ -41,6 +47,8 @@ public class fft extends ExternalFunction
         
         double[][] r = {{0.0}};
         r[0] = fftMag( val[0] );
+        
+        fftNative();
         
         return new DoubleNumberToken(r);
 
