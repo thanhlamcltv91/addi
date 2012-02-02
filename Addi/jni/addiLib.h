@@ -13,7 +13,10 @@ extern "C" {
  * Method:    fft
  * Signature: ()V
  */
-JNIEXPORT jint JNICALL Java_com_addi_toolbox_general_fft_fftNative
+JNIEXPORT jobjectArray JNICALL Java_com_addi_toolbox_general_fft_fftNative
+  (JNIEnv *, jobject, jdoubleArray, jdoubleArray, jint);
+
+JNIEXPORT jint JNICALL Java_com_addi_toolbox_general_fft_fftCleanup
   (JNIEnv *, jobject);
 
 #ifdef __cplusplus
