@@ -23,7 +23,7 @@
 				</dictionary>
 				<dictionary>
 					<key>org.eclipse.cdt.make.core.buildArguments</key>
-					<value>C:\ndk\android-ndk-r7\ndk-build</value>
+					<value>C:\ndk\android-ndk-r7b\ndk-build</value>
 				</dictionary>
 				<dictionary>
 					<key>org.eclipse.cdt.make.core.buildCommand</key>

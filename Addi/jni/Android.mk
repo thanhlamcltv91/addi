@@ -14,3 +14,16 @@ LOCAL_STATIC_LIBRARIES := fftw3
 LOCAL_SRC_FILES := addiLib.c
 
 include $(BUILD_SHARED_LIBRARY)
+
+include $(CLEAR_VARS)
+
+LOCAL_PATH = $(ROOT_PATH)
+
+LOCAL_MODULE    := octaveLib
+LOCAL_LDLIBS := -llog -lz 
+
+LOCAL_STATIC_LIBRARIES := octinterp octave cruft pcre lapack blas gfortranbegin gfortran
+
+LOCAL_SRC_FILES := octaveLib.cpp
+
+include $(BUILD_SHARED_LIBRARY)

@@ -19,16 +19,20 @@ package com.addi;
 
 import java.io.BufferedReader;
 
+import android.util.Log;
 import android.view.KeyEvent;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.lang.ThreadGroup;
 import java.util.ArrayList;
 import java.util.Vector;
+import com.addi.session.TermSession;
 //import java.lang.*;
 
 import com.addi.R;
@@ -41,6 +45,7 @@ import android.content.DialogInterface;
 import android.content.Intent; 
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.content.res.AssetManager;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
@@ -59,7 +64,7 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 public class Addi extends AddiBase {
-	
+
 	private static final int REQUEST_CODE_ADDI_EDIT = 1;
 	private static final int REQUEST_CODE_PICK_FILE_TO_OPEN = 4;
 	private static final int REQUEST_CODE_BROWSER_DIRECTORY_TO_CREATE = 5;
@@ -85,7 +90,8 @@ public class Addi extends AddiBase {
 	public int _endSelection;
 	public boolean _selectionSaved = false;
 	public boolean _selectionForwarded = false;
-	public int _oldVisibility;
+	public int _oldVisibility;	
+	private TermSession _termSession = null;
 
 	// Need handler for callbacks to the UI thread
 	public final Handler _mHandler = new Handler() {
@@ -138,27 +144,27 @@ public class Addi extends AddiBase {
 				_mOutArrayAdapter.add(getString(R.string.edit_quit));
 			}
 		}
-		
+
 		// Results from OI File Manager
-		
+
 		// Opens the selected file
 		else if(requestCode == REQUEST_CODE_PICK_FILE_TO_OPEN){
 			Uri fileUri = (data!=null?(Uri)data.getData():null);
 			if(fileUri != null){ // Everything went well => edit the file
 				String filePath = fileUri.getPath();
 				Toast.makeText(this, filePath, Toast.LENGTH_SHORT).show();
-				executeCmd("edit " + filePath, false);
+				executeCmd("edit " + filePath, true);
 			}
 			else{ // Error occurred
 				Toast.makeText(this, "No file found.", Toast.LENGTH_LONG).show();
 			}
 		}
-		
+
 		// Ask for the filename, then create it.
 		else if(requestCode == REQUEST_CODE_BROWSER_DIRECTORY_TO_CREATE){
 			final Uri directoryUri = (data!=null?(Uri)data.getData():null);
 			if(directoryUri != null){
-				
+
 				AlertDialog.Builder alert = new AlertDialog.Builder(this);
 				alert.setTitle("M-file name");
 				alert.setMessage("Filename must end with \".m\"");
@@ -166,17 +172,17 @@ public class Addi extends AddiBase {
 				alert.setView(input);
 
 				alert.setPositiveButton("Create", new DialogInterface.OnClickListener() {
-				public void onClick(DialogInterface dialog, int whichButton) {
-				  String fileName = input.getText().toString();
-				  String filePath = directoryUri.getPath();
-				  executeCmd("edit " + filePath + "/" + fileName, false);
-				  }
+					public void onClick(DialogInterface dialog, int whichButton) {
+						String fileName = input.getText().toString();
+						String filePath = directoryUri.getPath();
+						executeCmd("edit " + filePath + "/" + fileName, true);
+					}
 				});
 
 				alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-				  public void onClick(DialogInterface dialog, int whichButton) {
-				    // TODO
-				  }
+					public void onClick(DialogInterface dialog, int whichButton) {
+						// TODO
+					}
 				});
 
 				alert.show();
@@ -184,7 +190,7 @@ public class Addi extends AddiBase {
 			else {
 				Toast.makeText(this, "No emplacement found.", Toast.LENGTH_LONG).show();
 			}
-			
+
 		}
 	}
 
@@ -200,7 +206,7 @@ public class Addi extends AddiBase {
 	public void onCreate(Bundle savedInstanceState) {
 
 		setContentView(R.layout.main);
-		
+
 		super.onCreate(savedInstanceState);
 
 		_interpreter = new Interpreter(true);
@@ -331,8 +337,18 @@ public class Addi extends AddiBase {
 		{
 		}
 
+		if (_sharedPrefs.getBoolean("use_octave_interp", false)) {
+			copyFileOrDir("m");
+			_termSession = new TermSession(this);
+			_termSession.updateSize(1024, 1024);
+		}
+
 	}
-	
+
+	public void processString(String inStr) {
+		_mOutArrayAdapter.add(inStr);
+	}
+
 	public void dpadDown() {
 		if (_oldCommandIndex == 0) {
 			_oldCommandIndex=_oldCommandIndex-1;
@@ -359,12 +375,12 @@ public class Addi extends AddiBase {
 			}
 		}		
 	}
-	
+
 	@Override
 	public void handleBackButton() {
 		saveOffEverything();
 	}
-	
+
 	private void saveOffEverything() {
 		try
 		{    
@@ -416,7 +432,7 @@ public class Addi extends AddiBase {
 		{
 		}
 	}
-	
+
 
 	/** Called when the activity is put into background. */
 	@Override
@@ -436,27 +452,48 @@ public class Addi extends AddiBase {
 
 	public void executeCmd(final String command, boolean displayCommand) {
 
-		if (_blockExecute == false) {
-			if (displayCommand) {
-				_mOutArrayAdapter.add(">>  " + command);
+		if (_sharedPrefs.getBoolean("use_octave_interp", false)) {
+			if (command.equals("startup") && (displayCommand == false)) {
+				// do nothing
+			} else {
+				if (_termSession == null) {
+					copyFileOrDir("m");
+					_termSession = new TermSession(this);
+					_termSession.updateSize(1024, 1024);
+				}
 				_oldCommands.add(0, command);
 				if (_oldCommands.size() == 100) {
 					_oldCommands.remove(99);
 				}
+				_oldCommandIndex = -1;
+				_termSession.write(command + "\n");
+				_mCmdEditText.setText("");
 			}
-			_oldCommandIndex = -1;
+		} else {
 
-			_blockExecute = true;
+			if (_blockExecute == false) {
+				if (displayCommand) {
+					_mOutArrayAdapter.add(">>  " + command);
+					_oldCommands.add(0, command);
+					if (_oldCommands.size() == 100) {
+						_oldCommands.remove(99);
+					}
+				}
+				_oldCommandIndex = -1;
 
-			_command = command;
-			_act = this;
+				_blockExecute = true;
 
-			// Fire off a thread to do some work that we shouldn't do directly in the UI thread
-			ThreadGroup threadGroup = new ThreadGroup("executeCmdGroup");
-			Thread t = new Thread(threadGroup, mRunThread, "executeCmd", 16*1024*1024) {};
-			t.start();
+				_command = command;
+				_act = this;
 
-			_mCmdEditText.setText("");
+				// Fire off a thread to do some work that we shouldn't do directly in the UI thread
+				ThreadGroup threadGroup = new ThreadGroup("executeCmdGroup");
+				Thread t = new Thread(threadGroup, mRunThread, "executeCmd", 16*1024*1024) {};
+				t.start();
+
+				_mCmdEditText.setText("");
+			}
+
 		}
 
 	}
@@ -469,63 +506,111 @@ public class Addi extends AddiBase {
 			_mHandler.post(mUpdateResults);
 		}
 	};
-	
+
 	@Override
 	public void handleEnter() {
 		String command = _mCmdEditText.getText().toString();
 		executeCmd(command,true);
 	}
-	
-	@Override
-	  public boolean onCreateOptionsMenu(Menu menu) {
-	      MenuInflater inflater = getMenuInflater();
-	      inflater.inflate(R.menu.main_menu, menu);
-	      return true;
-	  }
-	  
-	  @Override
-	  public boolean onOptionsItemSelected(MenuItem item) {
-	      switch (item.getItemId()) {
-	          case R.id.mainMenuOpenMFile: 
-	        	  onOIFileManagerOptionsItemSelected(REQUEST_CODE_PICK_FILE_TO_OPEN, "Choose file to open");
-	        	  break;
-	          case R.id.mainMenuCreateMFile:
-	        	  onOIFileManagerOptionsItemSelected(REQUEST_CODE_BROWSER_DIRECTORY_TO_CREATE, "Choose directory");
-	        	  break;
-	          case R.id.mainMenuPreferences:
-	        	  startActivity(new Intent(this, ShowSettingsActivity.class));
-	        	  break;
-	      }
-	      return true;
-	  }
-	  
-	  private void onOIFileManagerOptionsItemSelected(int REQUEST_CODE, String titleString){
-		  
-		  Intent openOIFileManager = new Intent("org.openintents.action.PICK_FILE");
-		  openOIFileManager.putExtra("org.openintents.extra.TITLE", titleString);
 
-		  try{
-			  startActivityForResult(openOIFileManager, REQUEST_CODE);
-		  } catch (ActivityNotFoundException e){
-	            AlertDialog.Builder alertbox = new AlertDialog.Builder(this);
-	            alertbox.setMessage("You need OI File Manager to continue. Go to market?");
-	            alertbox.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-	                public void onClick(DialogInterface arg0, int arg1) {
-	                	String packageName = "org.openintents.filemanager";
-	                	Intent goToMarket = new Intent(Intent.ACTION_VIEW).setData(Uri.parse("market://details?id="+packageName));
-	                	startActivity(goToMarket);
-	                }
-	            });
-	 
-	            alertbox.setNegativeButton("No", new DialogInterface.OnClickListener() {
-	 
-	                public void onClick(DialogInterface arg0, int arg1) {
-	                	Toast.makeText(getApplicationContext(), (CharSequence)"Please use command line : \"edit yourfile.m\"", Toast.LENGTH_LONG).show();
-	                }
-	            });
-	 
-	            alertbox.show();
-		  }
-	  }
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		MenuInflater inflater = getMenuInflater();
+		inflater.inflate(R.menu.main_menu, menu);
+		return true;
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+		case R.id.mainMenuOpenMFile: 
+			onOIFileManagerOptionsItemSelected(REQUEST_CODE_PICK_FILE_TO_OPEN, "Choose file to open");
+			break;
+		case R.id.mainMenuCreateMFile:
+			onOIFileManagerOptionsItemSelected(REQUEST_CODE_BROWSER_DIRECTORY_TO_CREATE, "Choose directory");
+			break;
+		case R.id.mainMenuPreferences:
+			startActivity(new Intent(this, ShowSettingsActivity.class));
+			break;
+		}
+		return true;
+	}
+
+	private void onOIFileManagerOptionsItemSelected(int REQUEST_CODE, String titleString){
+
+		Intent openOIFileManager = new Intent("org.openintents.action.PICK_FILE");
+		openOIFileManager.putExtra("org.openintents.extra.TITLE", titleString);
+
+		try{
+			startActivityForResult(openOIFileManager, REQUEST_CODE);
+		} catch (ActivityNotFoundException e){
+			AlertDialog.Builder alertbox = new AlertDialog.Builder(this);
+			alertbox.setMessage("You need OI File Manager to continue. Go to market?");
+			alertbox.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+				public void onClick(DialogInterface arg0, int arg1) {
+					String packageName = "org.openintents.filemanager";
+					Intent goToMarket = new Intent(Intent.ACTION_VIEW).setData(Uri.parse("market://details?id="+packageName));
+					startActivity(goToMarket);
+				}
+			});
+
+			alertbox.setNegativeButton("No", new DialogInterface.OnClickListener() {
+
+				public void onClick(DialogInterface arg0, int arg1) {
+					Toast.makeText(getApplicationContext(), (CharSequence)"Please use command line : \"edit yourfile.m\"", Toast.LENGTH_LONG).show();
+				}
+			});
+
+			alertbox.show();
+		}
+	}
+	
+	private void copyFileOrDir(String path) {
+	    AssetManager assetManager = this.getAssets();
+	    String assets[] = null;
+	    try {
+	        assets = assetManager.list(path);
+	        if (assets.length == 0) {
+	            copyFile(path);
+	        } else {
+	            String fullPath = "/data/data/" + this.getPackageName() + "/" + path;
+	            File dir = new File(fullPath);
+	            if (!dir.exists())
+	                dir.mkdir();
+	            for (int i = 0; i < assets.length; ++i) {
+	                copyFileOrDir(path + "/" + assets[i]);
+	            }
+	        }
+	    } catch (IOException ex) {
+	        Log.e("tag", "I/O Exception", ex);
+	    }
+	}
+
+	private void copyFile(String filename) {
+	    AssetManager assetManager = this.getAssets();
+
+	    InputStream in = null;
+	    OutputStream out = null;
+	    try {
+	        in = assetManager.open(filename);
+	        String newFileName = "/data/data/" + this.getPackageName() + "/" + filename;
+	        out = new FileOutputStream(newFileName);
+
+	        byte[] buffer = new byte[1024];
+	        int read;
+	        while ((read = in.read(buffer)) != -1) {
+	            out.write(buffer, 0, read);
+	        }
+	        in.close();
+	        in = null;
+	        out.flush();
+	        out.close();
+	        out = null;
+	    } catch (Exception e) {
+	        Log.e("tag", e.getMessage());
+	    }
+
+	}
+
 
 }
