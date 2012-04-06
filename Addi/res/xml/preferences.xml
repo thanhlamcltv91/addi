@@ -11,7 +11,14 @@
             android:summary="Enable or disable custom keyboard"
             android:title="Enable custom keyboard" 
             android:defaultValue="true"
-        />     
+        />
+        
+        <CheckBoxPreference 
+            android:key="use_octave_interp"
+            android:summary="Enable or disable experimental interpreter"
+            android:title="Enable experimental interpreter" 
+            android:defaultValue="false"
+        />
     </PreferenceCategory>
     
 </PreferenceScreen>

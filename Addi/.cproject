@@ -20,7 +20,7 @@
 					<folderInfo id="com.android.toolchain.gcc.1558404107.1422678989" name="/" resourcePath="">
 						<toolChain id="com.android.toolchain.gcc.1717521223" name="com.android.toolchain.gcc" superClass="com.android.toolchain.gcc">
 							<targetPlatform archList="all" binaryParser="org.eclipse.cdt.core.ELF" id="com.android.targetPlatform.1628266476" name="Android Platform" osList="all" superClass="com.android.targetPlatform"/>
-							<builder id="com.android.builder.1583524858" keepEnvironmentInBuildfile="false" managedBuildOn="false" superClass="com.android.builder">
+							<builder arguments="C:\ndk\android-ndk-r7b\ndk-build" command="bash" id="com.android.builder.1583524858" keepEnvironmentInBuildfile="false" managedBuildOn="false" superClass="com.android.builder">
 								<outputEntries>
 									<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="outputPath" name="libs"/>
 								</outputEntries>
@@ -63,5 +63,8 @@
 		<scannerConfigBuildInfo instanceId="com.android.toolchain.gcc.1558404107;com.android.toolchain.gcc.1558404107.1422678989;com.android.tool.compiler.c.1116325102;com.android.tool.compiler.c.input.910908660">
 			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.make.core.GCCStandardMakePerFileProfile"/>
 		</scannerConfigBuildInfo>
+	</storageModule>
+	<storageModule moduleId="refreshScope" versionNumber="1">
+		<resource resourceType="PROJECT" workspacePath="/Addi"/>
 	</storageModule>
 </cproject>
