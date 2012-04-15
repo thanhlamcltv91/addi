@@ -134,9 +134,27 @@ static int create_subprocess(int* pProcessId)
         pts = open(devname, O_RDWR);
         if(pts < 0) exit(-1);
 
+        if (isatty(pts)) {
+        	LOGI("pts is a tty\n");
+        } else {
+        	LOGE("pts is not a tty\n");
+        }
+
         dup2(pts, 0);
         dup2(pts, 1);
         dup2(pts, 2);
+
+        if (isatty(0)) {
+        	LOGI("stdin is a tty\n");
+        } else {
+        	LOGE("stdin is not a tty\n");
+        }
+
+        if (isatty(1)) {
+        	LOGI("stdout is a tty\n");
+        } else {
+        	LOGE("stdout is not a tty\n");
+        }
 
         char **argv = NULL;
         char name[] = { 'a', 'd', 'd', 'i', '\0' };

@@ -23,6 +23,7 @@ import android.util.Log;
 import android.view.KeyEvent;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -40,6 +41,7 @@ import com.addi.core.interpreter.*;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.ActivityNotFoundException;
 import android.content.DialogInterface;
 import android.content.Intent; 
@@ -92,6 +94,10 @@ public class Addi extends AddiBase {
 	public boolean _selectionForwarded = false;
 	public int _oldVisibility;	
 	private TermSession _termSession = null;
+	private String partialLine = "";
+	private boolean interpreterReady = false;
+	private ProgressDialog myPd_ring;
+	private boolean copyingFailed = false;
 
 	// Need handler for callbacks to the UI thread
 	public final Handler _mHandler = new Handler() {
@@ -337,16 +343,32 @@ public class Addi extends AddiBase {
 		{
 		}
 
-		if (_sharedPrefs.getBoolean("use_octave_interp", false)) {
-			copyFileOrDir("m");
-			_termSession = new TermSession(this);
-			_termSession.updateSize(1024, 1024);
-		}
-
 	}
 
-	public void processString(String inStr) {
-		_mOutArrayAdapter.add(inStr);
+	public void processString(String newTermOut) {
+		String modifiedTermOut = partialLine + newTermOut;
+		int incompleteLine;
+		String lines[] = modifiedTermOut.split("\\r?\\n");
+		if (lines.length > 0) {
+			if ((modifiedTermOut.charAt(modifiedTermOut.length()-1) == '\n') || (modifiedTermOut.charAt(modifiedTermOut.length()-1) == '\r')) {
+				incompleteLine = 0;
+				partialLine = "";
+			} else {
+				incompleteLine = 1;
+				partialLine = lines[lines.length-1];
+			}
+			for (int lineNum = 0; lineNum < lines.length - incompleteLine; lineNum++) {
+				if (lines[lineNum].startsWith("STARTUPADDIEDITWITH=")) {
+					_addiEditString = lines[lineNum].substring(20);
+					Intent addiEditIntent = new Intent(Addi.this, AddiEdit.class);
+					addiEditIntent.putExtra("fileName", lines[lineNum].substring(20));
+					startActivityForResult(addiEditIntent,1);
+				} else {
+					_mOutArrayAdapter.add(lines[lineNum]);
+				}
+			}
+		}
+
 	}
 
 	public void dpadDown() {
@@ -456,18 +478,61 @@ public class Addi extends AddiBase {
 			if (command.equals("startup") && (displayCommand == false)) {
 				// do nothing
 			} else {
-				if (_termSession == null) {
-					copyFileOrDir("m");
-					_termSession = new TermSession(this);
-					_termSession.updateSize(1024, 1024);
+				if (interpreterReady == false) {
+					String fileName = "mFileUnpacked";	
+					FileInputStream input = null;
+					try {
+						input = openFileInput(fileName);
+						InputStreamReader inputReader = new InputStreamReader(input);
+						BufferedReader buffReader = new BufferedReader(inputReader);
+
+						String mFileVersion = "";
+						try {
+							mFileVersion = buffReader.readLine();
+							if (mFileVersion.equals("0")) {
+								interpreterReady = true;
+							}
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
+					} catch (FileNotFoundException e) {
+						e.printStackTrace();
+					}	
 				}
-				_oldCommands.add(0, command);
-				if (_oldCommands.size() == 100) {
-					_oldCommands.remove(99);
+				if (interpreterReady == false) {
+					myPd_ring=ProgressDialog.show(Addi.this, "Preparing Interpreter", "This is the first time you have used this version of the experimental interpreter.\nUnpacking .m files to a usable location.\nThis takes several minutes, feel free to hit the home button and use another app for a while.  Hit enter again when this is complete.\n", true);
+					myPd_ring.setCancelable(false);
+					new Thread(new Runnable() {  
+						@Override
+						public void run() {
+							try
+							{
+								copyFileOrDir("share");
+								if (copyingFailed == false) {
+									String fileName = "mFileUnpacked";	
+									OutputStreamWriter out = new OutputStreamWriter(openFileOutput(fileName, MODE_PRIVATE));
+									out.write("0\n");
+									out.flush();
+									out.close();
+								}
+							}catch(Exception e){}
+							interpreterReady = true;
+							myPd_ring.dismiss();
+						}
+					}).start();
+				} else {
+					if (_termSession == null) {
+						_termSession = new TermSession(this);
+						_termSession.updateSize(1024, 1024);
+					}
+					_oldCommands.add(0, command);
+					if (_oldCommands.size() == 100) {
+						_oldCommands.remove(99);
+					}
+					_oldCommandIndex = -1;
+					_termSession.write(command + "\n");
+					_mCmdEditText.setText("");
 				}
-				_oldCommandIndex = -1;
-				_termSession.write(command + "\n");
-				_mCmdEditText.setText("");
 			}
 		} else {
 
@@ -564,51 +629,56 @@ public class Addi extends AddiBase {
 			alertbox.show();
 		}
 	}
-	
+
 	private void copyFileOrDir(String path) {
-	    AssetManager assetManager = this.getAssets();
-	    String assets[] = null;
-	    try {
-	        assets = assetManager.list(path);
-	        if (assets.length == 0) {
-	            copyFile(path);
-	        } else {
-	            String fullPath = "/data/data/" + this.getPackageName() + "/" + path;
-	            File dir = new File(fullPath);
-	            if (!dir.exists())
-	                dir.mkdir();
-	            for (int i = 0; i < assets.length; ++i) {
-	                copyFileOrDir(path + "/" + assets[i]);
-	            }
-	        }
-	    } catch (IOException ex) {
-	        Log.e("tag", "I/O Exception", ex);
-	    }
+		AssetManager assetManager = this.getAssets();
+		String assets[] = null;
+		try {
+			assets = assetManager.list(path);
+			if (assets.length == 0) {
+				copyFile(path);
+			} else {
+				String fullPath = "/data/data/" + this.getPackageName() + "/" + path;
+				File dir = new File(fullPath);
+				if (!dir.exists())
+					dir.mkdir();
+				for (int i = 0; i < assets.length; ++i) {
+					copyFileOrDir(path + "/" + assets[i]);
+				}
+			}
+		} catch (IOException ex) {
+			Log.e("tag", "I/O Exception", ex);
+		}
 	}
 
 	private void copyFile(String filename) {
-	    AssetManager assetManager = this.getAssets();
+		AssetManager assetManager = this.getAssets();
 
-	    InputStream in = null;
-	    OutputStream out = null;
-	    try {
-	        in = assetManager.open(filename);
-	        String newFileName = "/data/data/" + this.getPackageName() + "/" + filename;
-	        out = new FileOutputStream(newFileName);
+		InputStream in = null;
+		OutputStream out = null;
+		try {
+			Log.i("tag", "starting to copy" + filename);
+			in = assetManager.open(filename);
+			String newFileName = "/data/data/" + this.getPackageName() + "/" + filename;
+			newFileName = newFileName.replace("startswithunderscore", "");
+			out = new FileOutputStream(newFileName);
 
-	        byte[] buffer = new byte[1024];
-	        int read;
-	        while ((read = in.read(buffer)) != -1) {
-	            out.write(buffer, 0, read);
-	        }
-	        in.close();
-	        in = null;
-	        out.flush();
-	        out.close();
-	        out = null;
-	    } catch (Exception e) {
-	        Log.e("tag", e.getMessage());
-	    }
+			byte[] buffer = new byte[1024];
+			int read;
+
+			while ((read = in.read(buffer)) != -1) {
+				out.write(buffer, 0, read);
+			}
+			in.close();
+			in = null;
+			out.flush();
+			out.close();
+			out = null;
+			Log.i("tag", "finished copying" + filename);
+		} catch (Exception e) {
+			Log.e("tag", e.getMessage());
+			copyingFailed = true;
+		}
 
 	}
 
