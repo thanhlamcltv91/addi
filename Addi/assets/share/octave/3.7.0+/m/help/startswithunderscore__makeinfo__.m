@@ -107,45 +107,12 @@ function [retval, status] = __makeinfo__ (text, output_type = "plain text", fsee
   ## Handle @xcode macro
   text = regexprep (text, '@xcode *\{([^}]*)\}', "$1");
 
-  if (strcmpi (output_type, "texinfo"))
-    status = 0;
-    retval = text;
-    return;
-  endif
+  status = 0;
+  retval = text;
+  return;
 
-  ## Create the final TeXinfo input string
-  text = sprintf ("\\input texinfo\n\n%s\n\n@bye\n", text);
-
-  unwind_protect
-    ## Write Texinfo to tmp file
-    template = "octave-help-XXXXXX";
-    [fid, name] = mkstemp (fullfile (P_tmpdir, template), true);
-    if (fid < 0)
-      error ("__makeinfo__: could not create temporary file");
-    endif
-    fwrite (fid, text);
-    fclose (fid);
-
-    ## Take action depending on output type
-    switch (lower (output_type))
-      case "plain text"
-        cmd = sprintf ("%s --no-headers --no-warn --force --no-validate %s",
-                       makeinfo_program (), name);
-      case "html"
-        cmd = sprintf ("%s --no-headers --html --no-warn --no-validate --force %s",
-                       makeinfo_program (), name);
-      otherwise
-        error ("__makeinfo__: unsupported output type: '%s'", output_type);
-    endswitch
-
-    ## Call makeinfo
-    [status, retval] = system (cmd);
-
-  unwind_protect_cleanup
-    if (exist (name, "file"))
-      delete (name);
-    endif
-  end_unwind_protect
+  ##CCX
+  
 endfunction
 
 
