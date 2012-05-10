@@ -3,8 +3,8 @@
       android:installLocation="auto"
       package="com.addi"
       android:sharedUserId="com.addi.sharedid"
-      android:versionCode="41" 
-      android:versionName="1.95"> 
+      android:versionCode="44" 
+      android:versionName="1.98"> 
     <supports-screens android:resizeable="true"
                       android:smallScreens="true"
                       android:normalScreens="true"

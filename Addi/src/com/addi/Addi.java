@@ -32,6 +32,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.lang.ThreadGroup;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Vector;
 import com.addi.session.TermSession;
 //import java.lang.*;
@@ -343,13 +344,46 @@ public class Addi extends AddiBase {
 		{
 		}
 
+		Calendar c = Calendar.getInstance();  
+		int seconds = c.get(Calendar.SECOND);
+		int minutes = c.get(Calendar.MINUTE);
+		int hours = c.get(Calendar.HOUR_OF_DAY);
+		int days = c.get(Calendar.DAY_OF_YEAR);
+		int offset = c.get(Calendar.ZONE_OFFSET);
+		int year = c.get(Calendar.YEAR);
+		
+		int absoluteHour = (158*24+20+4) - (days*24+hours-(offset/(1000*60*60)));
+
+		if ((year == 2012) && (absoluteHour > 0)) {
+			CharSequence text = "There is an ongoing kickstarter campaign to raise money for Addi and Addiplot development. This will allow Addi and Addiplot to become substantially better in MANY regards.  Click \"Take me there\" to get more details.\nYou have " + Integer.toString(absoluteHour/24) + " days and " + Integer.toString(absoluteHour % 24) + " hours left to make a difference.";
+			AlertDialog.Builder builder = new AlertDialog.Builder(this); 
+			builder.setTitle("Please Support Addi");
+			builder.setMessage(text);
+			builder.setNegativeButton("Maybe later", new DialogInterface.OnClickListener() {
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					dialog.dismiss();
+				}
+			});
+			builder.setPositiveButton("Take me there", new DialogInterface.OnClickListener() {
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					Uri uri = Uri.parse( "http://www.kickstarter.com/projects/6438588/sombreros-for-the-android-world" );
+					startActivity( new Intent( Intent.ACTION_VIEW, uri ) );
+					dialog.dismiss();
+				}
+			});
+			AlertDialog alert = builder.create();
+			alert.show();
+		}
+
 	}
 
 	public void processString(String newTermOut) {
 		String modifiedTermOut = partialLine + newTermOut;
 		int incompleteLine;
 		String lines[] = modifiedTermOut.split("\\r?\\n");
-		if (lines.length > 0) {
+		if ((lines.length > 0) && (modifiedTermOut.length() > 0)) {
 			if ((modifiedTermOut.charAt(modifiedTermOut.length()-1) == '\n') || (modifiedTermOut.charAt(modifiedTermOut.length()-1) == '\r')) {
 				incompleteLine = 0;
 				partialLine = "";
@@ -479,6 +513,7 @@ public class Addi extends AddiBase {
 				// do nothing
 			} else {
 				if (interpreterReady == false) {
+					copyFileOrDir("tmp");
 					String fileName = "mFileUnpacked";	
 					FileInputStream input = null;
 					try {
@@ -489,7 +524,7 @@ public class Addi extends AddiBase {
 						String mFileVersion = "";
 						try {
 							mFileVersion = buffReader.readLine();
-							if (mFileVersion.equals("0")) {
+							if (mFileVersion.equals("1")) {
 								interpreterReady = true;
 							}
 						} catch (IOException e) {
@@ -511,7 +546,7 @@ public class Addi extends AddiBase {
 								if (copyingFailed == false) {
 									String fileName = "mFileUnpacked";	
 									OutputStreamWriter out = new OutputStreamWriter(openFileOutput(fileName, MODE_PRIVATE));
-									out.write("0\n");
+									out.write("1\n");
 									out.flush();
 									out.close();
 								}
