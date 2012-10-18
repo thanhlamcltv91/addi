@@ -57,7 +57,7 @@ public class plot extends ExternalFunction
         	if(operands[0] instanceof DoubleNumberToken)
 			{
         		valuesY = ((DoubleNumberToken)operands[0]).getReValues();
-        		valuesX = valuesY;  //just get the size of it
+        		valuesX = valuesY.clone();  //just get the size of it
         		for(int row = 0; row < valuesX.length; row++)
         		{
         			for(int column = 0; column < valuesX[row].length; column++) 
