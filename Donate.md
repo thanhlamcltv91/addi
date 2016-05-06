@@ -1,0 +1,5 @@
+[Please consider supporting this project:](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=4JELWYF6CNHVU&lc=US&item_name=Corbin%20Champion%20Designs&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donateCC_LG%2egif%3aNonHosted)
+
+[![](https://www.paypal.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=4JELWYF6CNHVU&lc=US&item_name=Corbin%20Champion%20Designs&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donateCC_LG%2egif%3aNonHosted)
+
+Money will be used to keep Addi free, free of ads and consistently better.    Your donation will help yourself as a user of Addi, but also all of the other users.  If you want to make a particular feature request to accompany your donation as a "pay it forward" please email me or file a feature request under the issues link.
